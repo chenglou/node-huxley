@@ -1,0 +1,18 @@
+{
+  "name": "node-huxley",
+  "version": "0.0.0",
+  "description": "placeholder",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "gm": "~1.11.1",
+    "commander": "~2.0.0",
+    "soda": "~0.2.5"
+  }
+}

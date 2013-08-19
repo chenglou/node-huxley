@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+var commander = require('commander');
+
+commander
+  .version('0.0.0')
+  .option('-r, --record', 'Record a new test')
+  .option('-p, --playback-only', 'Don\'t write new screenshots')
+  .option('-s, --save-diff', 'Save information about failures as last.png and' +
+    'diff.png')
+  .parse(process.argv);
