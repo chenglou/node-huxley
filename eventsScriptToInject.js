@@ -10,7 +10,7 @@
     events.push([Date.now(), 'keyup', String.fromCharCode(e.keyCode)]);
   }, true);
 
-  // TODO: double click (?), right click
+  // TODO: double click (?), right click, cap char detection
 
   window._getHuxleyEvents = function() {
     return events;
