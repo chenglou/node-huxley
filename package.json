@@ -13,6 +13,7 @@
   "dependencies": {
     "gm": "~1.11.1",
     "commander": "~2.0.0",
-    "soda": "~0.2.5"
+    "selenium-webdriver": "~2.35.0",
+    "keypress": "~0.2.1"
   }
 }
