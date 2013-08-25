@@ -1,19 +1,44 @@
 var gm = require('gm');
 var fs = require('fs');
+var exec = require('child_process').exec;
 
-function writeImageToFile(path, rawImage, callback) {
-  var imageBuffer = new Buffer(rawImage, 'base64');
-  fs.writeFile(pathAndName, imageBuffer, callback);
+function writeToFile(path, rawImageBuffer, callback) {
+  var imageBuffer = new Buffer(rawImageBuffer, 'base64');
+  fs.writeFile(path, imageBuffer, callback);
 }
 
-function compareImages(image1, image2, callback) {
-  // pixel perfect, leaves no room for error (the 0)
-  gm.compare(image1, image2, 0, function(err, isEqual) {
-    callback(isEqual);
+function compareAndSaveDiffOnMismatch(image1Buffer, image2Path, callback) {
+  // in our use case, iamge1Buffer will always be a buffer of the temp image we
+  // created
+  var tempFileName = 'temp' + Math.random() + '.png';
+  writeToFile(tempFileName, image1Buffer, function(err) {
+    try {
+      // pixel perfect, leaves no room for error (the 0)
+      gm.compare(tempFileName, image2Path, 0, function(err, areSame) {
+        if (!areSame) {
+          // waiting for gm to accept the pull on diff saving. Meanwhile...
+          exec(
+            'gm compare -file diff.png ' + tempFileName + ' ' + image2Path,
+            function(err) {
+              fs.unlink(tempFileName, function() {
+                callback(err, areSame);
+              });
+            }
+          );
+        } else {
+          fs.unlink(tempFileName, function() {
+            callback(null, areSame);
+          });
+        }
+      });
+    } catch (e) {
+      fs.unlinkSync(tempFileName);
+      throw e;
+    }
   });
 }
 
 module.exports = {
-  writeImageToFile: writeImageToFile,
-  compareImages: compareImages
+  writeToFile: writeToFile,
+  compareAndSaveDiffOnMismatch: compareAndSaveDiffOnMismatch,
 };
