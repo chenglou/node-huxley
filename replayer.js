@@ -1,51 +1,14 @@
-// var testjson = [
-//   {
-//     "command": "screenshot",
-//     "index": 0,
-//     "offsetTime": 400
-//   },
-//   {
-//     "command": "click",
-//     "offsetTime": 800,
-//     "pos": [182, 214]
-//   },
-//   {
-//     "command": "keypress",
-//     "offsetTime": 1100,
-//     "key": "A"
-//   },
-//   {
-//     "command": "click",
-//     "offsetTime": 1300,
-//     "pos": [121, 260]
-//   },
-//   {
-//     "command": "keypress",
-//     "offsetTime": 1600,
-//     "key": "B"
-//   },
-//   {
-//     "command": "click",
-//     "offsetTime": 1900,
-//     "pos": [513, 340]
-//   },
-//   {
-//     "command": "keypress",
-//     "offsetTime": 2100,
-//     "key": "C"
-//   },
-//   {
-//     "command": "screenshot",
-//     "index": 1,
-//     "offsetTime": 2400
-//   }
-// ];
-
 var imageOperations = require('./imageOperations');
 
 function simulateEvents(driver, steps, options, callback) {
+  if (steps.length === 0) {
+    // TODO: not throw
+    throw 'no steps';
+  }
+
   var sleepFactor = options.sleepFactor || 1;
   var compareWithOldImages = options.compareWithOldImages || false;
+  var taskDir = options.taskDir || '';
 
   // kickstart the console messages
   console.log(
@@ -58,10 +21,10 @@ function simulateEvents(driver, steps, options, callback) {
     var realOffsetTime = step.offsetTime * sleepFactor;
 
     var func;
-    if (step.command === 'screenshot') {
+    if (step.action === 'screenshot') {
       if (i === steps.length - 1) {
         func = function() {
-          _simulateEvent(driver, step, compareWithOldImages, function(notSame) {
+          _simulateEvent(driver, step, taskDir, compareWithOldImages, function(notSame) {
             if (notSame) {
               timeoutQueue.forEach(function(id) {
                 clearTimeout(id);
@@ -74,7 +37,7 @@ function simulateEvents(driver, steps, options, callback) {
         };
       } else {
         func = function() {
-          _simulateEvent(driver, step, compareWithOldImages, function(notSame) {
+          _simulateEvent(driver, step, taskDir, compareWithOldImages, function(notSame) {
             if (notSame) {
               timeoutQueue.forEach(function(id) {
                 clearTimeout(id);
@@ -90,7 +53,7 @@ function simulateEvents(driver, steps, options, callback) {
         };
       }
     } else {
-      // there's no way a non-screenshot step can be the last command, we've
+      // there's no way a non-screenshot step can be the last action, we've
       // decided so when we saved the record.json file
       func = function() {
         _simulateEvent(driver, step);
@@ -105,11 +68,11 @@ function simulateEvents(driver, steps, options, callback) {
   });
 }
 
-function _simulateEvent(driver, step, compareWithOldImages, callback) {
+function _simulateEvent(driver, step, taskDir, compareWithOldImages, callback) {
   if (typeof compareWithOldImages === 'function') {
     callback = compareWithOldImages;
   }
-  var eventName = step.command;
+  var eventName = step.action;
   var offsetTime = step.offsetTime;
   // eventParams varies according to the event passed
   switch (eventName) {
@@ -138,7 +101,7 @@ function _simulateEvent(driver, step, compareWithOldImages, callback) {
             );
           } else {
             // if it's not a form item, unfocus it so that the next potential
-            // keypress is not accidentally sent to inputs
+            // keyup is not accidentally sent to inputs
             driver.executeScript(
               'document.activeElement.blur();'
             );
@@ -155,11 +118,12 @@ function _simulateEvent(driver, step, compareWithOldImages, callback) {
       driver
         .takeScreenshot()
         .then(function(tempImage) {
-          var oldImagePath = 'screenshot' + index + '.png';
-
+          var oldImagePath = taskDir + '/screenshot' + index + '.png';
+          // TODO: remove dir somewhere
           if (compareWithOldImages) {
             imageOperations.compareAndSaveDiffOnMismatch(
-              tempImage, oldImagePath, function(err, areSame) {
+              // TODO: dir/path, choose one
+              tempImage, oldImagePath, taskDir, function(err, areSame) {
                 callback && callback(!areSame);
               }
             );
@@ -170,7 +134,7 @@ function _simulateEvent(driver, step, compareWithOldImages, callback) {
           }
         });
       break;
-    case 'keypress':
+    case 'keyup':
       // parameter is the key pressed
       var key = step.key;
       console.log('  Typing ' + key);
@@ -189,6 +153,53 @@ function _simulateEvent(driver, step, compareWithOldImages, callback) {
       throw 'unrecognized user event';
   }
 }
+
+module.exports = {
+  simulateEvents: simulateEvents
+};
+
+// var testjson = [
+//   {
+//     "action": "screenshot",
+//     "index": 0,
+//     "offsetTime": 400
+//   },
+//   {
+//     "action": "click",
+//     "offsetTime": 800,
+//     "pos": [182, 214]
+//   },
+//   {
+//     "action": "keyup",
+//     "offsetTime": 1100,
+//     "key": "A"
+//   },
+//   {
+//     "action": "click",
+//     "offsetTime": 1300,
+//     "pos": [121, 260]
+//   },
+//   {
+//     "action": "keyup",
+//     "offsetTime": 1600,
+//     "key": "B"
+//   },
+//   {
+//     "action": "click",
+//     "offsetTime": 1900,
+//     "pos": [513, 340]
+//   },
+//   {
+//     "action": "keyup",
+//     "offsetTime": 2100,
+//     "key": "C"
+//   },
+//   {
+//     "action": "screenshot",
+//     "index": 1,
+//     "offsetTime": 2400
+//   }
+// ];
 
 // TODO: remove
 // var browser = require('./browser');
