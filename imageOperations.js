@@ -7,7 +7,7 @@ function writeToFile(path, rawImageBuffer, callback) {
   fs.writeFile(path, imageBuffer, callback);
 }
 
-function compareAndSaveDiffOnMismatch(image1Buffer, image2Path, callback) {
+function compareAndSaveDiffOnMismatch(image1Buffer, image2Path, taskPath, callback) {
   // in our use case, iamge1Buffer will always be a buffer of the temp image we
   // created
   var tempFileName = 'temp' + Math.random() + '.png';
@@ -17,8 +17,9 @@ function compareAndSaveDiffOnMismatch(image1Buffer, image2Path, callback) {
       gm.compare(tempFileName, image2Path, 0, function(err, areSame) {
         if (!areSame) {
           // waiting for gm to accept the pull on diff saving. Meanwhile...
+          var diffPngPath = taskPath + '/diff.png';
           exec(
-            'gm compare -file diff.png ' + tempFileName + ' ' + image2Path,
+            'gm compare -file ' + diffPngPath + ' ' + tempFileName + ' ' + image2Path,
             function(err) {
               fs.unlink(tempFileName, function() {
                 callback(err, areSame);
