@@ -3,7 +3,7 @@ var fs = require('fs');
 
 function readHuxleyFile(path, callback) {
   try {
-    var huxleyFile = require(path);
+    var huxleyFile = require(path + '/Huxleyfile.json');
     callback(huxleyFile);
   } catch (e) {
     console.error('no Huxleyfile found');
@@ -20,7 +20,7 @@ function createTaskFolder(path, callback) {
 }
 
 function saveJSON(path, jsonData, callback) {
-  fs.writeFile(path, JSON.stringify(jsonData), function(err) {
+  fs.writeFile(path + '/record.json', JSON.stringify(jsonData), function(err) {
     if (err)
       console.error(err);
     else
@@ -31,5 +31,14 @@ function saveJSON(path, jsonData, callback) {
 module.exports = {
   readHuxleyFile: readHuxleyFile,
   createTaskFolder: createTaskFolder,
-  saveRecordedEventsToJSON: saveRecordedEventsToJSON
+  saveJSON: saveJSON
 };
+
+// TODO: remove
+// readHuxleyFileIn('./', function(file) {
+//   var tasks = file.tasks;
+//   console.log(tasks);
+//   createTaskFolder('./asd', function() {
+//     saveRecordJSONIn('./asd/', {c:'b'}, function() {});
+//   });
+// });
