@@ -1,3 +1,4 @@
+// TODO: better display msgs
 var fs = require('fs');
 var browser = require('./browser');
 var recorder = require('./recorder');
@@ -130,6 +131,7 @@ function _saveTaskAsJsonToFolder(taskName, taskSteps, callback) {
   });
 }
 
+// TODO: callback -> done
 function _updateTask(task, callback) {
   var userEvents;
   try {
