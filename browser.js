@@ -1,7 +1,7 @@
 var fs = require('fs');
 var webdriver = require('selenium-webdriver');
 
-function buildAndReturnNewDriver() {
+function getNewDriver() {
   driver = new webdriver.Builder()
     .usingServer('http://localhost:4444/wd/hub')
     // TODO: browser choice
@@ -11,56 +11,31 @@ function buildAndReturnNewDriver() {
   return driver;
 }
 
-function openToUrl(driver, url, windowWidth, windowHeight, callback) {
-  // TODO: test if need then()
-  driver.manage().window().setSize(windowWidth, windowHeight);
-  driver.get(url).then(callback);
+function openToUrl(driver, url, windowWidth, windowHeight, done) {
+  driver.manage().window()
+    .setSize(windowWidth, windowHeight)
+    .then(function() {
+      driver.get(url);
+    })
+    .then(done);
 }
 
-// TODO: maybe not needed
-function refresh(driver, callback) {
-  // TODO: this. Callback?
-  driver.navigate()
-    .refresh()
-    .then(callback);
-}
-
-function quit(driver, callback) {
+function quit(driver, done) {
   driver
     .quit()
-    .then(callback);
+    .then(done);
 }
 
 // TODO: shorter name
-function getBrowserEvents(driver, callback) {
-  var events = driver
+function getRecordedEvents(driver, done) {
+  driver
     .executeScript('return window._getHuxleyEvents();')
-    .then(callback);
+    .then(done);
 }
 
 module.exports = {
-  buildAndReturnNewDriver: buildAndReturnNewDriver,
+  getNewDriver: getNewDriver,
   openToUrl: openToUrl,
-  refresh: refresh,
   quit: quit,
-  getBrowserEvents: getBrowserEvents
+  getRecordedEvents: getRecordedEvents
 };
-
-
-// TODO: remove
-
-// openToUrl('localhost:8000', 1000, 1000, function(driver) {
-//   setTimeout(function() {
-//     refresh(driver, function() {
-//       console.log('refreshed');
-//       injectEventsScript(driver, function() {
-//         console.log('events injected');
-//         setTimeout(function() {
-//           getBrowserEvents(driver, function(recordedBrowserEvents) {
-//             console.log(recordedBrowserEvents);
-//           });
-//         }, 1000);
-//       });
-//     });
-//   }, 1000);
-// });

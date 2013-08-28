@@ -50,16 +50,16 @@ function recordTasks() {
   _operateOnEachTask(_recordTask);
 }
 
-function updateTasks() {
-  _operateOnEachTask(_updateTask);
+function playbackTasksAndSaveScreenshots() {
+  _operateOnEachTask(_playbackTaskAndSaveScreenshot);
 }
 
-function playbackTasks() {
-  _operateOnEachTask(_playbackTask);
+function playbackTasksAndCompareScrenshots() {
+  _operateOnEachTask(_playbackTaskAndCompareScreenshot);
 }
 
-function _recordTask(task, callback) {
-  var driver = browser.buildAndReturnNewDriver();
+function _recordTask(task, next) {
+  var driver = browser.getNewDriver();
   // TODO: put in a constant file
   var screenSize = task.screenSize || [1024, 768];
 
@@ -68,13 +68,10 @@ function _recordTask(task, callback) {
     recorder.start(driver, function(screenShotTimes, recordingStartTime) {
       recorder.stop(driver, screenShotTimes, function(allEvents) {
         var processedTaskEvents = _processRawTaskEvents(allEvents, recordingStartTime);
-
         _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function() {
-          browser.refresh(driver, function() {
-            playback(driver, processedTaskEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor}, function() {
-              browser.quit(driver, function() {
-                callback();
-              });
+          browser.quit(driver, function() {
+            _playbackTaskAndSaveScreenshot(task, function() {
+              next();
             });
           });
         });
@@ -133,7 +130,7 @@ function _saveTaskAsJsonToFolder(taskName, taskSteps, callback) {
 }
 
 // TODO: callback -> done
-function _updateTask(task, callback) {
+function _playbackTaskAndSaveScreenshot(task, callback) {
   var userEvents;
   try {
     userEvents = require(_getTaskFolderName(task.name) + '/record.json');
@@ -142,7 +139,7 @@ function _updateTask(task, callback) {
     return;
   }
 
-  var driver = browser.buildAndReturnNewDriver();
+  var driver = browser.getNewDriver();
   // TODO: put in a constant file
   var screenSize = task.screenSize || [1024, 768];
 
@@ -157,7 +154,7 @@ function _updateTask(task, callback) {
   });
 }
 
-function _playbackTask(task, callback) {
+function _playbackTaskAndCompareScreenshot(task, callback) {
   var userEvents;
   try {
     userEvents = require(_getTaskFolderName(task.name) + '/record.json');
@@ -166,7 +163,7 @@ function _playbackTask(task, callback) {
     return;
   }
 
-  var driver = browser.buildAndReturnNewDriver();
+  var driver = browser.getNewDriver();
   // TODO: put in a constant file
   var screenSize = task.screenSize || [1024, 768];
 
@@ -179,13 +176,12 @@ function _playbackTask(task, callback) {
       });
     });
   });
-
 }
 
 module.exports = {
   recordTasks: recordTasks,
-  updateTasks: updateTasks,
-  playbackTasks: playbackTasks,
+  playbackTasksAndSaveScreenshots: playbackTasksAndSaveScreenshots,
+  playbackTasksAndCompareScrenshots: playbackTasksAndCompareScrenshots,
 };
 
 // recordTasks();

@@ -10,9 +10,9 @@ commander
   .parse(process.argv);
 
 if (commander.update) {
-  core.updateTasks();
+  core.playbackTasksAndSaveScreenshots();
 } else if (commander.record) {
   core.recordTasks();
 } else {
-  core.playbackTasks();
+  core.playbackTasksAndCompareScrenshots();
 }

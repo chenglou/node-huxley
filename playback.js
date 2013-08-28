@@ -3,7 +3,8 @@
 var imageOperations = require('./imageOperations');
 
 function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
-  console.log('  Taking screenshot ' + event.index); // screenshot index
+  // parameter is the index of the screenshot
+  console.log('  Taking screenshot ' + event.index);
 
   driver
    .takeScreenshot()
@@ -26,16 +27,14 @@ function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
 
 function _simulateKeypress(driver, event, next) {
   // parameter is the key pressed
-  var key = event.key;
-  console.log('  Typing ' + key);
+  console.log('  Typing ' + event.key);
 
   driver
     .executeScript('return document.activeElement;')
     .then(function(activeElement) {
       if (!activeElement) return next();
-      // TODO: upper case
       activeElement
-        .sendKeys(key)
+        .sendKeys(event.key)
         .then(next);
     });
 }
@@ -91,8 +90,12 @@ function playback(driver, events, options, done) {
   var currentEventIndex = 0;
   var simulationStartTime = Date.now();
 
-  // TODO: explain
-  // closure
+  // the initial idea was to pass through the events array and simply do a
+  // `setTimeout(func, events[i].offsetTime)`, where `func` is the function
+  // corresponding to the event we want to reproduce, e.g. `_simulateClick`. But
+  // this causes some concurrency issue when sleepTime is set to < 0.2. The new
+  // way is to pass `_next` (or `done`) as a _callback_ to `func`, and set the
+  // correct timer to trigger func. See below
   function _next(err) {
     if (err) {
       throw err;
@@ -125,10 +128,17 @@ function playback(driver, events, options, done) {
         case 'screenshot':
           fn = _simulateScreenshot.bind(null, driver, currentEvent, taskDir, compareWithOldImages, _next);
           break;
+        default:
+          // TODO: don't throw
+          throw 'Unrecognized user event.';
       }
     }
 
-    // TODO: comment here
+    // while we could have easily set the time interval to the difference
+    // between the current event and the previous, this doesn't take into
+    // consideration the time taken to execute the simulation itself (which is
+    // why we were having concurrency issue in the first place). We correct that
+    // here with the last two timestamps
     setTimeout(fn, currentEvent.offsetTime * sleepFactor - Date.now() + simulationStartTime);
     currentEventIndex++;
   }
