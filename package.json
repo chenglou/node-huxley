@@ -1,6 +1,6 @@
 {
   "name": "node-huxley",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "New wave front-end testing.",
   "main": "index.js",
   "preferGlobal": true,
@@ -15,7 +15,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "gm": "~1.11.1",
     "commander": "~2.0.0",
     "selenium-webdriver": "~2.35.0",
     "keypress": "~0.2.1",
