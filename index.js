@@ -31,9 +31,9 @@ function _operateOnEachTask(operation) {
   operation(tasks[currentTaskCount], function runNextTask() {
     if (currentTaskCount === tasks.length - 1) {
       process.stdin.pause();
-      console.log('All done successfully!'.green);
+      console.log('\nAll done successfully!'.green);
     } else {
-      console.log('\nNext task...');
+      console.log('\nNext task...\n');
       operation(tasks[++currentTaskCount], runNextTask);
     }
   });
@@ -117,33 +117,14 @@ function _saveTaskAsJsonToFolder(taskName, taskEvents, next) {
 }
 
 function _playbackTaskAndSaveScreenshot(task, next) {
-  var taskEvents;
-  try {
-    taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
-  } catch (e) {
-    console.error('Cannot find info on recorded actions.'.red);
-    return;
-  }
-
-  var driver = browser.getNewDriver();
-  var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
-
-  browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
-    console.log('Running test: ' + task.name);
-
-    var options = {
-      taskPath: _getTaskFolderName(task.name),
-      sleepFactor: task.sleepFactor
-    };
-    playback(driver, taskEvents, options, function() {
-      browser.quit(driver, function() {
-        next();
-      });
-    });
-  });
+  _playbackTask(task, false, next);
 }
 
 function _playbackTaskAndCompareScreenshot(task, next) {
+  _playbackTask(task, true, next);
+}
+
+function _playbackTask(task, compareInsteadOfOverride, next) {
   var taskEvents;
   try {
     taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
@@ -161,7 +142,7 @@ function _playbackTaskAndCompareScreenshot(task, next) {
     var options = {
       taskPath: _getTaskFolderName(task.name),
       sleepFactor: task.sleepFactor,
-      compareWithOldImages: true
+      compareWithOldImages: compareInsteadOfOverride
     };
     playback(driver, taskEvents, options, function() {
       browser.quit(driver, function() {
