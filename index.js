@@ -37,6 +37,7 @@ function _operateOnEachTask(operation) {
   operation(tasks[currentTaskCount], function runNextTask() {
     if (currentTaskCount === tasks.length - 1) {
       process.stdin.pause();
+      // TODO: better msg
       console.log('done');
     } else {
       console.log('next task...');

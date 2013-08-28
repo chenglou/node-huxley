@@ -4,6 +4,7 @@ var webdriver = require('selenium-webdriver');
 function buildAndReturnNewDriver() {
   driver = new webdriver.Builder()
     .usingServer('http://localhost:4444/wd/hub')
+    // TODO: browser choice
     .withCapabilities(webdriver.Capabilities.firefox())
     .build();
 

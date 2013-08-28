@@ -1,4 +1,5 @@
 // TODO: use strict
+// TODO: input focux aura problem
 var imageOperations = require('./imageOperations');
 // TODO: ew file name replayer
 
