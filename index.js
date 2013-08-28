@@ -4,12 +4,7 @@ var browser = require('./browser');
 var recorder = require('./recorder');
 var playback = require('./playback');
 var mkdirp = require('mkdirp');
-
-var rerunActionsMessage =
-  'Up next, we\'ll re-run your actions to generate screenshots to ensure they' +
-  ' are pixel-perfect when running automated. Press enter to start.';
-
-var playingBackMessage = 'Playing back to ensure the test is correct.';
+var colors = require('colors');
 
 // TODO: integration with remote environment
 
@@ -26,36 +21,24 @@ function _operateOnEachTask(operation) {
   try {
     tasks = require(process.cwd() + '/Huxleyfile.json');
   } catch (e) {
-    // TODO: colorify! and maybe not console
-    console.error('No Huxleyfile.json found!');
+    // TODO: maybe not console
+    console.error('No Huxleyfile.json found!'.red);
     return;
   }
 
-  // TODO: error if no huxfile, throw if no task
+  // TODO: throw if no task
   var currentTaskCount = 0;
 
   operation(tasks[currentTaskCount], function runNextTask() {
     if (currentTaskCount === tasks.length - 1) {
       process.stdin.pause();
       // TODO: better msg
-      console.log('done');
+      console.log('All done successfully!'.green);
     } else {
-      console.log('next task...');
+      console.log('\nnext task...');
       operation(tasks[++currentTaskCount], runNextTask);
     }
   });
-}
-
-function recordTasks() {
-  _operateOnEachTask(_recordTask);
-}
-
-function playbackTasksAndSaveScreenshots() {
-  _operateOnEachTask(_playbackTaskAndSaveScreenshot);
-}
-
-function playbackTasksAndCompareScrenshots() {
-  _operateOnEachTask(_playbackTaskAndCompareScreenshot);
 }
 
 function _recordTask(task, next) {
@@ -69,7 +52,7 @@ function _recordTask(task, next) {
       recorder.stop(driver, screenShotTimes, function(allEvents) {
         var processedTaskEvents = _processRawTaskEvents(allEvents, recordingStartTime);
         _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function() {
-          console.log('Don\'t move! Simulating the recording now...');
+          console.log('\nDon\'t move! Simulating the recording now...\n'.bold.yellow);
           browser.quit(driver, function() {
             _playbackTaskAndSaveScreenshot(task, function() {
               next();
@@ -122,8 +105,9 @@ function _saveTaskAsJsonToFolder(taskName, taskSteps, callback) {
   var folderPath = _getTaskFolderName(taskName);
   // TODO: err
   mkdirp(folderPath, function(err) {
-    // TODO: prettify
-    fs.writeFile(folderPath + '/record.json', JSON.stringify(taskSteps), function(err) {
+    fs.writeFile(folderPath + '/record.json',
+                JSON.stringify(taskSteps, null, 2), // prettify, 2 spaces indent
+                function(err) {
       // TODO: err
       callback();
     });
@@ -160,7 +144,7 @@ function _playbackTaskAndCompareScreenshot(task, callback) {
   try {
     userEvents = require(_getTaskFolderName(task.name) + '/record.json');
   } catch (e) {
-    console.error('Cannot find info on recorded actions.');
+    console.error('Cannot find info on recorded actions.'.red);
     return;
   }
 
@@ -177,6 +161,18 @@ function _playbackTaskAndCompareScreenshot(task, callback) {
       });
     });
   });
+}
+
+function recordTasks() {
+  _operateOnEachTask(_recordTask);
+}
+
+function playbackTasksAndSaveScreenshots() {
+  _operateOnEachTask(_playbackTaskAndSaveScreenshot);
+}
+
+function playbackTasksAndCompareScrenshots() {
+  _operateOnEachTask(_playbackTaskAndCompareScreenshot);
 }
 
 module.exports = {

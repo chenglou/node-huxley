@@ -1,6 +1,7 @@
 // TODO: use strict
 // TODO: input focux aura problem
 var imageOperations = require('./imageOperations');
+var colors = require('colors');
 
 function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
   // parameter is the index of the screenshot
@@ -80,7 +81,7 @@ function _simulateClick(driver, event, next) {
 function playback(driver, events, options, done) {
   if (events.length === 0) {
     // TODO: not throw, better msg
-    throw 'no events';
+    throw 'no events'.red;
   }
 
   var sleepFactor = options.sleepFactor == null ? 1 : options.sleepFactor;
@@ -109,7 +110,7 @@ function playback(driver, events, options, done) {
       : currentEvent.offsetTime - events[currentEventIndex - 1].offsetTime;
 
     console.log(
-      '  Sleeping for %s ms', (sleepDuration * sleepFactor).toFixed(1)
+      '  Sleeping for %s ms'.grey, (sleepDuration * sleepFactor).toFixed(1)
     );
 
     if (currentEventIndex === events.length - 1) {

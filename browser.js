@@ -26,7 +26,6 @@ function quit(driver, done) {
     .then(done);
 }
 
-// TODO: shorter name
 function getRecordedEvents(driver, done) {
   driver
     .executeScript('return window._getHuxleyEvents();')
