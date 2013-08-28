@@ -78,7 +78,7 @@ function _simulateClick(driver, event, next) {
     });
 }
 
-function simulateEvents(driver, events, options, done) {
+function playback(driver, events, options, done) {
   if (events.length === 0) {
     // TODO: not throw, better msg
     throw 'no events';
@@ -136,6 +136,4 @@ function simulateEvents(driver, events, options, done) {
   _next();
 }
 
-module.exports = {
-  simulateEvents: simulateEvents
-};
+module.exports = playback;

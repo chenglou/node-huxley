@@ -2,7 +2,7 @@
 var fs = require('fs');
 var browser = require('./browser');
 var recorder = require('./recorder');
-var replayer = require('./replayer');
+var playback = require('./playback');
 var mkdirp = require('mkdirp');
 
 var rerunActionsMessage =
@@ -70,7 +70,7 @@ function _recordTask(task, callback) {
 
         _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function() {
           browser.refresh(driver, function() {
-            replayer.simulateEvents(driver, processedTaskEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor}, function() {
+            playback(driver, processedTaskEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor}, function() {
               browser.quit(driver, function() {
                 callback();
               });
@@ -148,7 +148,7 @@ function _updateTask(task, callback) {
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
     // TODO: concurrency issue somewhere. Set sleepFactor small crashes selenium
-    replayer.simulateEvents(driver, userEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor}, function() {
+    playback(driver, userEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor}, function() {
       browser.quit(driver, function() {
         callback();
       });
@@ -172,7 +172,7 @@ function _playbackTask(task, callback) {
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
     // TODO: concurrency issue somewhere. Set sleepFactor small crashes selenium
-    replayer.simulateEvents(driver, userEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor, compareWithOldImages: true}, function() {
+    playback(driver, userEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor, compareWithOldImages: true}, function() {
       browser.quit(driver, function() {
         callback();
       });
