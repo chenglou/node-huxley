@@ -14,7 +14,7 @@ A port of the paradigm-shifting front-end "testing" tool, [Huxley](https://githu
 hux -r
 ```
 
-Huxley opens Selenium Webdriver and records your actions. Press `enter` in the terminal to take a snap shot of the screen. When you're done recording your actions and taking your screenshots, press `q` to exit.
+Huxley opens Selenium Webdriver and records your actions. Press `enter` in the terminal to take a snap shot of the screen. When you're done recording your actions and taking your screenshots, press `q` `enter` to exit.
 
 ### Playback
 
@@ -35,7 +35,7 @@ Same procedure as the playback mode, except this time Huxley replaces your old s
 ## Installation
 
 ```
-npm install -g node-huxley
+npm install -g huxley
 ```
 
 You'll need [Selenium Server](http://docs.seleniumhq.org/download/). Starting it is one Java command, documented on their [wiki page](http://code.google.com/p/selenium/wiki/Grid2). Don't want the hassle? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
