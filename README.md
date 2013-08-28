@@ -10,25 +10,25 @@ A port of the paradigm-shifting front-end "testing" tool, [Huxley](https://githu
 
 ### Record
 
-`hux -r`
+    hux -r
 
 Huxley opens Selenium Webdriver and records your actions. Press `enter` in the terminal to take a snap shot of the screen. When you're done recording your actions and taking your screenshots, press `q` to exit.
 
 ### Playback
 
-`hux`
+    hux
 
 Huxley opens the browser again, but this time it'll run the commands you recorded (browser actions and screenshots taking), automatically. When a new screenshot isn't identical to the old one, it stops, warns you and save a diff image for you to examine.
 
 ### Update
 
-`hux -u`
+    hux -u
 
 Same procedure as the playback mode, except this time Huxley replaces your old screenshots with your new ones.
 
 ## Installation
 
-`npm install node-huxley`
+    npm install node-huxley
 
 You'll also need [Selenium Server](http://docs.seleniumhq.org/download/) (nothing else). Starting it is one Java command, documented on their [wiki page](http://code.google.com/p/selenium/wiki/Grid2). Don't want the hassle? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
@@ -81,7 +81,7 @@ Node-huxley is a port, so every recommendation [here](https://github.com/faceboo
 
 ### Is this a good idea?
 
-[Instagram](https://github.com/facebook/huxley#best-practices) runs on Huxley. They've gotten pretty far with it.
+[Instagram](https://github.com/facebook/huxley#huxley) runs on Huxley. They've gotten pretty far with it.
 
 ### Where's the documentation?
 
