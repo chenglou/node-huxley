@@ -12,16 +12,14 @@ function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
      // TODO: remove dir somewhere
      if (compareWithOldOne) {
        imageOperations.compareAndSaveDiffOnMismatch(
-         // TODO: dir/path, choose one
-         tempImage, oldImagePath, taskDir, function(err, areSame) {
-           console.log('done taking ss');
-           next(!areSame);
+          // TODO: dir/path, choose one
+          tempImage, oldImagePath, taskDir, function(err, areSame) {
+            if (err) return next(err);
+            next(!areSame);
          }
        );
      } else {
-       imageOperations.writeToFile(oldImagePath, tempImage, function(err) {
-         next(err);
-       });
+       imageOperations.writeToFile(oldImagePath, tempImage, next);
      }
    });
 }
@@ -34,17 +32,11 @@ function _simulateKeyup(driver, event, next) {
   driver
     .executeScript('return document.activeElement;')
     .then(function(activeElement) {
-      if (activeElement) {
-        // TODO: case
-        activeElement
-          .sendKeys(key.toLowerCase())
-          .then(function() {
-            console.log('done key ' + key);
-            next();
-          });
-      } else {
-        next();
-      }
+      if (!activeElement) return next();
+      // TODO: upper case
+      activeElement
+        .sendKeys(key.toLowerCase())
+        .then(next);
     });
 }
 
@@ -75,23 +67,16 @@ function _simulateClick(driver, event, next) {
           .executeScript(
             'document.elementFromPoint(' + posX + ', ' + posY + ').focus();'
           )
-          .then(function() {
-            console.log('done click ', posX, posY);
-            next();
-          });
+          .then(next);
       } else {
         // if it's not a form item, unfocus it so that the next potential
         // keyup is not accidentally sent to inputs
         driver
           .executeScript('document.activeElement.blur();')
-          .then(function() {
-            console.log('done click', posX, posY);
-            next();
-          });
+          .then(next);
       }
     });
 }
-
 
 function simulateEvents(driver, events, options, done) {
   if (events.length === 0) {
@@ -99,13 +84,14 @@ function simulateEvents(driver, events, options, done) {
     throw 'no events';
   }
 
-  var sleepFactor = options.sleepFactor || 1;
+  var sleepFactor = options.sleepFactor == null ? 1 : options.sleepFactor;
   var compareWithOldImages = options.compareWithOldImages || false;
   var taskDir = options.taskDir || '';
 
   var currentEventIndex = 0;
   var simulationStartTime = Date.now();
 
+  // TODO: explain
   // closure
   function _next(err) {
     if (err) {
@@ -114,9 +100,19 @@ function simulateEvents(driver, events, options, done) {
 
     var fn;
     var currentEvent = events[currentEventIndex];
+
+    var sleepDuration = currentEventIndex === 0
+      ? currentEvent.offsetTime
+      : currentEvent.offsetTime - events[currentEventIndex - 1].offsetTime;
+
+    console.log(
+      '  Sleeping for %s ms', (sleepDuration * sleepFactor).toFixed(1)
+    );
+
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed it so when we
       // saved the recording
+      // TODO: wrap
       fn = _simulateScreenshot.bind(null, driver, currentEvent, taskDir, compareWithOldImages, done);
     } else {
       switch (currentEvent.action) {
@@ -136,11 +132,6 @@ function simulateEvents(driver, events, options, done) {
     setTimeout(fn, currentEvent.offsetTime * sleepFactor - Date.now() + simulationStartTime);
     currentEventIndex++;
   }
-
-  // kickstart the console messages
-  console.log(
-    '  Sleeping for %s ms', (events[0].offsetTime * sleepFactor).toFixed(1)
-  );
 
   _next();
 }
