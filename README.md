@@ -4,7 +4,7 @@ A port of the paradigm-shifting front-end "testing" tool, [Huxley](https://githu
 
 - Records your actions as you browse.
 - Takes screenshots.
-- Auto-compares new screenshots against the old ones and check for differences.
+- Auto-compares new screenshots against the old ones and checks for differences.
 
 ## Modes
 
