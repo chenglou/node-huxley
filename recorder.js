@@ -5,13 +5,14 @@ var driver;
 var enterPromptMessage =
   'Press enter to take a screenshot, or type Q + enter if you\'re done.';
 
-function start(driver, callback) {
+function start(driver, done) {
   var screenshotCount = 0;
   var recordingStartTime;
   var screenShotTimes = [];
 
   // I'm sick of callbacks and promises, sync read this
-  var scriptToInject = fs.readFileSync(__dirname + '/eventsScriptToInject.js', 'utf8');
+  var scriptToInject =
+    fs.readFileSync(__dirname + '/eventsScriptToInject.js', 'utf8');
 
   driver.executeScript(scriptToInject);
 
@@ -37,12 +38,12 @@ function start(driver, callback) {
     } else if (key.name === 'q') {
       // quitting
       process.stdin.removeListener('keypress', handleKeyPress);
-      callback(screenShotTimes, recordingStartTime);
+      done(screenShotTimes, recordingStartTime);
     }
   });
 }
 
-function stop(driver, screenShotTimes, callback) {
+function stop(driver, screenShotTimes, done) {
   // this will not only include the browser events, but also the screenshot
   // keypress events
   var allEvents;
@@ -68,7 +69,7 @@ function stop(driver, screenShotTimes, callback) {
       }
     })
     .then(function() {
-      callback(allEvents);
+      done(allEvents);
     });
 }
 

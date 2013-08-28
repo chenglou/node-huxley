@@ -3,19 +3,18 @@
 var imageOperations = require('./imageOperations');
 var colors = require('colors');
 
-function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
+function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
   // parameter is the index of the screenshot
   console.log('  Taking screenshot ' + event.index);
 
   driver
    .takeScreenshot()
    .then(function(tempImage) {
-     var oldImagePath = taskDir + '/screenshot' + event.index + '.png';
+     var oldImagePath = taskPath + '/screenshot' + event.index + '.png';
      // TODO: remove dir somewhere
      if (compareWithOldOne) {
        imageOperations.compareAndSaveDiffOnMismatch(
-          // TODO: dir/path, choose one
-          tempImage, oldImagePath, taskDir, function(err, areSame) {
+          tempImage, oldImagePath, taskPath, function(err, areSame) {
             if (err) return next(err);
             next(!areSame);
          }
@@ -80,13 +79,13 @@ function _simulateClick(driver, event, next) {
 
 function playback(driver, events, options, done) {
   if (events.length === 0) {
-    // TODO: not throw, better msg
-    throw 'no events'.red;
+    // TODO: not throw
+    throw 'No events recorded.'.bold.yellow;
   }
 
   var sleepFactor = options.sleepFactor == null ? 1 : options.sleepFactor;
   var compareWithOldImages = options.compareWithOldImages || false;
-  var taskDir = options.taskDir || '';
+  var taskPath = options.taskPath || '';
 
   var currentEventIndex = 0;
   var simulationStartTime = Date.now();
@@ -116,8 +115,9 @@ function playback(driver, events, options, done) {
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed it so when we
       // saved the recording
-      // TODO: wrap
-      fn = _simulateScreenshot.bind(null, driver, currentEvent, taskDir, compareWithOldImages, done);
+      fn = _simulateScreenshot.bind(
+        null, driver, currentEvent, taskPath, compareWithOldImages, done
+      );
     } else {
       switch (currentEvent.action) {
         case 'click':
@@ -127,7 +127,9 @@ function playback(driver, events, options, done) {
           fn = _simulateKeypress.bind(null, driver, currentEvent, _next);
           break;
         case 'screenshot':
-          fn = _simulateScreenshot.bind(null, driver, currentEvent, taskDir, compareWithOldImages, _next);
+          fn = _simulateScreenshot.bind(
+            null, driver, currentEvent, taskPath, compareWithOldImages, _next
+          );
           break;
         default:
           // TODO: don't throw
@@ -140,7 +142,10 @@ function playback(driver, events, options, done) {
     // consideration the time taken to execute the simulation itself (which is
     // why we were having concurrency issue in the first place). We correct that
     // here with the last two timestamps
-    setTimeout(fn, currentEvent.offsetTime * sleepFactor - Date.now() + simulationStartTime);
+    setTimeout(
+      fn,
+      currentEvent.offsetTime * sleepFactor - Date.now() + simulationStartTime
+    );
     currentEventIndex++;
   }
 

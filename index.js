@@ -1,4 +1,3 @@
-// TODO: better display msgs
 var fs = require('fs');
 var browser = require('./browser');
 var recorder = require('./recorder');
@@ -6,6 +5,7 @@ var playback = require('./playback');
 var mkdirp = require('mkdirp');
 var colors = require('colors');
 
+var DEFAULT_SCREEN_SIZE = [1024, 768];
 // TODO: integration with remote environment
 
 
@@ -15,7 +15,6 @@ function _getTaskFolderName(taskName) {
 
 // the signature of the operation passed:
 // operation(singleTaskObj, callback)
-// TODO: what does task/event/recording really mean?
 function _operateOnEachTask(operation) {
   var tasks;
   try {
@@ -32,10 +31,9 @@ function _operateOnEachTask(operation) {
   operation(tasks[currentTaskCount], function runNextTask() {
     if (currentTaskCount === tasks.length - 1) {
       process.stdin.pause();
-      // TODO: better msg
       console.log('All done successfully!'.green);
     } else {
-      console.log('\nnext task...');
+      console.log('\nNext task...');
       operation(tasks[++currentTaskCount], runNextTask);
     }
   });
@@ -43,16 +41,20 @@ function _operateOnEachTask(operation) {
 
 function _recordTask(task, next) {
   var driver = browser.getNewDriver();
-  // TODO: put in a constant file
-  var screenSize = task.screenSize || [1024, 768];
+  var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
     recorder.start(driver, function(screenShotTimes, recordingStartTime) {
       recorder.stop(driver, screenShotTimes, function(allEvents) {
-        var processedTaskEvents = _processRawTaskEvents(allEvents, recordingStartTime);
+        var processedTaskEvents =
+          _processRawTaskEvents(allEvents, recordingStartTime);
+
         _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function() {
-          console.log('\nDon\'t move! Simulating the recording now...\n'.bold.yellow);
+          console.log(
+            '\nDon\'t move! Simulating the recording now...\n'.bold.yellow
+          );
+
           browser.quit(driver, function() {
             _playbackTaskAndSaveScreenshot(task, function() {
               next();
@@ -93,71 +95,77 @@ function _processRawTaskEvents(events, recordingStartTime) {
         break;
       default:
         // TODO: really throw?
-        throw 'Unrecognized user event.';
+        throw 'Unrecognized user event.'.red;
     }
 
     return obj;
   });
 }
 
-function _saveTaskAsJsonToFolder(taskName, taskSteps, callback) {
-  // `taskSteps` should already have been processed by `_processRawTaskEvents`
+function _saveTaskAsJsonToFolder(taskName, taskEvents, next) {
+  // `taskEvents` should already have been processed by `_processRawTaskEvents`
   var folderPath = _getTaskFolderName(taskName);
   // TODO: err
   mkdirp(folderPath, function(err) {
     fs.writeFile(folderPath + '/record.json',
-                JSON.stringify(taskSteps, null, 2), // prettify, 2 spaces indent
+                JSON.stringify(taskEvents, null, 2), // prettify, 2 spaces indent
                 function(err) {
       // TODO: err
-      callback();
+      next();
     });
   });
 }
 
-// TODO: callback -> done
-function _playbackTaskAndSaveScreenshot(task, callback) {
-  var userEvents;
+function _playbackTaskAndSaveScreenshot(task, next) {
+  var taskEvents;
   try {
-    userEvents = require(_getTaskFolderName(task.name) + '/record.json');
-  } catch (e) {
-    console.error('Cannot find info on recorded actions.');
-    return;
-  }
-
-  var driver = browser.getNewDriver();
-  // TODO: put in a constant file
-  var screenSize = task.screenSize || [1024, 768];
-
-  browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
-    console.log('Running test: ' + task.name);
-    // TODO: concurrency issue somewhere. Set sleepFactor small crashes selenium
-    playback(driver, userEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor}, function() {
-      browser.quit(driver, function() {
-        callback();
-      });
-    });
-  });
-}
-
-function _playbackTaskAndCompareScreenshot(task, callback) {
-  var userEvents;
-  try {
-    userEvents = require(_getTaskFolderName(task.name) + '/record.json');
+    taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
   } catch (e) {
     console.error('Cannot find info on recorded actions.'.red);
     return;
   }
 
   var driver = browser.getNewDriver();
-  // TODO: put in a constant file
-  var screenSize = task.screenSize || [1024, 768];
+  var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
-    // TODO: concurrency issue somewhere. Set sleepFactor small crashes selenium
-    playback(driver, userEvents, {taskDir: _getTaskFolderName(task.name), sleepFactor: task.sleepFactor, compareWithOldImages: true}, function() {
+
+    var options = {
+      taskPath: _getTaskFolderName(task.name),
+      sleepFactor: task.sleepFactor
+    };
+    playback(driver, taskEvents, options, function() {
       browser.quit(driver, function() {
-        callback();
+        next();
+      });
+    });
+  });
+}
+
+function _playbackTaskAndCompareScreenshot(task, next) {
+  var taskEvents;
+  try {
+    taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
+  } catch (e) {
+    console.error('Cannot find info on recorded actions.'.red);
+    return;
+  }
+
+  var driver = browser.getNewDriver();
+  var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
+
+  browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
+    console.log('Running test: ' + task.name);
+
+    var options = {
+      taskPath: _getTaskFolderName(task.name),
+      sleepFactor: task.sleepFactor,
+      compareWithOldImages: true
+    };
+    playback(driver, taskEvents, options, function() {
+      browser.quit(driver, function() {
+        next();
       });
     });
   });
