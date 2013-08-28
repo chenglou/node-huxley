@@ -69,6 +69,7 @@ function _recordTask(task, next) {
       recorder.stop(driver, screenShotTimes, function(allEvents) {
         var processedTaskEvents = _processRawTaskEvents(allEvents, recordingStartTime);
         _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function() {
+          console.log('Don\'t move! Simulating the recording now...');
           browser.quit(driver, function() {
             _playbackTaskAndSaveScreenshot(task, function() {
               next();
