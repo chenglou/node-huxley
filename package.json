@@ -1,8 +1,9 @@
 {
   "name": "node-huxley",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "New wave front-end testing.",
   "main": "index.js",
+  "preferGlobal": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

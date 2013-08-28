@@ -28,7 +28,7 @@ Same procedure as the playback mode, except this time Huxley replaces your old s
 
 ## Installation
 
-    npm install node-huxley
+    npm install -g node-huxley
 
 You'll also need [Selenium Server](http://docs.seleniumhq.org/download/) (nothing else). Starting it is one Java command, documented on their [wiki page](http://code.google.com/p/selenium/wiki/Grid2). Don't want the hassle? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
