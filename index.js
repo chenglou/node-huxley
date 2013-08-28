@@ -86,10 +86,10 @@ function _recordTask(task, callback) {
 function _processRawTaskEvents(events, recordingStartTime) {
   // a single task freshly out of a recording session looks like this (first
   // item is time):
-  // [1377491482885, 'keyup', 'D']
+  // [1377491482885, 'keypress', 'D']
   // turn it into:
   // {
-  //   "action": "keyup",
+  //   "action": "keypress",
   //   "offsetTime": 2100,
   //   "key": "D"
   // }
@@ -104,7 +104,7 @@ function _processRawTaskEvents(events, recordingStartTime) {
       case 'click':
         obj.pos = event[2];
         break;
-      case 'keyup':
+      case 'keypress':
         obj.key = event[2];
         break;
       case 'screenshot':

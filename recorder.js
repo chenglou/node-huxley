@@ -54,7 +54,7 @@ function stop(driver, screenShotTimes, callback) {
         .concat(screenShotTimes)
         .sort(function(prev, curr) {
           // each array item is of the format [timeStamp, action, miscInfo]
-          // e.g. [1231, 'keyup', 103]
+          // e.g. [1231, 'keypress', 103]
           return prev[0] - curr[0];
         });
       for (var i = allEvents.length - 1; i >= 0; i--) {

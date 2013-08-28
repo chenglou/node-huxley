@@ -6,11 +6,11 @@
     events.push([Date.now(), 'click', [e.clientX, e.clientY]]);
   }, true);
 
-  window.addEventListener('keyup', function(e) {
-    events.push([Date.now(), 'keyup', String.fromCharCode(e.keyCode)]);
+  window.addEventListener('keypress', function(e) {
+    events.push([Date.now(), 'keypress', String.fromCharCode(e.keyCode || e.which)]);
   }, true);
 
-  // TODO: double click (?), right click, cap char detection
+  // TODO: double click (?), right click
 
   window._getHuxleyEvents = function() {
     return events;

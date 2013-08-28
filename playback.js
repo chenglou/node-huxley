@@ -1,7 +1,6 @@
 // TODO: use strict
 // TODO: input focux aura problem
 var imageOperations = require('./imageOperations');
-// TODO: ew file name replayer
 
 function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
   console.log('  Taking screenshot ' + event.index); // screenshot index
@@ -25,7 +24,7 @@ function _simulateScreenshot(driver, event, taskDir, compareWithOldOne, next) {
    });
 }
 
-function _simulateKeyup(driver, event, next) {
+function _simulateKeypress(driver, event, next) {
   // parameter is the key pressed
   var key = event.key;
   console.log('  Typing ' + key);
@@ -36,7 +35,7 @@ function _simulateKeyup(driver, event, next) {
       if (!activeElement) return next();
       // TODO: upper case
       activeElement
-        .sendKeys(key.toLowerCase())
+        .sendKeys(key)
         .then(next);
     });
 }
@@ -71,7 +70,7 @@ function _simulateClick(driver, event, next) {
           .then(next);
       } else {
         // if it's not a form item, unfocus it so that the next potential
-        // keyup is not accidentally sent to inputs
+        // keypress is not accidentally sent to inputs
         driver
           .executeScript('document.activeElement.blur();')
           .then(next);
@@ -120,8 +119,8 @@ function playback(driver, events, options, done) {
         case 'click':
           fn = _simulateClick.bind(null, driver, currentEvent, _next);
           break;
-        case 'keyup':
-          fn = _simulateKeyup.bind(null, driver, currentEvent, _next);
+        case 'keypress':
+          fn = _simulateKeypress.bind(null, driver, currentEvent, _next);
           break;
         case 'screenshot':
           fn = _simulateScreenshot.bind(null, driver, currentEvent, taskDir, compareWithOldImages, _next);
