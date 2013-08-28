@@ -40,13 +40,15 @@ npm install -g node-huxley
 
 You'll need [Selenium Server](http://docs.seleniumhq.org/download/). Starting it is one Java command, documented on their [wiki page](http://code.google.com/p/selenium/wiki/Grid2). Don't want the hassle? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
-You'll also need [GraphicsMagick](http://www.graphicsmagick.org). It's used for comparing screenshots.
+You'll also need [GraphicsMagick](http://www.graphicsmagick.org). It's used for comparing screenshots (yes, it even works on Windows!).
 
 ## Example
 
 In `examples/` you'll find two simple completed Huxley tests.
 
 Let's start recording from scratch by removing `toggle.huxley`, `type.huxley` and `Huxleyfile.json`.
+
+_If you have any Windows-related trouble during the process, see the FAQ below._
 
 `cd` into `examples/webroot` and start a local server. Try `python -m SimpleHTTPServer` (if you're on Python 3.x: `python -m http.server`) or use [this package](https://github.com/nodeapps/http-server).
 
@@ -69,7 +71,7 @@ Create a Huxleyfile.json, like this:
 
 Each task is an object. `name` and `url` are mandatory, `sleepFactor` (see below; it accelerates the replay) and `screenSize`. There are no other options =).
 
-Start Selenium (see "Installation" above), it doesn't matter where. `cd` to `examples/` then run `hux -r`. Assuming Selenium started correctly, you should now see a Firefox (the default) window. Note that you need Firefox in your environment path. Then, do the following:
+Start Selenium (see "Installation" above), it doesn't matter where. `cd` to `examples/` then run `hux -r`. The default Selenium browser is Firefox, and it needs to be in your environment `PATH`. Assuming Selenium started correctly, you should now see a Firefox (the default) window. Now do the following:
 
 - Go back to the terminal, press `enter` to record the initial state of the browser screen.
 - Go to browser, click on the button once.
@@ -100,3 +102,11 @@ This readme actually covered every single functionality of node-huxley. Pretty n
 ### But I like writing front-end unit tests the traditional way!
 
 Woah, really? =) Hop on to the next era of unit testing or we might leave without you!
+
+### I'm on Windows and ______
+
+Make sure that:
+
+- Java is installed and in your environment path.
+- Same for Firefox, or whatever browser you want Huxley to open to (coming soon!).
+- If the enter key doesn't register while recording, try typing anything (beside `q`) before pressing enter.
