@@ -4,7 +4,7 @@ A port of the paradigm-shifting front-end "testing" tool, [Huxley](https://githu
 
 - Records your actions as you browse.
 - Takes screenshots.
-- Auto-compare new screenshots against the old ones and check for differences.
+- Auto-compares new screenshots against the old ones and check for differences.
 
 ## Modes
 
@@ -59,7 +59,7 @@ Create a Huxleyfile.json, like this:
 
 Each task is an object. `name` and `url` are mandatory, `sleepFactor` (see below; it accelerates the replay) and `screenSize`. There are no other options =).
 
-Start Selenium (see "Installation" above), doesn't matter where. `cd` to `examples/` then run `hux -r`. Assuming Selenium started correctly, you should now see a Firefox (the default) window. Note that you need Firefox in your environment path. Then, do the following:
+Start Selenium (see "Installation" above), it doesn't matter where. `cd` to `examples/` then run `hux -r`. Assuming Selenium started correctly, you should now see a Firefox (the default) window. Note that you need Firefox in your environment path. Then, do the following:
 
 - Go back to the terminal, press `enter` to record the initial state of the browser screen.
 - Go to browser, click on the button once.
