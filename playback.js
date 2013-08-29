@@ -16,7 +16,13 @@ function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
        imageOperations.compareAndSaveDiffOnMismatch(
           tempImage, oldImagePath, taskPath, function(err, areSame) {
             if (err) return next(err);
-            next(!areSame);
+            if (!areSame) {
+              return next(
+                'New screenshot looks different! The diff image is saved for ' +
+                'you to examine.'
+              );
+            }
+            next();
          }
        );
      } else {
@@ -78,10 +84,7 @@ function _simulateClick(driver, event, next) {
 }
 
 function playback(driver, events, options, done) {
-  if (events.length === 0) {
-    // TODO: not throw
-    throw 'No events recorded.'.bold.yellow;
-  }
+  if (events.length === 0) return done('No previously recorded events.');
 
   var sleepFactor = options.sleepFactor == null ? 1 : options.sleepFactor;
   var compareWithOldImages = options.compareWithOldImages || false;
@@ -97,9 +100,7 @@ function playback(driver, events, options, done) {
   // way is to pass `_next` (or `done`) as a _callback_ to `func`, and set the
   // correct timer to trigger func. See below
   function _next(err) {
-    if (err) {
-      throw err;
-    }
+    if (err) return done(err);
 
     var fn;
     var currentEvent = events[currentEventIndex];
@@ -132,8 +133,7 @@ function playback(driver, events, options, done) {
           );
           break;
         default:
-          // TODO: don't throw
-          throw 'Unrecognized user event.';
+          return done('Unrecognized user event.');
       }
     }
 

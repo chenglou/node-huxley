@@ -19,16 +19,16 @@ function _operateOnEachTask(operation) {
   var tasks;
   try {
     tasks = require(process.cwd() + '/Huxleyfile.json');
-  } catch (e) {
-    // TODO: maybe not console
+  } catch (err) {
     console.error('No Huxleyfile.json found!'.red);
     return;
   }
 
-  // TODO: throw if no task
   var currentTaskCount = 0;
 
-  operation(tasks[currentTaskCount], function runNextTask() {
+  operation(tasks[currentTaskCount], function runNextTask(err) {
+    if (err) return console.error(err.red);
+
     if (currentTaskCount === tasks.length - 1) {
       process.stdin.pause();
       console.log('\nAll done successfully!'.green);
@@ -50,13 +50,15 @@ function _recordTask(task, next) {
         var processedTaskEvents =
           _processRawTaskEvents(allEvents, recordingStartTime);
 
-        _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function() {
+        _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function(err) {
           console.log(
             '\nDon\'t move! Simulating the recording now...\n'.bold.yellow
           );
 
           browser.quit(driver, function() {
-            _playbackTaskAndSaveScreenshot(task, function() {
+            if (err) return next(err);
+            _playbackTaskAndSaveScreenshot(task, function(err) {
+              if (err) return next(err);
               next();
             });
           });
@@ -94,8 +96,7 @@ function _processRawTaskEvents(events, recordingStartTime) {
         obj.index = event[2];
         break;
       default:
-        // TODO: really throw?
-        throw 'Unrecognized user event.'.red;
+        throw 'Unrecognized event. This is a fault of the library.'.red;
     }
 
     return obj;
@@ -105,12 +106,12 @@ function _processRawTaskEvents(events, recordingStartTime) {
 function _saveTaskAsJsonToFolder(taskName, taskEvents, next) {
   // `taskEvents` should already have been processed by `_processRawTaskEvents`
   var folderPath = _getTaskFolderName(taskName);
-  // TODO: err
   mkdirp(folderPath, function(err) {
+    if (err) return next(err);
     fs.writeFile(folderPath + '/record.json',
                 JSON.stringify(taskEvents, null, 2), // prettify, 2 spaces indent
                 function(err) {
-      // TODO: err
+      if (err) return next(err);
       next();
     });
   });
@@ -144,8 +145,9 @@ function _playbackTask(task, compareInsteadOfOverride, next) {
       sleepFactor: task.sleepFactor,
       compareWithOldImages: compareInsteadOfOverride
     };
-    playback(driver, taskEvents, options, function() {
+    playback(driver, taskEvents, options, function(err) {
       browser.quit(driver, function() {
+        if (err) return next(err);
         next();
       });
     });
