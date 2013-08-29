@@ -1,4 +1,5 @@
-// TODO: use strict
+'use strict';
+
 // TODO: input focux aura problem
 var imageOperations = require('./imageOperations');
 var colors = require('colors');

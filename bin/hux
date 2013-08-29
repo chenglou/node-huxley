@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+'use strict';
+
 var app = require('commander');
 var core = require('../');
 var version = require('../package.json').version;

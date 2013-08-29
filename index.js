@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var browser = require('./browser');
 var recorder = require('./recorder');

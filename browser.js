@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var webdriver = require('selenium-webdriver');
 
@@ -17,7 +19,7 @@ function getNewDriver(browserName) {
     return null;
   }
 
-  driver = new webdriver.Builder()
+  var driver = new webdriver.Builder()
     .usingServer(serverUrl)
     .withCapabilities(browser)
     .build();
