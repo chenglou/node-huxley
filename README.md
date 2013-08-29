@@ -1,6 +1,6 @@
 # Node-huxley
 
-A port of the paradigm-shifting front-end "testing" tool, [Huxley](https://github.com/facebook/huxley), to JavaScript.
+A port of the paradigm-shifting front-end "testing" tool, [Huxley](https://github.com/facebook/huxley), used by Instagram.
 
 - Records your actions as you browse.
 - Takes screenshots.
@@ -38,9 +38,9 @@ Same procedure as the playback mode, except this time Huxley replaces your old s
 npm install -g huxley
 ```
 
-You'll need [Selenium Server](http://docs.seleniumhq.org/download/). Starting it is one Java command, documented on their [wiki page](http://code.google.com/p/selenium/wiki/Grid2). Don't want the hassle? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
-
 You'll also need [GraphicsMagick](http://www.graphicsmagick.org). It's used for comparing screenshots (yes, it even works on Windows!).
+
+If you already have [Selenium Server](http://docs.seleniumhq.org/download/) then skip this. Don't have it and don't want the hassle of managing it? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
 ## Example
 
@@ -71,7 +71,7 @@ Create a Huxleyfile.json, like this:
 
 Each task is an object. `name` and `url` are mandatory, `sleepFactor` (see below; it accelerates the replay) and `screenSize`. There are no other options =).
 
-Start Selenium (see "Installation" above), it doesn't matter where. `cd` to `examples/` then run `hux -r`. The default Selenium browser is Firefox, and it needs to be in your environment `PATH`. Assuming Selenium started correctly, you should now see a Firefox (the default) window. Now do the following:
+Start Selenium (see "Installation" above), it doesn't matter where. `cd` to `examples/` then run `hux -r`. The default Selenium browser is Firefox, **see FAQ if you're having trouble/want to use another browser.** Assuming Selenium started correctly, you should now see a Firefox (the default) window. Now do the following:
 
 - Go back to the terminal, press `enter` to record the initial state of the browser screen.
 - Go to browser, click on the button once.
@@ -91,22 +91,26 @@ Node-huxley is a port, so every recommendation [here](https://github.com/faceboo
 
 ## FAQ
 
-### Is this a good idea?
+### Selenium isn't starting up my Firefox and throws an error?
 
-[Instagram](https://github.com/facebook/huxley#huxley) runs on Huxley. They've gotten pretty far with it.
+You might need Firefox in your environment PATH.
 
-### Where's the documentation?
+### How do I switch the default browser?
 
-This readme actually covered every single functionality of node-huxley. Pretty nice isn't it.
+Currently only Firefox and Chrome are supported. For Chrome, you need [chromedriver](https://code.google.com/p/chromedriver/downloads/list), which doesn't come bundled with Selenium yet. Then do this:
 
-### But I like writing front-end unit tests the traditional way!
-
-Woah, really? =) Hop on to the next era of unit testing or we might leave without you!
+```
+hux -b chrome -flagForWhateverElseYouNeed
+```
 
 ### I'm on Windows and ______
 
 Make sure that:
 
 - Java is installed and in your environment path.
-- Same for Firefox, or whatever browser you want Huxley to open to (coming soon!).
+- Same for Firefox or Chrome (see above FAQ).
 - If the enter key doesn't register while recording, try typing anything (beside `q`) before pressing enter.
+
+### But I like writing front-end unit tests the traditional way!
+
+Woah, really? =) Hop on to the next era of unit testing or we might leave without you!

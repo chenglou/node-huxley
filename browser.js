@@ -1,11 +1,25 @@
 var fs = require('fs');
 var webdriver = require('selenium-webdriver');
 
-function getNewDriver() {
+function getNewDriver(browserName) {
+  var browser;
+  var serverUrl;
+  // haven't tested on ie. Safari is buggy (can't receive sent keys correctly)
+  // http://stackoverflow.com/questions/18389419/selenium-webdriverjs-cannot-
+  // build-webdriver-for-chrome
+  if (browserName == null || browserName === 'firefox') {
+    browser = webdriver.Capabilities.firefox();
+    serverUrl = 'http://localhost:4444/wd/hub';
+  } else if (browserName === 'chrome') {
+    browser = webdriver.Capabilities.chrome();
+    serverUrl = 'http://localhost:9515';
+  } else {
+    return null;
+  }
+
   driver = new webdriver.Builder()
-    .usingServer('http://localhost:4444/wd/hub')
-    // TODO: browser choice
-    .withCapabilities(webdriver.Capabilities.firefox())
+    .usingServer(serverUrl)
+    .withCapabilities(browser)
     .build();
 
   return driver;

@@ -1,18 +1,25 @@
 #!/usr/bin/env node
-var commander = require('commander');
+var app = require('commander');
 var core = require('../');
 var version = require('../package.json').version;
 
-commander
+app
   .version(version)
   .option('-r, --record', 'Record a new test')
   .option('-u, --update', 'Record new screenshot using the automated steps')
+  .option(
+    '-b, --browser [browser]',
+    'Browser. Defaults to Firefox. Chrome requires extra setup.' +
+    'See README for more info'
+  )
   .parse(process.argv);
 
-if (commander.update) {
-  core.playbackTasksAndSaveScreenshots();
-} else if (commander.record) {
-  core.recordTasks();
+var browser = app.browser;
+
+if (app.update) {
+  core.playbackTasksAndSaveScreenshots(browser);
+} else if (app.record) {
+  core.recordTasks(browser);
 } else {
-  core.playbackTasksAndCompareScrenshots();
+  core.playbackTasksAndCompareScrenshots(browser);
 }

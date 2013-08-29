@@ -14,8 +14,8 @@ function _getTaskFolderName(taskName) {
 }
 
 // the signature of the operation passed:
-// operation(singleTaskObj, callback)
-function _operateOnEachTask(operation) {
+// operation(browserName, singleTaskObj, callback)
+function _operateOnEachTask(browserName, operation) {
   var tasks;
   try {
     tasks = require(process.cwd() + '/Huxleyfile.json');
@@ -26,7 +26,7 @@ function _operateOnEachTask(operation) {
 
   var currentTaskCount = 0;
 
-  operation(tasks[currentTaskCount], function runNextTask(err) {
+  operation(browserName, tasks[currentTaskCount], function runNextTask(err) {
     if (err) return console.error(err.red);
 
     if (currentTaskCount === tasks.length - 1) {
@@ -34,13 +34,15 @@ function _operateOnEachTask(operation) {
       console.log('\nAll done successfully!'.green);
     } else {
       console.log('\nNext task...\n');
-      operation(tasks[++currentTaskCount], runNextTask);
+      operation(browserName, tasks[++currentTaskCount], runNextTask);
     }
   });
 }
 
-function _recordTask(task, next) {
-  var driver = browser.getNewDriver();
+function _recordTask(browserName, task, next) {
+  var driver = browser.getNewDriver(browserName);
+  if (driver === null) return next('Unsupported browser.');
+
   var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
@@ -117,15 +119,15 @@ function _saveTaskAsJsonToFolder(taskName, taskEvents, next) {
   });
 }
 
-function _playbackTaskAndSaveScreenshot(task, next) {
-  _playbackTask(task, false, next);
+function _playbackTaskAndSaveScreenshot(browserName, task, next) {
+  _playbackTask(browserName, task, false, next);
 }
 
-function _playbackTaskAndCompareScreenshot(task, next) {
-  _playbackTask(task, true, next);
+function _playbackTaskAndCompareScreenshot(browserName, task, next) {
+  _playbackTask(browserName, task, true, next);
 }
 
-function _playbackTask(task, compareInsteadOfOverride, next) {
+function _playbackTask(browserName, task, compareInsteadOfOverride, next) {
   var taskEvents;
   try {
     taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
@@ -134,7 +136,9 @@ function _playbackTask(task, compareInsteadOfOverride, next) {
     return;
   }
 
-  var driver = browser.getNewDriver();
+  var driver = browser.getNewDriver(browserName);
+  if (driver === null) return next('Unsupported browser.');
+
   var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
@@ -154,16 +158,16 @@ function _playbackTask(task, compareInsteadOfOverride, next) {
   });
 }
 
-function recordTasks() {
-  _operateOnEachTask(_recordTask);
+function recordTasks(browserName) {
+  _operateOnEachTask(browserName, _recordTask);
 }
 
-function playbackTasksAndSaveScreenshots() {
-  _operateOnEachTask(_playbackTaskAndSaveScreenshot);
+function playbackTasksAndSaveScreenshots(browserName) {
+  _operateOnEachTask(browserName, _playbackTaskAndSaveScreenshot);
 }
 
-function playbackTasksAndCompareScrenshots() {
-  _operateOnEachTask(_playbackTaskAndCompareScreenshot);
+function playbackTasksAndCompareScrenshots(browserName) {
+  _operateOnEachTask(browserName, _playbackTaskAndCompareScreenshot);
 }
 
 module.exports = {
