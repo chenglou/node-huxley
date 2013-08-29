@@ -1,3 +1,11 @@
+### 0.1.3 (August 27th 2013)
+- Chrome support.
+- Better error handling/messages. Colors!
+- Prettified record.json for you to hack around.
+
+### 0.1.2 (August 27th 2013)
+- New name for npm package.
+
 ### 0.1.1 (August 27th 2013)
 - Fix broken examples.
 
