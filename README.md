@@ -81,7 +81,7 @@ Start Selenium (see "Installation" above), it doesn't matter where. `cd` to `exa
 
 Huxley will then replay your actions as done by itself, then save the screenshots into each task's respective folder.
 
-`hux -p` to see the playback. If you ever feel your actions where too slow, open `Huxleyfile.json` and add the `sleepFactor` to `toggle` and/or `type`. The smaller the faster. Setting it to 0 queues your actions without delay. _Careful though_, if you have animations or other things that require waiting.
+`hux` to see the playback. If you ever feel your actions where too slow, open `Huxleyfile.json` and add the `sleepFactor` to `toggle` and/or `type`. The smaller the faster. Setting it to 0 queues your actions without delay. _Careful though_, if you have animations or other things that require waiting.
 
 Now, say you made a change in `toggle.html`. All you need to do is `hux -u` to update the screenshots automatically.
 
