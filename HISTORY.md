@@ -1,3 +1,8 @@
+## 0.2.0 (August 29th 2013)
+- Fix behavior when pressing arrow keys.
+- Better error output.
+- Fix cli parsingbug  for `browser`.
+
 ### 0.1.3 (August 27th 2013)
 - Chrome support.
 - Better error handling/messages. Colors!
