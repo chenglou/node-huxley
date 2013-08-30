@@ -6,20 +6,24 @@ var webdriver = require('selenium-webdriver');
 function getNewDriver(browserName) {
   var browser;
   var serverUrl;
+  var driver;
   // haven't tested on ie. Safari is buggy (can't receive sent keys correctly)
   // http://stackoverflow.com/questions/18389419/selenium-webdriverjs-cannot-
   // build-webdriver-for-chrome
-  if (browserName == null || browserName === 'firefox') {
+  if (browserName == null) browserName = 'firefox';
+  browserName = browserName.toLowerCase();
+
+  if (browserName === 'firefox') {
     browser = webdriver.Capabilities.firefox();
     serverUrl = 'http://localhost:4444/wd/hub';
   } else if (browserName === 'chrome') {
     browser = webdriver.Capabilities.chrome();
     serverUrl = 'http://localhost:9515';
   } else {
-    return null;
+    return;
   }
 
-  var driver = new webdriver.Builder()
+  driver = new webdriver.Builder()
     .usingServer(serverUrl)
     .withCapabilities(browser)
     .build();
@@ -42,15 +46,8 @@ function quit(driver, done) {
     .then(done);
 }
 
-function getRecordedEvents(driver, done) {
-  driver
-    .executeScript('return window._getHuxleyEvents();')
-    .then(done);
-}
-
 module.exports = {
   getNewDriver: getNewDriver,
   openToUrl: openToUrl,
-  quit: quit,
-  getRecordedEvents: getRecordedEvents
+  quit: quit
 };

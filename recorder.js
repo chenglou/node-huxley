@@ -7,7 +7,7 @@ var driver;
 var enterPromptMessage =
   'Press enter to take a screenshot, or type Q + enter if you\'re done.';
 
-function start(driver, done) {
+function startPromptAndInjectEventsScript(driver, done) {
   var screenshotCount = 0;
   var recordingStartTime;
   var screenShotTimes = [];
@@ -45,7 +45,7 @@ function start(driver, done) {
   });
 }
 
-function stop(driver, screenShotTimes, done) {
+function stopAndGetBrowserEvents(driver, screenShotTimes, done) {
   // this will not only include the browser events, but also the screenshot
   // keypress events
   var allEvents;
@@ -76,6 +76,6 @@ function stop(driver, screenShotTimes, done) {
 }
 
 module.exports = {
-  start: start,
-  stop: stop
+  startPromptAndInjectEventsScript: startPromptAndInjectEventsScript,
+  stopAndGetBrowserEvents: stopAndGetBrowserEvents
 };

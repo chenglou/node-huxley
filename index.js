@@ -29,7 +29,10 @@ function _operateOnEachTask(browserName, operation) {
   var currentTaskCount = 0;
 
   operation(browserName, tasks[currentTaskCount], function runNextTask(err) {
-    if (err) return console.error(err.red);
+    if (err) {
+      process.stdin.pause();
+      return console.error(err.red);
+    }
 
     if (currentTaskCount === tasks.length - 1) {
       process.stdin.pause();
@@ -43,14 +46,14 @@ function _operateOnEachTask(browserName, operation) {
 
 function _recordTask(browserName, task, next) {
   var driver = browser.getNewDriver(browserName);
-  if (driver === null) return next('Unsupported browser.');
+  if (driver == null) return next('Unsupported browser.');
 
   var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
-    recorder.start(driver, function(screenShotTimes, recordingStartTime) {
-      recorder.stop(driver, screenShotTimes, function(allEvents) {
+    recorder.startPromptAndInjectEventsScript(driver, function(screenShotTimes, recordingStartTime) {
+      recorder.stopAndGetBrowserEvents(driver, screenShotTimes, function(allEvents) {
         var processedTaskEvents =
           _processRawTaskEvents(allEvents, recordingStartTime);
 
@@ -61,7 +64,7 @@ function _recordTask(browserName, task, next) {
 
           browser.quit(driver, function() {
             if (err) return next(err);
-            _playbackTaskAndSaveScreenshot(task, function(err) {
+            _playbackTaskAndSaveScreenshot(browserName, task, function(err) {
               if (err) return next(err);
               next();
             });
@@ -134,8 +137,7 @@ function _playbackTask(browserName, task, compareInsteadOfOverride, next) {
   try {
     taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
   } catch (e) {
-    console.error('Cannot find info on recorded actions.'.red);
-    return;
+    return next('Cannot find info on recorded actions.');
   }
 
   var driver = browser.getNewDriver(browserName);
