@@ -10,7 +10,7 @@ var enterPromptMessage =
 function startPromptAndInjectEventsScript(driver, done) {
   var screenshotCount = 0;
   var recordingStartTime;
-  var screenShotTimes = [];
+  var screenShotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
   var scriptToInject =
@@ -21,18 +21,20 @@ function startPromptAndInjectEventsScript(driver, done) {
   console.log('Begin record');
   console.log(enterPromptMessage);
 
-  // start after the page's loaded (`get` up there). more accurate
+  // start after the page's loaded. more accurate
   recordingStartTime = Date.now();
 
   keypress(process.stdin);
-
+  // TODO: maybe auto record the first ss
   process.stdin.on('keypress', function handleKeyPress(char, key) {
     if (!key) throw 'No key input received';
 
     if (key.name === 'enter') {
-      screenShotTimes.push(
-        [Date.now(), 'screenshot', screenshotCount]
-      );
+      screenShotEvents.push({
+        action: 'screenshot',
+        timeOffset: Date.now(),
+        index: screenshotCount
+      });
       screenshotCount++;
       console.log(screenshotCount + ' screenshot recorded.');
       console.log(enterPromptMessage);
@@ -40,42 +42,53 @@ function startPromptAndInjectEventsScript(driver, done) {
     } else if (key.name === 'q') {
       // quitting
       process.stdin.removeListener('keypress', handleKeyPress);
-      done(screenShotTimes, recordingStartTime);
+      done(screenShotEvents, recordingStartTime);
     }
   });
 }
 
-function stopAndGetBrowserEvents(driver, screenShotTimes, done) {
-  // this will not only include the browser events, but also the screenshot
-  // keypress events
-  var allEvents;
+// TODO: gutter
+function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime, done) {
+  var browserAndScreenshotEvents;
 
   driver
     .executeScript('return window._getHuxleyEvents();')
-    .then(function(recordedBrowserEvents) {
-      allEvents = recordedBrowserEvents
-        .concat(screenShotTimes)
-        .sort(function(prev, curr) {
-          // each array item is of the format [timeStamp, action, miscInfo]
-          // e.g. [1231, 'keypress', 103]
-          return prev[0] - curr[0];
+    // TODO: warn if page switched (can't get events)
+    .then(function(browserEvents) {
+      browserAndScreenshotEvents = browserEvents
+        .concat(screenShotEvents)
+        .sort(function(previous, current) {
+          return previous.timeOffset - current.timeOffset;
         });
-      for (var i = allEvents.length - 1; i >= 0; i--) {
+
+      browserAndScreenshotEvents
+        .map(function(event, i) {
+          event.waitInterval = i === 0
+            ? event.timeOffset - recordingStartTime
+            : event.timeOffset - browserAndScreenshotEvents[i - 1].timeOffset;
+          return event;
+        })
+        .forEach(function(event) {
+          // no need for this key anymore
+          delete event.timeOffset;
+        });
+
+      for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
         // every browser event happening after the last screenshot event is
         // useless. Trim them
-        if (allEvents[i][1] !== 'screenshot') {
-          allEvents.pop();
+        if (browserAndScreenshotEvents[i].action !== 'screenshot') {
+          browserAndScreenshotEvents.pop();
         } else {
           break;
         }
       }
+
+      return browserAndScreenshotEvents;
     })
-    .then(function() {
-      done(allEvents);
-    });
+    .then(done);
 }
 
 module.exports = {
   startPromptAndInjectEventsScript: startPromptAndInjectEventsScript,
-  stopAndGetBrowserEvents: stopAndGetBrowserEvents
+  stopAndGetProcessedEvents: stopAndGetProcessedEvents
 };
