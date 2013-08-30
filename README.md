@@ -103,6 +103,8 @@ Currently only Firefox and Chrome are supported. For Chrome, you need [chromedri
 hux -b chrome -flagForWhateverElseYouNeed
 ```
 
+**Note: ** Chrome has a bug that doesn't trigger the click event on `<select>` element, therefore it cannot be detected by Huxley.
+
 ### I'm on Windows and ______
 
 Make sure that:
