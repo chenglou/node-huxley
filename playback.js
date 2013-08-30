@@ -1,8 +1,11 @@
 'use strict';
 
-// TODO: input focux aura problem
+// TODO: input focus aura problem
 var imageOperations = require('./imageOperations');
 var colors = require('colors');
+var specialKeys = require('selenium-webdriver').Key;
+
+var HTML_FORM_ELEMENTS = 'input textarea select keygen a button'.split(' ');
 
 function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
   // parameter is the index of the screenshot
@@ -34,14 +37,20 @@ function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
 
 function _simulateKeypress(driver, event, next) {
   // parameter is the key pressed
-  console.log('  Typing ' + event.key);
+  var key = event.key;
+  console.log('  Typing ' + key);
 
   driver
     .executeScript('return document.activeElement;')
     .then(function(activeElement) {
       if (!activeElement) return next();
+
+      // refer to `eventScriptToInject.js`. The special keys are the arrow keys,
+      // stored like 'ARROW_LEFT', By chance, the webdriver's `Key` object store
+      // these keys
+      if (key.length > 1) key = specialKeys[key];
       activeElement
-        .sendKeys(event.key)
+        .sendKeys(key)
         .then(next);
     });
 }
@@ -66,9 +75,7 @@ function _simulateClick(driver, event, next) {
     })
     .then(function(tagName) {
       // clicking on a form item doesn't actually focus it; do it this way
-      if (tagName === 'input' ||
-        tagName === 'textarea' ||
-        tagName === 'select') {
+      if (HTML_FORM_ELEMENTS.indexOf(tagName) !== -1) {
         driver
           .executeScript(
             'document.elementFromPoint(' + posX + ', ' + posY + ').focus();'
