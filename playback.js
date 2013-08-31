@@ -9,6 +9,7 @@ var HTML_FORM_ELEMENTS = 'input textarea select keygen a button'.split(' ');
 
 function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
   // parameter is the index of the screenshot
+  // TODO: generate this, don't keep it in record.json
   console.log('  Taking screenshot ' + event.index);
 
   driver
@@ -55,12 +56,14 @@ function _simulateKeypress(driver, event, next) {
     });
 }
 
+// TODO: handle friggin select menu click, can't right now bc browsers
 function _simulateClick(driver, event, next) {
   // parameter is an array for (x, y) coordinates of the click
   var posX = event.position[0];
   var posY = event.position[1];
   console.log('  Clicking [%s, %s]', posX, posY);
 
+  // TODO: try sendclick instead
   driver
     .executeScript(
       'document.elementFromPoint(' + posX + ', ' + posY + ').click();'

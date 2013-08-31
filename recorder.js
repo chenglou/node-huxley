@@ -1,11 +1,10 @@
 'use strict';
 
 var fs = require('fs');
-var keypress = require('keypress');
+var read = require('read');
 
 var driver;
-var enterPromptMessage =
-  'Press enter to take a screenshot, or type Q + enter if you\'re done.';
+var promptMessage = 'q/l/*:';
 
 function startPromptAndInjectEventsScript(driver, done) {
   var screenshotCount = 0;
@@ -13,43 +12,44 @@ function startPromptAndInjectEventsScript(driver, done) {
   var screenShotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
+  // TODO: better name
   var scriptToInject =
     fs.readFileSync(__dirname + '/eventsScriptToInject.js', 'utf8');
 
   driver.executeScript(scriptToInject);
 
   console.log('Begin record');
-  console.log(enterPromptMessage);
+  console.log(
+    'Type q to quit, l for taking a screenshot and marking a live playback point, and anything else to take a normal screenshot.'
+  );
 
   // start after the page's loaded. more accurate
   recordingStartTime = Date.now();
 
-  keypress(process.stdin);
-  // TODO: maybe auto record the first ss
-  process.stdin.on('keypress', function handleKeyPress(char, key) {
-    if (!key) throw 'No key input received';
+  read({prompt: promptMessage}, function handleKeyPress(err, key) {
+    if (key === 'q') return done(screenShotEvents, recordingStartTime);
 
-    if (key.name === 'enter') {
-      screenShotEvents.push({
-        action: 'screenshot',
-        timeOffset: Date.now(),
-        index: screenshotCount
-      });
-      screenshotCount++;
-      console.log(screenshotCount + ' screenshot recorded.');
-      console.log(enterPromptMessage);
+    var event = {
+      action: 'screenshot',
+      timeOffset: Date.now(),
+      index: screenshotCount
+    };
 
-    } else if (key.name === 'q') {
-      // quitting
-      process.stdin.removeListener('keypress', handleKeyPress);
-      done(screenShotEvents, recordingStartTime);
+    if (key === 'l') {
+      event.livePlayback = true;
     }
+
+    screenShotEvents.push(event);
+    screenshotCount++;
+    console.log(screenshotCount + ' screenshot recorded.');
+    read({prompt: promptMessage}, handleKeyPress);
   });
 }
 
 // TODO: gutter
 function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime, done) {
   var browserAndScreenshotEvents;
+  var lastScreenshotIsLivePlayback = false;
 
   driver
     .executeScript('return window._getHuxleyEvents();')
@@ -63,13 +63,18 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime,
 
       browserAndScreenshotEvents
         .map(function(event, i) {
-          event.waitInterval = i === 0
-            ? event.timeOffset - recordingStartTime
-            : event.timeOffset - browserAndScreenshotEvents[i - 1].timeOffset;
+          if (event.action === 'screenshot') {
+            lastScreenshotIsLivePlayback = event.livePlayback;
+          }
+          if (lastScreenshotIsLivePlayback) {
+            event.waitInterval = i === 0
+              ? event.timeOffset - recordingStartTime
+              : event.timeOffset - browserAndScreenshotEvents[i - 1].timeOffset;
+          }
           return event;
         })
         .forEach(function(event) {
-          // no need for this key anymore
+          // no need for these keys anymore
           delete event.timeOffset;
         });
 
