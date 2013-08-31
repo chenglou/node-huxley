@@ -4,6 +4,7 @@ var fs = require('fs');
 var read = require('read');
 
 var driver;
+// TODO: better msg
 var promptMessage = 'q/l/*:';
 
 function startPromptAndInjectEventsScript(driver, done) {
@@ -78,9 +79,9 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime,
           delete event.timeOffset;
         });
 
+      // every browser event happening after the last screenshot event is
+      // useless. Trim them
       for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
-        // every browser event happening after the last screenshot event is
-        // useless. Trim them
         if (browserAndScreenshotEvents[i].action !== 'screenshot') {
           browserAndScreenshotEvents.pop();
         } else {

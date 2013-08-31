@@ -113,7 +113,6 @@ function _playbackTask(browserName, task, compareInsteadOfOverride, next) {
 
     var options = {
       taskPath: _getTaskFolderName(task.name),
-      sleepFactor: task.sleepFactor,
       compareWithOldImages: compareInsteadOfOverride
     };
     playback(driver, taskEvents, options, function(err) {

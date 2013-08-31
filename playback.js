@@ -97,7 +97,6 @@ function _simulateClick(driver, event, next) {
 function playback(driver, events, options, done) {
   if (events.length === 0) return done('No previously recorded events.');
 
-  var sleepFactor = options.sleepFactor == null ? 1 : options.sleepFactor;
   var compareWithOldImages = options.compareWithOldImages || false;
   var taskPath = options.taskPath || '';
 
@@ -111,9 +110,9 @@ function playback(driver, events, options, done) {
     var fn;
     var currentEvent = events[currentEventIndex];
 
-    console.log(
-      '  Sleeping for %s ms'.grey, (currentEvent.waitInterval * sleepFactor).toFixed(1)
-    );
+    if (currentEvent.waitInterval) {
+      console.log('  Pause for %s ms'.grey, currentEvent.waitInterval);
+    }
 
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed it so when we
@@ -139,7 +138,7 @@ function playback(driver, events, options, done) {
       }
     }
 
-    setTimeout(fn, currentEvent.waitInterval * sleepFactor);
+    setTimeout(fn, currentEvent.waitInterval || 0);
     currentEventIndex++;
   }
 
