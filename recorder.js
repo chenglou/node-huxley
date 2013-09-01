@@ -29,7 +29,6 @@ function startPromptAndInjectEventsScript(driver, done) {
     var event = {
       action: 'screenshot',
       timeStamp: Date.now(),
-      index: screenshotCount
     };
 
     if (key === 'l') {

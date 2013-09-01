@@ -18,7 +18,8 @@
     events.push({
       action: 'click',
       timeStamp: Date.now(),
-      position: [e.clientX, e.clientY]
+      x: e.clientX,
+      y: e.clientY
     });
   }, true);
 

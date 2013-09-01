@@ -5,16 +5,15 @@ var imageOperations = require('./imageOperations');
 var colors = require('colors');
 var specialKeys = require('selenium-webdriver').Key;
 
-function _simulateScreenshot(driver, event, taskPath, compareWithOld, next) {
+function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
   // parameter is the index of the screenshot
-  // TODO: generate this, don't keep it in record.json
-  console.log('  Taking screenshot ' + event.index);
+  console.log('  Taking screenshot ' + index);
 
   driver
    .takeScreenshot()
    .then(function(tempImage) {
     // TODO: browser name
-    var oldImagePath = taskPath + '/' + event.index + '.png';
+    var oldImagePath = taskPath + '/' + index + '.png';
     if (compareWithOld) {
       imageOperations.compareAndSaveDiffOnMismatch(
         tempImage, oldImagePath, taskPath, function(err, areSame) {
@@ -34,9 +33,7 @@ function _simulateScreenshot(driver, event, taskPath, compareWithOld, next) {
    });
 }
 
-function _simulateKeypress(driver, event, next) {
-  // parameter is the key pressed
-  var key = event.key;
+function _simulateKeypress(driver, key, next) {
   console.log('  Typing ' + key);
 
   driver
@@ -55,13 +52,10 @@ function _simulateKeypress(driver, event, next) {
 }
 
 // TODO: handle friggin select menu click, can't right now bc browsers
-function _simulateClick(driver, event, next) {
-  // parameter is an array for (x, y) coordinates of the click
-  var posX = event.position[0];
-  var posY = event.position[1];
-  console.log('  Clicking [%s, %s]', posX, posY);
-
+function _simulateClick(driver, posX, posY, next) {
   var posString = '(' + posX + ', ' + posY + ')';
+  console.log('  Clicking ' + posString);
+
   driver
     // TODO: isolate this into a script file clicking on an input/textarea
     // element focuses it but doesn't place the carret at the correct position;
@@ -88,6 +82,7 @@ function playback(driver, events, options, done) {
   var taskPath = options.taskPath || '';
 
   var currentEventIndex = 0;
+  var screenshotCount = 1;
 
   // pass `_next` or `done` as the callback when the current simulated event
   // completes
@@ -100,24 +95,26 @@ function playback(driver, events, options, done) {
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed the rest when
       // we saved the recording
-      fn = _simulateScreenshot.bind(null, driver, currentEvent, taskPath,
+      fn = _simulateScreenshot.bind(null, driver, screenshotCount, taskPath,
         compareWithOld, function() {
           imageOperations.removeDanglingImages(
-            taskPath, currentEvent.index + 1, done
+            taskPath, screenshotCount + 1, done
           );
         }
       );
     } else {
       switch (currentEvent.action) {
         case 'click':
-          fn = _simulateClick.bind(null, driver, currentEvent, _next);
+          fn = _simulateClick.bind(
+            null, driver, currentEvent.x, currentEvent.y, _next
+          );
           break;
         case 'keypress':
-          fn = _simulateKeypress.bind(null, driver, currentEvent, _next);
+          fn = _simulateKeypress.bind(null, driver, currentEvent.key, _next);
           break;
         case 'screenshot':
           fn = _simulateScreenshot.bind(
-            null, driver, currentEvent, taskPath, compareWithOld, _next
+            null, driver, screenshotCount++, taskPath, compareWithOld, _next
           );
           break;
         case 'pause':
