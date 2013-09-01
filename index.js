@@ -31,7 +31,7 @@ function _operateOnEachTask(browserName, operation) {
   operation(browserName, tasks[currentTaskCount], function runNextTask(err) {
     if (err) {
       process.stdin.pause();
-      return console.error(err.red);
+      return console.error(typeof err === 'string' ? err.red : err.message.red);
     }
 
     if (currentTaskCount === tasks.length - 1) {

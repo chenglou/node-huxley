@@ -15,6 +15,7 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
   // in our use case, iamge1Buffer will always be a buffer of the temp image we
   // created
   var tempFileName = 'temp' + Math.random() + '.png';
+
   writeToFile(tempFileName, image1Buffer, function(err) {
     try {
       _checkIfDifferent(tempFileName, image2Path, function(err, areSame) {
@@ -38,7 +39,7 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
 
 function _checkIfDifferent(image1Path, image2Path, done) {
   exec(
-    'gm compare -metric mse ' + image1Path + ' ' + image2Path,
+    'gm compare -metric mse "' + image1Path + '" "' + image2Path + '"',
     function (err, stdout) {
       if (err) return done(err);
 
@@ -56,7 +57,7 @@ function _checkIfDifferent(image1Path, image2Path, done) {
 
 function _saveDiffImage(image1Path, image2Path, diffPath, done) {
   exec(
-    'gm compare -file ' + diffPath + ' ' + image1Path + ' ' + image2Path, done
+    'gm compare -file "' + diffPath + '" "' + image1Path + '" "' + image2Path + '"', done
   );
 }
 
