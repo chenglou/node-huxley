@@ -15,7 +15,7 @@ function startPromptAndInjectEventsScript(driver, done) {
   // I'm sick of callbacks and promises, sync read this
   // TODO: better name
   var scriptToInject =
-    fs.readFileSync(__dirname + '/eventsScriptToInject.js', 'utf8');
+    fs.readFileSync(__dirname + '/bigBrother.js', 'utf8');
 
   driver.executeScript(scriptToInject);
 

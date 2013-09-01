@@ -8,7 +8,13 @@
     '40': 'ARROW_DOWN'
   };
 
-  window.addEventListener('click', function(e) {
+  // we're treating a mousedown as a click, because they behave the same way
+  // except when, say, clicking on a label that causes the checkbox to be
+  // checked. In this case, the click event fires twice, which is undesirable
+
+  // slightly related: for a select, chrome triggers mousedown but not click
+  // anyways
+  window.addEventListener('mousedown', function(e) {
     events.push({
       action: 'click',
       timeOffset: Date.now(),
