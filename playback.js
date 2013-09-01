@@ -5,8 +5,6 @@ var imageOperations = require('./imageOperations');
 var colors = require('colors');
 var specialKeys = require('selenium-webdriver').Key;
 
-var HTML_FORM_ELEMENTS = 'input textarea select keygen a button'.split(' ');
-
 function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
   // parameter is the index of the screenshot
   // TODO: generate this, don't keep it in record.json
@@ -64,35 +62,24 @@ function _simulateClick(driver, event, next) {
   var posY = event.position[1];
   console.log('  Clicking [%s, %s]', posX, posY);
 
-  // TODO: try sendclick instead
+  var posString = '(' + posX + ', ' + posY + ')';
   driver
+    // TODO: isolate this into a script file clicking on an input/textarea
+    // element focuses it but doesn't place the carret at the correct position;
+    // do it here (only works for ff)
     .executeScript(
-      'document.elementFromPoint(' + posX + ', ' + posY + ').click();'
+      'var el = document.elementFromPoint' + posString + ';' +
+      'if ((el.tagName === "TEXTAREA" || el.tagName === "INPUT") && document.caretPositionFromPoint) {' +
+        'var range = document.caretPositionFromPoint' + posString + ';' +
+        'var offset = range.offset;' +
+        'document.elementFromPoint' + posString + '.setSelectionRange(offset, offset);' +
+      '}' +
+      'return document.elementFromPoint' + posString + ';'
     )
-    .then(function() {
-      return driver.executeScript(
-        'return document.elementFromPoint(' + posX + ', ' + posY + ');'
-      );
+    .then(function(el) {
+      el.click();
     })
-    .then(function(element) {
-      return element.getTagName();
-    })
-    .then(function(tagName) {
-      // clicking on a form item doesn't actually focus it; do it this way
-      if (HTML_FORM_ELEMENTS.indexOf(tagName) !== -1) {
-        driver
-          .executeScript(
-            'document.elementFromPoint(' + posX + ', ' + posY + ').focus();'
-          )
-          .then(next);
-      } else {
-        // if it's not a form item, unfocus it so that the next potential
-        // keypress is not accidentally sent to inputs
-        driver
-          .executeScript('document.activeElement.blur();')
-          .then(next);
-      }
-    });
+    .then(next);
 }
 
 function playback(driver, events, options, done) {
