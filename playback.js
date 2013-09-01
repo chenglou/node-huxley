@@ -5,7 +5,7 @@ var imageOperations = require('./imageOperations');
 var colors = require('colors');
 var specialKeys = require('selenium-webdriver').Key;
 
-function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
+function _simulateScreenshot(driver, event, taskPath, compareWithOld, next) {
   // parameter is the index of the screenshot
   // TODO: generate this, don't keep it in record.json
   console.log('  Taking screenshot ' + event.index);
@@ -13,10 +13,9 @@ function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
   driver
    .takeScreenshot()
    .then(function(tempImage) {
-    // TODO: shorter img name, and with browser name
-    var oldImagePath = taskPath + '/screenshot' + event.index + '.png';
-    // TODO: remove dir somewhere
-    if (compareWithOldOne) {
+    // TODO: browser name
+    var oldImagePath = taskPath + '/' + event.index + '.png';
+    if (compareWithOld) {
       imageOperations.compareAndSaveDiffOnMismatch(
         tempImage, oldImagePath, taskPath, function(err, areSame) {
           if (err) return next(err);
@@ -85,7 +84,7 @@ function _simulateClick(driver, event, next) {
 function playback(driver, events, options, done) {
   if (events.length === 0) return done('No previously recorded events.');
 
-  var compareWithOldImages = options.compareWithOldImages || false;
+  var compareWithOld = options.compareWithOld || false;
   var taskPath = options.taskPath || '';
 
   var currentEventIndex = 0;
@@ -99,10 +98,14 @@ function playback(driver, events, options, done) {
     var currentEvent = events[currentEventIndex];
 
     if (currentEventIndex === events.length - 1) {
-      // the last action is always taking a screenshot. We trimmed it so when we
-      // saved the recording
-      fn = _simulateScreenshot.bind(
-        null, driver, currentEvent, taskPath, compareWithOldImages, done
+      // the last action is always taking a screenshot. We trimmed the rest when
+      // we saved the recording
+      fn = _simulateScreenshot.bind(null, driver, currentEvent, taskPath,
+        compareWithOld, function() {
+          imageOperations.removeDanglingImages(
+            taskPath, currentEvent.index + 1, done
+          );
+        }
       );
     } else {
       switch (currentEvent.action) {
@@ -114,7 +117,7 @@ function playback(driver, events, options, done) {
           break;
         case 'screenshot':
           fn = _simulateScreenshot.bind(
-            null, driver, currentEvent, taskPath, compareWithOldImages, _next
+            null, driver, currentEvent, taskPath, compareWithOld, _next
           );
           break;
         case 'pause':

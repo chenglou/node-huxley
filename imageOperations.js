@@ -63,7 +63,19 @@ function _saveDiffImage(image1Path, image2Path, diffPath, done) {
   );
 }
 
+function removeDanglingImages(taskPath, index, done) {
+  // a new recording might take less screenshots than the previous
+  var imagePath = taskPath + '/' + index + '.png';
+  if (!fs.existsSync(imagePath)) return done();
+
+  fs.unlink(imagePath, function(err) {
+    if (err) return done(err);
+    removeDanglingImages(taskPath, index + 1, done);
+  });
+}
+
 module.exports = {
   writeToFile: writeToFile,
   compareAndSaveDiffOnMismatch: compareAndSaveDiffOnMismatch,
+  removeDanglingImages: removeDanglingImages
 };
