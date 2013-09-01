@@ -12,7 +12,7 @@ var DEFAULT_SCREEN_SIZE = [1024, 768];
 
 
 function _getTaskFolderName(taskName) {
-  return process.cwd() + '/' + taskName + '.huxley';
+  return process.cwd() + '/' + taskName + '.hux';
 }
 
 // the signature of the operation passed:
@@ -31,7 +31,7 @@ function _operateOnEachTask(browserName, operation) {
   operation(browserName, tasks[currentTaskCount], function runNextTask(err) {
     if (err) {
       process.stdin.pause();
-      return console.error(err.red);
+      return console.error(typeof err === 'string' ? err.red : err.message.red);
     }
 
     if (currentTaskCount === tasks.length - 1) {
@@ -52,12 +52,10 @@ function _recordTask(browserName, task, next) {
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
-    recorder.startPromptAndInjectEventsScript(driver, function(screenShotTimes, recordingStartTime) {
-      recorder.stopAndGetBrowserEvents(driver, screenShotTimes, function(allEvents) {
-        var processedTaskEvents =
-          _processRawTaskEvents(allEvents, recordingStartTime);
-
-        _saveTaskAsJsonToFolder(task.name, processedTaskEvents, function(err) {
+    // TODO: gutter
+    recorder.startPromptAndInjectEventsScript(driver, function(screenShotTimes) {
+      recorder.stopAndGetProcessedEvents(driver, screenShotTimes, function(allEvents) {
+        _saveTaskAsJsonToFolder(task.name, allEvents, function(err) {
           console.log(
             '\nDon\'t move! Simulating the recording now...\n'.bold.yellow
           );
@@ -72,41 +70,6 @@ function _recordTask(browserName, task, next) {
         });
       });
     });
-  });
-}
-
-function _processRawTaskEvents(events, recordingStartTime) {
-  // a single task freshly out of a recording session looks like this (first
-  // item is time):
-  // [1377491482885, 'keypress', 'D']
-  // turn it into:
-  // {
-  //   "action": "keypress",
-  //   "offsetTime": 2100,
-  //   "key": "D"
-  // }
-  return events.map(function(event) {
-    var action = event[1];
-    var obj = {
-      action: action,
-      offsetTime: event[0] - recordingStartTime,
-    };
-
-    switch (action) {
-      case 'click':
-        obj.pos = event[2];
-        break;
-      case 'keypress':
-        obj.key = event[2];
-        break;
-      case 'screenshot':
-        obj.index = event[2];
-        break;
-      default:
-        throw 'Unrecognized event. This is a fault of the library.'.red;
-    }
-
-    return obj;
   });
 }
 
@@ -150,7 +113,6 @@ function _playbackTask(browserName, task, compareInsteadOfOverride, next) {
 
     var options = {
       taskPath: _getTaskFolderName(task.name),
-      sleepFactor: task.sleepFactor,
       compareWithOldImages: compareInsteadOfOverride
     };
     playback(driver, taskEvents, options, function(err) {

@@ -1,1 +1,80 @@
-[{"action":"screenshot","offsetTime":3122,"index":0},{"action":"click","offsetTime":4467,"pos":[120,84]},{"action":"keypress","offsetTime":4961,"key":"H"},{"action":"keypress","offsetTime":5120,"key":"e"},{"action":"keypress","offsetTime":5264,"key":"l"},{"action":"keypress","offsetTime":5409,"key":"l"},{"action":"keypress","offsetTime":5585,"key":"o"},{"action":"screenshot","offsetTime":6673,"index":1},{"action":"keypress","offsetTime":7913,"key":" "},{"action":"keypress","offsetTime":8272,"key":"W"},{"action":"keypress","offsetTime":8401,"key":"o"},{"action":"keypress","offsetTime":8531,"key":"r"},{"action":"keypress","offsetTime":8616,"key":"l"},{"action":"keypress","offsetTime":8720,"key":"d"},{"action":"screenshot","offsetTime":9745,"index":2}]
+[
+  {
+    "action": "screenshot",
+    "index": 0,
+    "waitInterval": 1513
+  },
+  {
+    "position": [
+      197,
+      76
+    ],
+    "action": "click",
+    "waitInterval": 2117
+  },
+  {
+    "action": "keypress",
+    "key": "H",
+    "waitInterval": 514
+  },
+  {
+    "action": "keypress",
+    "key": "e",
+    "waitInterval": 168
+  },
+  {
+    "action": "keypress",
+    "key": "l",
+    "waitInterval": 216
+  },
+  {
+    "action": "keypress",
+    "key": "l",
+    "waitInterval": 104
+  },
+  {
+    "action": "keypress",
+    "key": "o",
+    "waitInterval": 192
+  },
+  {
+    "action": "screenshot",
+    "index": 1,
+    "waitInterval": 1312
+  },
+  {
+    "action": "keypress",
+    "key": " ",
+    "waitInterval": 783
+  },
+  {
+    "action": "keypress",
+    "key": "W",
+    "waitInterval": 360
+  },
+  {
+    "action": "keypress",
+    "key": "o",
+    "waitInterval": 153
+  },
+  {
+    "action": "keypress",
+    "key": "r",
+    "waitInterval": 104
+  },
+  {
+    "action": "keypress",
+    "key": "l",
+    "waitInterval": 72
+  },
+  {
+    "action": "keypress",
+    "key": "d",
+    "waitInterval": 112
+  },
+  {
+    "action": "screenshot",
+    "index": 2,
+    "waitInterval": 1015
+  }
+]

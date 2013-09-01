@@ -1,81 +1,115 @@
 'use strict';
 
 var fs = require('fs');
-var keypress = require('keypress');
+var read = require('read');
 
 var driver;
-var enterPromptMessage =
-  'Press enter to take a screenshot, or type Q + enter if you\'re done.';
+// TODO: better msg
+var promptMessage = 'q/l/*:';
 
 function startPromptAndInjectEventsScript(driver, done) {
   var screenshotCount = 0;
   var recordingStartTime;
-  var screenShotTimes = [];
+  var screenShotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
+  // TODO: better name
   var scriptToInject =
-    fs.readFileSync(__dirname + '/eventsScriptToInject.js', 'utf8');
+    fs.readFileSync(__dirname + '/bigBrother.js', 'utf8');
 
   driver.executeScript(scriptToInject);
 
   console.log('Begin record');
-  console.log(enterPromptMessage);
+  console.log(
+    'Type q to quit, l for taking a screenshot and marking a live playback point, and anything else to take a normal screenshot.'
+  );
 
-  // start after the page's loaded (`get` up there). more accurate
-  recordingStartTime = Date.now();
+  read({prompt: promptMessage}, function handleKeyPress(err, key) {
+    if (key === 'q') return done(screenShotEvents);
 
-  keypress(process.stdin);
+    var event = {
+      action: 'screenshot',
+      timeOffset: Date.now(),
+      index: screenshotCount
+    };
 
-  process.stdin.on('keypress', function handleKeyPress(char, key) {
-    if (!key) throw 'No key input received';
-
-    if (key.name === 'enter') {
-      screenShotTimes.push(
-        [Date.now(), 'screenshot', screenshotCount]
-      );
-      screenshotCount++;
-      console.log(screenshotCount + ' screenshot recorded.');
-      console.log(enterPromptMessage);
-
-    } else if (key.name === 'q') {
-      // quitting
-      process.stdin.removeListener('keypress', handleKeyPress);
-      done(screenShotTimes, recordingStartTime);
+    if (key === 'l') {
+      event.livePlayback = true;
     }
+
+    screenShotEvents.push(event);
+    screenshotCount++;
+    console.log(screenshotCount + ' screenshot recorded.');
+    read({prompt: promptMessage}, handleKeyPress);
   });
 }
 
-function stopAndGetBrowserEvents(driver, screenShotTimes, done) {
-  // this will not only include the browser events, but also the screenshot
-  // keypress events
-  var allEvents;
+// TODO: gutter
+function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
+  var browserAndScreenshotEvents;
+  var prevScreenshotIsLivePlayback = false;
 
   driver
     .executeScript('return window._getHuxleyEvents();')
-    .then(function(recordedBrowserEvents) {
-      allEvents = recordedBrowserEvents
-        .concat(screenShotTimes)
-        .sort(function(prev, curr) {
-          // each array item is of the format [timeStamp, action, miscInfo]
-          // e.g. [1231, 'keypress', 103]
-          return prev[0] - curr[0];
+    // TODO: warn if page switched (can't get events)
+    .then(function(browserEvents) {
+      browserAndScreenshotEvents = browserEvents
+        .concat(screenShotEvents)
+        .sort(function(previous, current) {
+          return previous.timeOffset - current.timeOffset;
         });
-      for (var i = allEvents.length - 1; i >= 0; i--) {
-        // every browser event happening after the last screenshot event is
-        // useless. Trim them
-        if (allEvents[i][1] !== 'screenshot') {
-          allEvents.pop();
+
+      // every browser event happening after the last screenshot event is
+      // useless. Trim them
+
+      // TODO: maybe, instead of doing this, add a last screenshot here. It's
+      // mostly due to mistakes
+      for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
+        if (browserAndScreenshotEvents[i].action !== 'screenshot') {
+          browserAndScreenshotEvents.pop();
         } else {
           break;
         }
       }
+
+      var j = 0;
+      var currentEvent;
+      while (j < browserAndScreenshotEvents.length) {
+        currentEvent = browserAndScreenshotEvents[j];
+
+        if (currentEvent.action === 'screenshot') {
+          prevScreenshotIsLivePlayback = currentEvent.livePlayback;
+        }
+
+        if (!prevScreenshotIsLivePlayback || j === browserAndScreenshotEvents.length - 1) {
+          j++;
+          continue;
+        }
+
+        // previous for loop and last conditional garantees this isn't a
+        // screenshot event
+        var actionToAdd = {
+          action: 'pause',
+          ms: browserAndScreenshotEvents[j + 1].timeOffset - currentEvent.timeOffset
+        };
+
+        browserAndScreenshotEvents.splice(j + 1, 0, actionToAdd);
+        j += 2;
+        continue;
+      }
+
+      browserAndScreenshotEvents.forEach(function(event) {
+        // no need for these keys anymore
+        delete event.livePlayback;
+        delete event.timeOffset;
+      });
+
+      return browserAndScreenshotEvents;
     })
-    .then(function() {
-      done(allEvents);
-    });
+    .then(done);
 }
 
 module.exports = {
   startPromptAndInjectEventsScript: startPromptAndInjectEventsScript,
-  stopAndGetBrowserEvents: stopAndGetBrowserEvents
+  stopAndGetProcessedEvents: stopAndGetProcessedEvents
 };

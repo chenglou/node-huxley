@@ -8,8 +8,18 @@
     '40': 'ARROW_DOWN'
   };
 
-  window.addEventListener('click', function(e) {
-    events.push([Date.now(), 'click', [e.clientX, e.clientY]]);
+  // we're treating a mousedown as a click, because they behave the same way
+  // except when, say, clicking on a label that causes the checkbox to be
+  // checked. In this case, the click event fires twice, which is undesirable
+
+  // slightly related: for a select, chrome triggers mousedown but not click
+  // anyways
+  window.addEventListener('mousedown', function(e) {
+    events.push({
+      action: 'click',
+      timeOffset: Date.now(),
+      position: [e.clientX, e.clientY]
+    });
   }, true);
 
   // only `keypress` returns the correct character. `keydown` returns `A` when
@@ -22,9 +32,11 @@
     // the way dom deals with keydown/press/up and which charCode/keyCode/which
     // we receive is really screwed up. If you google "keyCode charCode which"
     // you'll see why the `or` is here
-    events.push(
-      [Date.now(), 'keypress', String.fromCharCode(code)]
-    );
+    events.push({
+      action: 'keypress',
+      timeOffset: Date.now(),
+      key: String.fromCharCode(code)
+    });
   }, true);
 
   // arrow keys are not registered by `keypress` in chrome, so handle them here.
@@ -34,8 +46,12 @@
   window.addEventListener('keydown', function(e) {
     var code = e.keyCode || e.which;
     if (code < 37 || code > 40) return;
-    // treat it as a `keypress` for simplicity when replaying
-    events.push([Date.now(), 'keypress', specialKeysMap[code]]);
+    // treat it as a `keypress` for simplicity during playback simulation
+    events.push({
+      action: 'keypress',
+      timeOffset: Date.now(),
+      key: specialKeysMap[code]
+    });
   });
 
   // TODO: maybe double click and right click in the future, but Selenium

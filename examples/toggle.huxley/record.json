@@ -1,1 +1,33 @@
-[{"action":"screenshot","offsetTime":829,"index":0},{"action":"click","offsetTime":2390,"pos":[148,82]},{"action":"screenshot","offsetTime":4027,"index":1},{"action":"click","offsetTime":5445,"pos":[114,70]},{"action":"screenshot","offsetTime":6580,"index":2}]
+[
+  {
+    "action": "screenshot",
+    "index": 0,
+    "waitInterval": 610
+  },
+  {
+    "position": [
+      103,
+      81
+    ],
+    "action": "click",
+    "waitInterval": 1466
+  },
+  {
+    "action": "screenshot",
+    "index": 1,
+    "waitInterval": 1148
+  },
+  {
+    "position": [
+      128,
+      75
+    ],
+    "action": "click",
+    "waitInterval": 1528
+  },
+  {
+    "action": "screenshot",
+    "index": 2,
+    "waitInterval": 1153
+  }
+]
