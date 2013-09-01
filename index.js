@@ -12,7 +12,7 @@ var DEFAULT_SCREEN_SIZE = [1024, 768];
 
 
 function _getTaskFolderName(taskName) {
-  return process.cwd() + '/' + taskName + '.huxley';
+  return process.cwd() + '/' + taskName + '.hux';
 }
 
 // the signature of the operation passed:
