@@ -110,10 +110,6 @@ function playback(driver, events, options, done) {
     var fn;
     var currentEvent = events[currentEventIndex];
 
-    if (currentEvent.waitInterval) {
-      console.log('  Pause for %s ms'.grey, currentEvent.waitInterval);
-    }
-
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed it so when we
       // saved the recording
@@ -133,13 +129,21 @@ function playback(driver, events, options, done) {
             null, driver, currentEvent, taskPath, compareWithOldImages, _next
           );
           break;
+        case 'pause':
+          fn = function() {
+            console.log('  Pause for %s ms'.grey, currentEvent.ms);
+            setTimeout(_next, currentEvent.ms);
+          };
+          break;
         default:
-          return done('Unrecognized user event.');
+          return done(
+            'Unrecognized user action. Record.json might have been modified'
+          );
       }
     }
 
-    setTimeout(fn, currentEvent.waitInterval || 0);
     currentEventIndex++;
+    fn();
   }
 
   _next();

@@ -62,25 +62,11 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime,
           return previous.timeOffset - current.timeOffset;
         });
 
-      browserAndScreenshotEvents
-        .map(function(event, i) {
-          if (event.action === 'screenshot') {
-            lastScreenshotIsLivePlayback = event.livePlayback;
-          }
-          if (lastScreenshotIsLivePlayback) {
-            event.waitInterval = i === 0
-              ? event.timeOffset - recordingStartTime
-              : event.timeOffset - browserAndScreenshotEvents[i - 1].timeOffset;
-          }
-          return event;
-        })
-        .forEach(function(event) {
-          // no need for these keys anymore
-          delete event.timeOffset;
-        });
-
       // every browser event happening after the last screenshot event is
       // useless. Trim them
+
+      // TODO: maybe, instead of doing this, add a last screenshot here. It's
+      // mostly due to mistakes
       for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
         if (browserAndScreenshotEvents[i].action !== 'screenshot') {
           browserAndScreenshotEvents.pop();
@@ -88,6 +74,37 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime,
           break;
         }
       }
+
+      var j = 0;
+      var currentEvent;
+      while (j < browserAndScreenshotEvents.length) {
+        currentEvent = browserAndScreenshotEvents[j];
+
+        if (currentEvent.action === 'screenshot') {
+          lastScreenshotIsLivePlayback = currentEvent.livePlayback;
+        }
+
+        if (lastScreenshotIsLivePlayback && j !== browserAndScreenshotEvents.length - 1) {
+          // previous loop garantees this isn't a screenshot event
+          var actionObjToAdd = {
+            action: 'pause',
+          };
+
+          actionObjToAdd.ms = browserAndScreenshotEvents[j + 1].timeOffset - currentEvent.timeOffset;
+
+          browserAndScreenshotEvents.splice(j + 1, 0, actionObjToAdd);
+          j += 2;
+          continue;
+        }
+
+        j++;
+      }
+
+      browserAndScreenshotEvents.forEach(function(event) {
+        // no need for these keys anymore
+        delete event.livePlayback;
+        delete event.timeOffset;
+      });
 
       return browserAndScreenshotEvents;
     })
