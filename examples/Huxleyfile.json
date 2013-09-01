@@ -1,12 +1,11 @@
 [
   {
-    "name": "toggle",
-    "screenSize": [1000, 1000],
-    "sleepFactor": 0.5,
-    "url": "http://localhost:8000/toggle.html"
+    "name": "1 type and toggle",
+    "screenSize": [1000, 600],
+    "url": "http://localhost:8000/component.html"
   },
   {
-    "name": "type",
-    "url": "http://localhost:8000/type.html"
+    "name": "2 modal",
+    "url": "http://localhost:8000/component.html"
   }
 ]

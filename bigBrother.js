@@ -17,8 +17,9 @@
   window.addEventListener('mousedown', function(e) {
     events.push({
       action: 'click',
-      timeOffset: Date.now(),
-      position: [e.clientX, e.clientY]
+      timeStamp: Date.now(),
+      x: e.clientX,
+      y: e.clientY
     });
   }, true);
 
@@ -34,7 +35,7 @@
     // you'll see why the `or` is here
     events.push({
       action: 'keypress',
-      timeOffset: Date.now(),
+      timeStamp: Date.now(),
       key: String.fromCharCode(code)
     });
   }, true);
@@ -49,10 +50,10 @@
     // treat it as a `keypress` for simplicity during playback simulation
     events.push({
       action: 'keypress',
-      timeOffset: Date.now(),
+      timeStamp: Date.now(),
       key: specialKeysMap[code]
     });
-  });
+  }, true);
 
   // TODO: maybe double click and right click in the future, but Selenium
   // support and manual reproduction are shaky

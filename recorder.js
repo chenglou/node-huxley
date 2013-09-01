@@ -13,15 +13,14 @@ function startPromptAndInjectEventsScript(driver, done) {
   var screenShotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
-  // TODO: better name
-  var scriptToInject =
-    fs.readFileSync(__dirname + '/bigBrother.js', 'utf8');
+  var scriptToInject = fs.readFileSync(__dirname + '/bigBrother.js', 'utf8');
 
   driver.executeScript(scriptToInject);
 
   console.log('Begin record');
   console.log(
-    'Type q to quit, l for taking a screenshot and marking a live playback point, and anything else to take a normal screenshot.'
+    'Type q to quit, l for taking a screenshot and marking a live playback ' +
+    'point, and anything else to take a normal screenshot.'
   );
 
   read({prompt: promptMessage}, function handleKeyPress(err, key) {
@@ -29,8 +28,7 @@ function startPromptAndInjectEventsScript(driver, done) {
 
     var event = {
       action: 'screenshot',
-      timeOffset: Date.now(),
-      index: screenshotCount
+      timeStamp: Date.now(),
     };
 
     if (key === 'l') {
@@ -44,7 +42,6 @@ function startPromptAndInjectEventsScript(driver, done) {
   });
 }
 
-// TODO: gutter
 function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
   var browserAndScreenshotEvents;
   var prevScreenshotIsLivePlayback = false;
@@ -56,7 +53,7 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
       browserAndScreenshotEvents = browserEvents
         .concat(screenShotEvents)
         .sort(function(previous, current) {
-          return previous.timeOffset - current.timeOffset;
+          return previous.timeStamp - current.timeStamp;
         });
 
       // every browser event happening after the last screenshot event is
@@ -81,7 +78,8 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
           prevScreenshotIsLivePlayback = currentEvent.livePlayback;
         }
 
-        if (!prevScreenshotIsLivePlayback || j === browserAndScreenshotEvents.length - 1) {
+        if (!prevScreenshotIsLivePlayback ||
+            j === browserAndScreenshotEvents.length - 1) {
           j++;
           continue;
         }
@@ -90,7 +88,8 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
         // screenshot event
         var actionToAdd = {
           action: 'pause',
-          ms: browserAndScreenshotEvents[j + 1].timeOffset - currentEvent.timeOffset
+          ms: browserAndScreenshotEvents[j + 1].timeStamp -
+              currentEvent.timeStamp
         };
 
         browserAndScreenshotEvents.splice(j + 1, 0, actionToAdd);
@@ -101,7 +100,7 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
       browserAndScreenshotEvents.forEach(function(event) {
         // no need for these keys anymore
         delete event.livePlayback;
-        delete event.timeOffset;
+        delete event.timeStamp;
       });
 
       return browserAndScreenshotEvents;

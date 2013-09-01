@@ -5,20 +5,16 @@ var imageOperations = require('./imageOperations');
 var colors = require('colors');
 var specialKeys = require('selenium-webdriver').Key;
 
-var HTML_FORM_ELEMENTS = 'input textarea select keygen a button'.split(' ');
-
-function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
+function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
   // parameter is the index of the screenshot
-  // TODO: generate this, don't keep it in record.json
-  console.log('  Taking screenshot ' + event.index);
+  console.log('  Taking screenshot ' + index);
 
   driver
    .takeScreenshot()
    .then(function(tempImage) {
-    // TODO: shorter img name, and with browser name
-    var oldImagePath = taskPath + '/screenshot' + event.index + '.png';
-    // TODO: remove dir somewhere
-    if (compareWithOldOne) {
+    // TODO: browser name
+    var oldImagePath = taskPath + '/' + index + '.png';
+    if (compareWithOld) {
       imageOperations.compareAndSaveDiffOnMismatch(
         tempImage, oldImagePath, taskPath, function(err, areSame) {
           if (err) return next(err);
@@ -37,9 +33,7 @@ function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
    });
 }
 
-function _simulateKeypress(driver, event, next) {
-  // parameter is the key pressed
-  var key = event.key;
+function _simulateKeypress(driver, key, next) {
   console.log('  Typing ' + key);
 
   driver
@@ -47,9 +41,9 @@ function _simulateKeypress(driver, event, next) {
     .then(function(activeElement) {
       if (!activeElement) return next();
 
-      // refer to `eventScriptToInject.js`. The special keys are the arrow keys,
-      // stored like 'ARROW_LEFT', By chance, the webdriver's `Key` object store
-      // these keys
+      // refer to `bigBrother.js`. The special keys are the arrow keys, stored
+      // like 'ARROW_LEFT', By chance, the webdriver's `Key` object store these
+      // keys
       if (key.length > 1) key = specialKeys[key];
       activeElement
         .sendKeys(key)
@@ -58,50 +52,37 @@ function _simulateKeypress(driver, event, next) {
 }
 
 // TODO: handle friggin select menu click, can't right now bc browsers
-function _simulateClick(driver, event, next) {
-  // parameter is an array for (x, y) coordinates of the click
-  var posX = event.position[0];
-  var posY = event.position[1];
-  console.log('  Clicking [%s, %s]', posX, posY);
+function _simulateClick(driver, posX, posY, next) {
+  var posString = '(' + posX + ', ' + posY + ')';
+  console.log('  Clicking ' + posString);
 
-  // TODO: try sendclick instead
   driver
+    // TODO: isolate this into a script file clicking on an input/textarea
+    // element focuses it but doesn't place the carret at the correct position;
+    // do it here (only works for ff)
     .executeScript(
-      'document.elementFromPoint(' + posX + ', ' + posY + ').click();'
+      'var el = document.elementFromPoint' + posString + ';' +
+      'if ((el.tagName === "TEXTAREA" || el.tagName === "INPUT") && document.caretPositionFromPoint) {' +
+        'var range = document.caretPositionFromPoint' + posString + ';' +
+        'var offset = range.offset;' +
+        'document.elementFromPoint' + posString + '.setSelectionRange(offset, offset);' +
+      '}' +
+      'return document.elementFromPoint' + posString + ';'
     )
-    .then(function() {
-      return driver.executeScript(
-        'return document.elementFromPoint(' + posX + ', ' + posY + ');'
-      );
+    .then(function(el) {
+      el.click();
     })
-    .then(function(element) {
-      return element.getTagName();
-    })
-    .then(function(tagName) {
-      // clicking on a form item doesn't actually focus it; do it this way
-      if (HTML_FORM_ELEMENTS.indexOf(tagName) !== -1) {
-        driver
-          .executeScript(
-            'document.elementFromPoint(' + posX + ', ' + posY + ').focus();'
-          )
-          .then(next);
-      } else {
-        // if it's not a form item, unfocus it so that the next potential
-        // keypress is not accidentally sent to inputs
-        driver
-          .executeScript('document.activeElement.blur();')
-          .then(next);
-      }
-    });
+    .then(next);
 }
 
 function playback(driver, events, options, done) {
   if (events.length === 0) return done('No previously recorded events.');
 
-  var compareWithOldImages = options.compareWithOldImages || false;
+  var compareWithOld = options.compareWithOld || false;
   var taskPath = options.taskPath || '';
 
   var currentEventIndex = 0;
+  var screenshotCount = 1;
 
   // pass `_next` or `done` as the callback when the current simulated event
   // completes
@@ -112,22 +93,28 @@ function playback(driver, events, options, done) {
     var currentEvent = events[currentEventIndex];
 
     if (currentEventIndex === events.length - 1) {
-      // the last action is always taking a screenshot. We trimmed it so when we
-      // saved the recording
-      fn = _simulateScreenshot.bind(
-        null, driver, currentEvent, taskPath, compareWithOldImages, done
+      // the last action is always taking a screenshot. We trimmed the rest when
+      // we saved the recording
+      fn = _simulateScreenshot.bind(null, driver, screenshotCount, taskPath,
+        compareWithOld, function() {
+          imageOperations.removeDanglingImages(
+            taskPath, screenshotCount + 1, done
+          );
+        }
       );
     } else {
       switch (currentEvent.action) {
         case 'click':
-          fn = _simulateClick.bind(null, driver, currentEvent, _next);
+          fn = _simulateClick.bind(
+            null, driver, currentEvent.x, currentEvent.y, _next
+          );
           break;
         case 'keypress':
-          fn = _simulateKeypress.bind(null, driver, currentEvent, _next);
+          fn = _simulateKeypress.bind(null, driver, currentEvent.key, _next);
           break;
         case 'screenshot':
           fn = _simulateScreenshot.bind(
-            null, driver, currentEvent, taskPath, compareWithOldImages, _next
+            null, driver, screenshotCount++, taskPath, compareWithOld, _next
           );
           break;
         case 'pause':
