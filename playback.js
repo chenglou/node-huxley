@@ -45,9 +45,9 @@ function _simulateKeypress(driver, event, next) {
     .then(function(activeElement) {
       if (!activeElement) return next();
 
-      // refer to `eventScriptToInject.js`. The special keys are the arrow keys,
-      // stored like 'ARROW_LEFT', By chance, the webdriver's `Key` object store
-      // these keys
+      // refer to `bigBrother.js`. The special keys are the arrow keys, stored
+      // like 'ARROW_LEFT', By chance, the webdriver's `Key` object store these
+      // keys
       if (key.length > 1) key = specialKeys[key];
       activeElement
         .sendKeys(key)

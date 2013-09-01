@@ -57,7 +57,9 @@ function _checkIfDifferent(image1Path, image2Path, done) {
 
 function _saveDiffImage(image1Path, image2Path, diffPath, done) {
   exec(
-    'gm compare -file "' + diffPath + '" "' + image1Path + '" "' + image2Path + '"', done
+    'gm compare -file "' + diffPath + '" "' + image1Path +
+    '" "' + image2Path + '"',
+    done
   );
 }
 
