@@ -53,8 +53,8 @@ function _recordTask(browserName, task, next) {
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
     // TODO: gutter
-    recorder.startPromptAndInjectEventsScript(driver, function(screenShotTimes, recordingStartTime) {
-      recorder.stopAndGetProcessedEvents(driver, screenShotTimes, recordingStartTime, function(allEvents) {
+    recorder.startPromptAndInjectEventsScript(driver, function(screenShotTimes) {
+      recorder.stopAndGetProcessedEvents(driver, screenShotTimes, function(allEvents) {
         _saveTaskAsJsonToFolder(task.name, allEvents, function(err) {
           console.log(
             '\nDon\'t move! Simulating the recording now...\n'.bold.yellow

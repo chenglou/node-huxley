@@ -24,11 +24,8 @@ function startPromptAndInjectEventsScript(driver, done) {
     'Type q to quit, l for taking a screenshot and marking a live playback point, and anything else to take a normal screenshot.'
   );
 
-  // start after the page's loaded. more accurate
-  recordingStartTime = Date.now();
-
   read({prompt: promptMessage}, function handleKeyPress(err, key) {
-    if (key === 'q') return done(screenShotEvents, recordingStartTime);
+    if (key === 'q') return done(screenShotEvents);
 
     var event = {
       action: 'screenshot',
@@ -48,9 +45,9 @@ function startPromptAndInjectEventsScript(driver, done) {
 }
 
 // TODO: gutter
-function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime, done) {
+function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
   var browserAndScreenshotEvents;
-  var lastScreenshotIsLivePlayback = false;
+  var prevScreenshotIsLivePlayback = false;
 
   driver
     .executeScript('return window._getHuxleyEvents();')
@@ -81,23 +78,24 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, recordingStartTime,
         currentEvent = browserAndScreenshotEvents[j];
 
         if (currentEvent.action === 'screenshot') {
-          lastScreenshotIsLivePlayback = currentEvent.livePlayback;
+          prevScreenshotIsLivePlayback = currentEvent.livePlayback;
         }
 
-        if (lastScreenshotIsLivePlayback && j !== browserAndScreenshotEvents.length - 1) {
-          // previous loop garantees this isn't a screenshot event
-          var actionObjToAdd = {
-            action: 'pause',
-          };
-
-          actionObjToAdd.ms = browserAndScreenshotEvents[j + 1].timeOffset - currentEvent.timeOffset;
-
-          browserAndScreenshotEvents.splice(j + 1, 0, actionObjToAdd);
-          j += 2;
+        if (!prevScreenshotIsLivePlayback || j === browserAndScreenshotEvents.length - 1) {
+          j++;
           continue;
         }
 
-        j++;
+        // previous for loop and last conditional garantees this isn't a
+        // screenshot event
+        var actionToAdd = {
+          action: 'pause',
+          ms: browserAndScreenshotEvents[j + 1].timeOffset - currentEvent.timeOffset
+        };
+
+        browserAndScreenshotEvents.splice(j + 1, 0, actionToAdd);
+        j += 2;
+        continue;
       }
 
       browserAndScreenshotEvents.forEach(function(event) {

@@ -15,24 +15,25 @@ function _simulateScreenshot(driver, event, taskPath, compareWithOldOne, next) {
   driver
    .takeScreenshot()
    .then(function(tempImage) {
-     var oldImagePath = taskPath + '/screenshot' + event.index + '.png';
-     // TODO: remove dir somewhere
-     if (compareWithOldOne) {
-       imageOperations.compareAndSaveDiffOnMismatch(
-          tempImage, oldImagePath, taskPath, function(err, areSame) {
-            if (err) return next(err);
-            if (!areSame) {
-              return next(
-                'New screenshot looks different! The diff image is saved for ' +
-                'you to examine.'
-              );
-            }
-            next();
-         }
-       );
-     } else {
-       imageOperations.writeToFile(oldImagePath, tempImage, next);
-     }
+    // TODO: shorter img name, and with browser name
+    var oldImagePath = taskPath + '/screenshot' + event.index + '.png';
+    // TODO: remove dir somewhere
+    if (compareWithOldOne) {
+      imageOperations.compareAndSaveDiffOnMismatch(
+        tempImage, oldImagePath, taskPath, function(err, areSame) {
+          if (err) return next(err);
+          if (!areSame) {
+            return next(
+              'New screenshot looks different! The diff image is saved for ' +
+              'you to examine.'
+            );
+          }
+          next();
+       }
+      );
+    } else {
+      imageOperations.writeToFile(oldImagePath, tempImage, next);
+    }
    });
 }
 
