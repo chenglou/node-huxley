@@ -1,6 +1,6 @@
 # Node-huxley
 
-A port of the codeless front-end codeless testing tool, [Huxley](https://github.com/facebook/huxley), used by Instagram.
+A port of the codeless front-end testing tool, [Huxley](https://github.com/facebook/huxley), used by Instagram.
 
 - Records your actions as you browse.
 - Takes screenshots.
@@ -28,7 +28,7 @@ Let's restart from beginning by removing everything _but_ the `webroot/` folder.
 
 `cd` into `webroot/` and start a local server. Try `python -m SimpleHTTPServer` (if you're on Python 3.x: `python -m http.server`) or use [this package](https://github.com/nodeapps/http-server) _(at port 8000)_.
 
-Back in `examples/`, Create a `Huxleyfile.json`, like this:
+Back in `examples/`, create a `Huxleyfile.json`, like this:
 
 ```json
 [

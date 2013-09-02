@@ -1,3 +1,6 @@
+### 0.3.1 (September 1st 2013)
+- Playback not doing image comparisons. Fixed it.
+
 ## 0.3.0 (September 1st 2013)
 - Switch to use Selenium's native click solution, which fixes lots of form input problems. The select problem persists.
 - Gap-less playback now the default. To record actions in real-time, use `l` `enter`. Check the updated README for more info.

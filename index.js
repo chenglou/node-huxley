@@ -114,7 +114,7 @@ function _playbackTask(browserName, task, compareInsteadOfOverride, next) {
 
     var options = {
       taskPath: _getTaskFolderName(task.name),
-      compareWithOldImages: compareInsteadOfOverride
+      compareWithOld: compareInsteadOfOverride
     };
     playback(driver, taskEvents, options, function(err) {
       browser.quit(driver, function() {
