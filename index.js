@@ -1,9 +1,9 @@
 'use strict';
 
 var fs = require('fs');
-var browser = require('./browser');
-var recorder = require('./recorder');
-var playback = require('./playback');
+var browser = require('./source/browser');
+var recorder = require('./source/recorder');
+var playback = require('./source/playback');
 var mkdirp = require('mkdirp');
 var colors = require('colors');
 
