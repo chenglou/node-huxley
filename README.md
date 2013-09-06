@@ -12,11 +12,13 @@ A port of the codeless front-end testing tool, [Huxley](https://github.com/faceb
 npm install -g huxley
 ```
 
-You'll also need [GraphicsMagick](http://www.graphicsmagick.org), used for comparing screenshots (works on Windows too!).
+You'll also need [GraphicsMagick](http://www.graphicsmagick.org)(if you're on Mac, `brew install graphicsmagick`), used for comparing screenshots (works on Windows too!).
 
 [Selenium Server](http://docs.seleniumhq.org/download/) is used to automate the recorded browser actions. If you already have it, skip this. Don't have it and don't want the hassle of managing it? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
 ## Walkthrough and API
+
+`hux -h` for a list of the available commands.
 
 The API's so short it didn't warrant its own section. The example below uses every feature of Huxley.
 
@@ -46,7 +48,7 @@ Back in `examples/`, create a `Huxleyfile.json`, like this:
 
 Each task is an object. Only `name` and `url` are mandatory and `screenSize` is the only other option. It's a good idea to test only one component inside one `Huxleyfile`, but to separate each aspect of the component into its respective task.
 
-Start Selenium (see "Installation" above), it doesn't matter where. Now run `hux -r` (for a complete list of options, do `hux -h`) to start recording. The default Selenium browser is Firefox, **see FAQ if you're having trouble/want to use another browser.** Assuming Selenium started correctly, do the following:
+Start Selenium (see "Installation" above), it doesn't matter where. Now run `hux -r` to start recording. The default Selenium browser is Firefox, **see FAQ if you're having trouble/want to use another browser.** Assuming Selenium started correctly, do the following:
 
 - Go to the terminal, press `enter` to record the initial state of the browser screen.
 - Go to browser, click on the text field and type 'Hello World'.
