@@ -1,3 +1,7 @@
+### 0.3.2 (September 6th 2013)
+- Ability to pick tasks to skip by changing the task's `name` field in `Huxleyfile.json` into `xname`.
+- Relevant error messages now include folder locations, to future proof automation of multiple Huxleys via Grunt.
+
 ### 0.3.1 (September 1st 2013)
 - Playback not doing image comparisons. Fixed it.
 

@@ -12,7 +12,7 @@ A port of the codeless front-end testing tool, [Huxley](https://github.com/faceb
 npm install -g huxley
 ```
 
-You'll also need [GraphicsMagick](http://www.graphicsmagick.org)(if you're on Mac, `brew install graphicsmagick`), used for comparing screenshots (works on Windows too!).
+You'll also need [GraphicsMagick](http://www.graphicsmagick.org) (if you're on Mac, `brew install graphicsmagick`), used for comparing screenshots (works on Windows too!).
 
 [Selenium Server](http://docs.seleniumhq.org/download/) is used to automate the recorded browser actions. If you already have it, skip this. Don't have it and don't want the hassle of managing it? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
@@ -20,13 +20,13 @@ You'll also need [GraphicsMagick](http://www.graphicsmagick.org)(if you're on Ma
 
 `hux -h` for a list of the available commands.
 
-The API's so short it didn't warrant its own section. The example below uses every feature of Huxley.
+The API's so short it didn't warrant its own section. This example covers every feature of Huxley. _If you have any Windows or browser issue during the process, see the FAQ below._
+
+In `examples/` you'll find two simple completed Huxley tests. Run `hux` there to see what our final results look like.
 
 ### Testing the water
 
-In `examples/` you'll find two simple completed Huxley tests. You can immediately run `hux` in that folder and see what our final results look like.
-
-Let's restart from beginning by removing everything _but_ the `webroot/` folder. _If you have any Windows or browser issue during the process, see the FAQ below._
+Let's start from scratch by removing everything _but_ the `webroot/` folder.
 
 `cd` into `webroot/` and start a local server. Try `python -m SimpleHTTPServer` (if you're on Python 3.x: `python -m http.server`) or use [this package](https://github.com/nodeapps/http-server) _(at port 8000)_.
 
@@ -40,15 +40,15 @@ Back in `examples/`, create a `Huxleyfile.json`, like this:
     "url": "http://localhost:8000/component.html"
   },
   {
-    "name": "type",
+    "xname": "type",
     "url": "http://localhost:8000/component.html"
   }
 ]
 ```
 
-Each task is an object. Only `name` and `url` are mandatory and `screenSize` is the only other option. It's a good idea to test only one component inside one `Huxleyfile`, but to separate each aspect of the component into its respective task.
+Each task is an object. Only `name` and `url` are mandatory and `screenSize` is the only other option. It's a good idea to separate each aspect of the component into its respective task. **Note that the second task is marked as `xname`**. This means that the task will be skipped. We'll only do the first one right now.
 
-Start Selenium (see "Installation" above), it doesn't matter where. Now run `hux -r` to start recording. The default Selenium browser is Firefox, **see FAQ if you're having trouble/want to use another browser.** Assuming Selenium started correctly, do the following:
+Start Selenium (see "Installation" above), it doesn't matter where. Now run `hux -r` to start recording. The default Selenium browser is Firefox. Assuming Selenium started correctly, do the following:
 
 - Go to the terminal, press `enter` to record the initial state of the browser screen.
 - Go to browser, click on the text field and type 'Hello World'.
@@ -59,13 +59,13 @@ Start Selenium (see "Installation" above), it doesn't matter where. Now run `hux
 
 Huxley will then replay your actions as done by itself, then save the screenshots into the task's folder. You'll notice that your actions are chained immediately one after another without delay, as to reduce the time wasted in-between.
 
-Now you finished your first task and Huxley's already opened the browser again and waiting for your second task. Pause for a second and read on.
+Onward!
 
 ### "l" for "live"
 
 The web landscape is getting more and more animated, and the way Huxley chains your recorded actions without delay doesn't work well when UI elements transition on your page. Fortunately, there's a special switch for this.
 
-You're now onto your second task. The browser should still be open, waiting for your input.
+Open `Huxleyfile.json` again. Change the first task's `name` key into `xname`. Change the second one's `xname` into `name`. Now we'll skip the first task when Huxley runs and focus on the second one. Run `hux -r`, then:
 
 - Go to terminal, `l` `enter`. This will not only capture a screenshot, but ask Huxley, when it does its playback, to consider everything from this point forward until the next screenshot as a live playback, e.g. respect the user action's timeline.
 - Click on `Launch modal`.
@@ -73,7 +73,7 @@ You're now onto your second task. The browser should still be open, waiting for 
 - Browser: click anywhere to dismiss the modal.
 - Terminal: `enter` to take a regular screenshot, then `q` `enter` to quit.
 
-That's it! After Huxley replays this task, feel free to examine the replay again with `hux`, or to update the replay when you make changes in the future with `hux -u`.
+That's it! Remove the `x` in `xname` of `Huxleyfile.json`. Feel free to examine the whole replay with `hux`, or to update the screenshots with `hux -u` when you make changes in the future.
 
 ### One more thing
 
