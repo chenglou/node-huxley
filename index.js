@@ -9,10 +9,10 @@ var colors = require('colors');
 
 var DEFAULT_SCREEN_SIZE = [1024, 768];
 // TODO: integration with remote environment
-
+var currentPath = process.cwd();
 
 function _getTaskFolderName(taskName) {
-  return process.cwd() + '/' + taskName + '.hux';
+  return currentPath + '/' + taskName + '.hux';
 }
 
 // the signature of the operation passed:
@@ -20,26 +20,52 @@ function _getTaskFolderName(taskName) {
 function _operateOnEachTask(browserName, operation) {
   var tasks;
   try {
-    tasks = require(process.cwd() + '/Huxleyfile.json');
+    tasks = require(currentPath + '/Huxleyfile.json');
   } catch (err) {
-    console.error('No Huxleyfile.json found!'.red);
+    console.error('No runnable Huxleyfile.json found at %s.'.red, currentPath);
+    return;
+  }
+
+  // filter out every task that's marked skipped (i.e. has the key `xname`
+  // rather than `name`)
+  var unSkippedTasks = tasks.filter(function(task) {
+    return !task.xname;
+  });
+
+  if (tasks.length === 0) {
+    return console.error('No runnable task found at %s.'.red, currentPath);
+  }
+
+  if (unSkippedTasks.length === 0) {
+    console.error('Every task is marked as skipped at %s.'.yellow, currentPath);
     return;
   }
 
   var currentTaskCount = 0;
 
-  operation(browserName, tasks[currentTaskCount], function runNextTask(err) {
+  operation(browserName,
+            unSkippedTasks[currentTaskCount],
+            function runNextTask(err) {
     if (err) {
       process.stdin.pause();
       return console.error(typeof err === 'string' ? err.red : err.message.red);
     }
 
-    if (currentTaskCount === tasks.length - 1) {
+    if (currentTaskCount === unSkippedTasks.length - 1) {
       process.stdin.pause();
       console.log('\nAll done successfully!'.green);
+      var skippedTaskCount = tasks.length - unSkippedTasks.length;
+      if (skippedTaskCount > 0) {
+        console.log(
+          '\nYou\'ve skipped %s task%s at %s'.yellow,
+          skippedTaskCount,
+          skippedTaskCount > 1 ? 's' : '',
+          currentPath
+        );
+      }
     } else {
       console.log('\nNext task...\n');
-      operation(browserName, tasks[++currentTaskCount], runNextTask);
+      operation(browserName, unSkippedTasks[++currentTaskCount], runNextTask);
     }
   });
 }
@@ -52,7 +78,8 @@ function _recordTask(browserName, task, next) {
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: ' + task.name);
-    recorder.startPromptAndInjectEventsScript(driver, function(screenShotTimes) {
+    recorder.startPromptAndInjectEventsScript(driver,
+                                              function(screenShotTimes) {
       recorder.stopAndGetProcessedEvents(driver,
                                         screenShotTimes,
                                         function(allEvents) {
@@ -80,7 +107,7 @@ function _saveTaskAsJsonToFolder(taskName, taskEvents, next) {
   mkdirp(folderPath, function(err) {
     if (err) return next(err);
     fs.writeFile(folderPath + '/record.json',
-                JSON.stringify(taskEvents, null, 2), // prettify, 2 spaces indent
+                JSON.stringify(taskEvents, null, 2), // prettify, 2-space indent
                 function(err) {
       if (err) return next(err);
       next();
@@ -101,7 +128,7 @@ function _playbackTask(browserName, task, compareInsteadOfOverride, next) {
   try {
     taskEvents = require(_getTaskFolderName(task.name) + '/record.json');
   } catch (e) {
-    return next('Cannot find info on recorded actions.');
+    return next('Cannot find enough info on recorded actions.');
   }
 
   var driver = browser.getNewDriver(browserName);
