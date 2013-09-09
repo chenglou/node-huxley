@@ -19,12 +19,12 @@
 ## 0.2.0 (August 29th 2013)
 - Fix behavior when pressing arrow keys.
 - Better error output.
-- Fix cli parsingbug  for `browser`.
+- Fix cli parsing bug  for `--browser`/`-b` flag.
 
 ### 0.1.3 (August 27th 2013)
 - Chrome support.
 - Better error handling/messages. Colors!
-- Prettified record.json for you to hack around.
+- Prettified `record.json` for you to hack around.
 
 ### 0.1.2 (August 27th 2013)
 - New name for npm package.
@@ -33,7 +33,7 @@
 - Fix broken examples.
 
 ## 0.1.0 (August 27th 2013)
-- Better readme instructions.
+- Better README instructions.
 - Playback now differentiates between lowercase and uppercase keystrokes.
 - Removed dependency on gm (GraphicsMagick wrapper).
 
