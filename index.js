@@ -8,7 +8,10 @@ var mkdirp = require('mkdirp');
 var colors = require('colors');
 var glob = require('glob');
 
-var DEFAULT_SCREEN_SIZE = [1024, 768];
+// optimal default screen size. 1200 is bootstrap's definition of 'large screen'
+// and 795 is a mba 13inch's available height for firefox window in Selenium.
+// The actual height of the chromeless viewport should be 689
+var DEFAULT_SCREEN_SIZE = [1200, 795];
 // TODO: integration with remote environment
 
 // TODO: following
@@ -182,7 +185,7 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePath, action) {
     }
     if (currentHuxleyfileIndex === allHuxleyPaths.length - 1) {
       process.stdin.pause();
-      console.log('All done successfully!'.green);
+      console.log('\nAll done successfully!\n'.green);
     } else {
       currentHuxleyfileIndex++;
       _operateOnEachHuxleyfile(browserName, allHuxleyPaths[currentHuxleyfileIndex], action, runNextHuxleyfile);
