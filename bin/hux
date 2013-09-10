@@ -15,14 +15,23 @@ app
     'Browser. Defaults to Firefox. Chrome requires extra setup.' +
     'See README for more info'
   )
+  .option(
+    '-d, --dir [dir]',
+    'Folder to search for the Huxleyfiles. Defaults to the current one. ' +
+    'Used for operating multiple Huxleyfiles in one shot.'
+  )
   .parse(process.argv);
 
 var browser = app.browser;
+// TODO: might change every mention of path to dir
+// the project uses `path` instead of `dir` everywhere (more concise). The
+// argument's `dir` only because that's what lots of people expect
+var path = app.dir;
 
 if (app.update) {
-  core.playbackTasksAndSaveScreenshots(browser);
+  core.playbackTasksAndSaveScreenshots(browser, path);
 } else if (app.record) {
-  core.recordTasks(browser);
+  core.recordTasks(browser, path);
 } else {
-  core.playbackTasksAndCompareScrenshots(browser);
+  core.playbackTasksAndCompareScrenshots(browser, path);
 }

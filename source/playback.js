@@ -20,8 +20,8 @@ function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
           if (err) return next(err);
           if (!areSame) {
             return next(
-              'New screenshot looks different! The diff image is saved for ' +
-              'you to examine.'
+              'New screenshot looks different at ' + taskPath +
+              '. The diff image is saved for you to examine.'
             );
           }
           next();

@@ -99,6 +99,7 @@ Make sure that:
 
 - Java is installed and in your environment path.
 - If the enter key doesn't register while recording, try typing anything (beside the reserved `q` or `l`) before pressing enter.
+- If you're using the `--file` flag, use only forward slashes (`/`) in your pattern.
 
 ### But I like writing front-end unit tests the traditional way!
 
