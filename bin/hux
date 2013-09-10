@@ -11,12 +11,12 @@ app
   .option('-r, --record', 'Record a new test')
   .option('-u, --update', 'Record new screenshot using the automated steps')
   .option(
-    '-b, --browser [browser]',
+    '-b, --browser <browser>',
     'Browser. Defaults to Firefox. Chrome requires extra setup.' +
     'See README for more info'
   )
   .option(
-    '-d, --dir [dir]',
+    '-d, --dir <dir>',
     'Folder to search for the Huxleyfiles. Defaults to the current one. ' +
     'Used for operating multiple Huxleyfiles in one shot.'
   )
