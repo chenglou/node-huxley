@@ -96,7 +96,9 @@ function playback(driver, events, options, done) {
       // the last action is always taking a screenshot. We trimmed the rest when
       // we saved the recording
       fn = _simulateScreenshot.bind(null, driver, screenshotCount, taskPath,
-        compareWithOld, function() {
+        compareWithOld, function(err) {
+          if (err) return done(err);
+
           imageOperations.removeDanglingImages(
             taskPath, screenshotCount + 1, done
           );
