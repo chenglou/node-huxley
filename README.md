@@ -73,7 +73,9 @@ Open `Huxleyfile.json` again. Change the first task's `name` key into `xname`. C
 - Browser: click anywhere to dismiss the modal.
 - Terminal: `enter` to take a regular screenshot, then `q` `enter` to quit.
 
-That's it! Remove the `x` in `xname` of `Huxleyfile.json`. Feel free to examine the whole replay with `hux`, or to update the screenshots with `hux -u` when you make changes in the future.
+That's it! _Don't forget to remove the `x` in `xname` of `Huxleyfile.json`_.
+
+When you modify your code in the future, `hux` to validate the new screenshots against the old ones and `hux -u` to update them. **If you want to batch run Huxleyfiles, try the `--dir` cli flag**.
 
 ### One more thing
 
