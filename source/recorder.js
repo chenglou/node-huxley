@@ -4,13 +4,11 @@ var fs = require('fs');
 var read = require('read');
 
 var driver;
-// TODO: better msg
-var promptMessage = 'q/l/*:';
 
 function startPromptAndInjectEventsScript(driver, done) {
   var screenshotCount = 0;
   var recordingStartTime;
-  var screenShotEvents = [];
+  var screenshotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
   var scriptToInject = fs.readFileSync(__dirname + '/bigBrother.js', 'utf8');
@@ -20,11 +18,11 @@ function startPromptAndInjectEventsScript(driver, done) {
   console.log('Begin record');
   console.log(
     'Type q to quit, l for taking a screenshot and marking a live playback ' +
-    'point, and anything else to take a normal screenshot.'
+    'point til next screenshot, and anything else to take a normal screenshot.'
   );
 
-  read({prompt: promptMessage}, function handleKeyPress(err, key) {
-    if (key === 'q') return done(screenShotEvents);
+  read({prompt: '> '}, function handleKeyPress(err, key) {
+    if (key === 'q') return done(screenshotEvents);
 
     var event = {
       action: 'screenshot',
@@ -35,14 +33,14 @@ function startPromptAndInjectEventsScript(driver, done) {
       event.livePlayback = true;
     }
 
-    screenShotEvents.push(event);
+    screenshotEvents.push(event);
     screenshotCount++;
     console.log(screenshotCount + ' screenshot recorded.');
-    read({prompt: promptMessage}, handleKeyPress);
+    read({prompt: '> '}, handleKeyPress);
   });
 }
 
-function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
+function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
   var browserAndScreenshotEvents;
   var prevScreenshotIsLivePlayback = false;
 
@@ -51,7 +49,7 @@ function stopAndGetProcessedEvents(driver, screenShotEvents, done) {
     // TODO: warn if page switched (can't get events)
     .then(function(browserEvents) {
       browserAndScreenshotEvents = browserEvents
-        .concat(screenShotEvents)
+        .concat(screenshotEvents)
         .sort(function(previous, current) {
           return previous.timeStamp - current.timeStamp;
         });

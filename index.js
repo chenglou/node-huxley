@@ -44,7 +44,9 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
   }
 
   if (unSkippedTasks.length === 0) {
-    console.warn('\nEvery task is marked as skipped at %s.\n'.yellow, huxleyfilePath);
+    console.warn(
+      '\nEvery task is marked as skipped at %s.\n'.yellow, huxleyfilePath
+    );
     return next();
   }
 
@@ -70,7 +72,12 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
       next();
     } else {
       console.log('\nNext task...\n');
-      action(browserName, huxleyfilePath, unSkippedTasks[++currentTaskCount], runNextTask);
+      action(
+        browserName,
+        huxleyfilePath,
+        unSkippedTasks[++currentTaskCount],
+        runNextTask
+      );
     }
   });
 }
@@ -82,20 +89,26 @@ function _recordTask(browserName, huxleyfilePath, task, next) {
   var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
-    console.log('Running test: ' + task.name);
+    console.log('Running test: %s'.bold, task.name);
     recorder.startPromptAndInjectEventsScript(driver,
                                               function(screenShotTimes) {
       recorder.stopAndGetProcessedEvents(driver,
                                         screenShotTimes,
                                         function(allEvents) {
-        _saveTaskAsJsonToFolder(task.name, huxleyfilePath, allEvents, function(err) {
+        _saveTaskAsJsonToFolder(task.name,
+                                huxleyfilePath,
+                                allEvents,
+                                function(err) {
           console.log(
             '\nDon\'t move! Simulating the recording now...\n'.yellow
           );
 
           browser.quit(driver, function() {
             if (err) return next(err);
-            _playbackTaskAndSaveScreenshot(browserName, huxleyfilePath, task, function(err) {
+            _playbackTaskAndSaveScreenshot(browserName,
+                                          huxleyfilePath,
+                                          task,
+                                          function(err) {
               if (err) return next(err);
               next();
             });
@@ -120,15 +133,25 @@ function _saveTaskAsJsonToFolder(taskName, huxleyfilePath, taskEvents, next) {
   });
 }
 
-function _playbackTaskAndSaveScreenshot(browserName, huxleyfilePath, task, next) {
+function _playbackTaskAndSaveScreenshot(browserName,
+                                        huxleyfilePath,
+                                        task,
+                                        next) {
   _playbackTask(browserName, huxleyfilePath,task, false, next);
 }
 
-function _playbackTaskAndCompareScreenshot(browserName, huxleyfilePath, task, next) {
+function _playbackTaskAndCompareScreenshot(browserName,
+                                          huxleyfilePath,
+                                          task,
+                                          next) {
   _playbackTask(browserName, huxleyfilePath,task, true, next);
 }
 
-function _playbackTask(browserName, huxleyfilePath, task, compareInsteadOfOverride, next) {
+function _playbackTask(browserName,
+                      huxleyfilePath,
+                      task,
+                      compareInsteadOfOverride,
+                      next) {
   var taskEvents;
   var recordPath = huxleyfilePath + '/' + task.name + '.hux';
 
@@ -144,7 +167,7 @@ function _playbackTask(browserName, huxleyfilePath, task, compareInsteadOfOverri
   var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
-    console.log('Running test: ' + task.name);
+    console.log('\nRunning test: %s\n', task.name);
 
     var options = {
       taskPath: recordPath,
@@ -178,7 +201,10 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePath, action) {
   }
 
   var currentHuxleyfileIndex = 0;
-  _operateOnEachHuxleyfile(browserName, allHuxleyPaths[currentHuxleyfileIndex], action, function runNextHuxleyfile(err) {
+  _operateOnEachHuxleyfile(browserName,
+                          allHuxleyPaths[currentHuxleyfileIndex],
+                          action,
+                          function runNextHuxleyfile(err) {
     if (err) {
       process.stdin.pause();
       return console.error(typeof err === 'string' ? err.red : err.message.red);
@@ -188,7 +214,12 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePath, action) {
       console.log('\nAll done successfully!\n'.green);
     } else {
       currentHuxleyfileIndex++;
-      _operateOnEachHuxleyfile(browserName, allHuxleyPaths[currentHuxleyfileIndex], action, runNextHuxleyfile);
+      _operateOnEachHuxleyfile(
+        browserName,
+        allHuxleyPaths[currentHuxleyfileIndex],
+        action,
+        runNextHuxleyfile
+      );
     }
   });
 }

@@ -9,16 +9,15 @@ var version = require('../package.json').version;
 app
   .version(version)
   .option('-r, --record', 'Record a new test')
-  .option('-u, --update', 'Record new screenshot using the automated steps')
+  .option('-u, --update', 'Update screenshots using the automated steps')
   .option(
     '-b, --browser <browser>',
-    'Browser. Defaults to Firefox. Chrome requires extra setup.' +
-    'See README for more info'
+    'Default: Firefox. Chrome needs extra setup (See README).'
   )
   .option(
     '-d, --dir <dir>',
-    'Folder to search for the Huxleyfiles. Defaults to the current one. ' +
-    'Used for operating multiple Huxleyfiles in one shot.'
+    'Folder to search for the Huxleyfiles. Accepts glob patterns. Default: ' +
+    ' \'**/\' (every Huxleyfile in the current and nested folders).'
   )
   .parse(process.argv);
 
