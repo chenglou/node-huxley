@@ -1,3 +1,8 @@
+## 0.4 (September 10th 2013)
+- More error handling for cli argument errors.
+- Batched Huxley automation! `-d` or `--dir` to specify the directory in which `Huxleyfile.json` resides. Can target multiple with glob patterns, etc. Defaults to `**/`, which gets every Huxleyfile in the current directory and every subdirectory.
+- Optimal default screen size of 1200 x 795: 1200 is the lower limit for what Bootstrap considers as "large screen", and 795 is the max height of Firefox's viewport on MBA 13 inch (actual chromeless screenshot should be 689). This should capture a bigger part of the user base.
+
 ### 0.3.3 (September 10th 2013)
 - Fix image diff not yielding warning. Apologies.
 
