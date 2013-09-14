@@ -22,7 +22,7 @@ You'll also need [GraphicsMagick](http://www.graphicsmagick.org) (if you're on M
 
 The API's so short it didn't warrant its own section. This example covers every feature of Huxley. _If you have any Windows or browser issue during the process, see the FAQ below._
 
-In `examples/` you'll find two simple completed Huxley tests. Run `hux` there to see what our final results look like.
+In `examples/` you'll find two simple completed Huxley tests. Run `hux -u` there to see what our final results look like.
 
 ### Testing the water
 
