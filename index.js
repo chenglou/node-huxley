@@ -207,7 +207,11 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePath, action) {
                           function runNextHuxleyfile(err) {
     if (err) {
       process.stdin.pause();
-      return console.error(typeof err === 'string' ? err.red : err.message.red);
+      console.error(typeof err === 'string' ? err.red : err.message.red);
+      console.error(
+        '\nThe tests now halts. You might have unfinished tasks.'.red
+      );
+      return;
     }
     if (currentHuxleyfileIndex === allHuxleyPaths.length - 1) {
       process.stdin.pause();
