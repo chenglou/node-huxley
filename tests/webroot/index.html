@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <input type="text" value="Write">
+    <br>
+    <input type="radio" name="a" value="1">
+    <input type="radio" name="a" value="2">
+    <br>
+    <textarea rows="10">Write more</textarea>
+    <br>
+    <button>Click</button>
+    <script>
+      document.querySelector('button').addEventListener('click', function() {
+        var p = document.createElement('p');
+        p.innerHTML = 'Button clicked';
+        document.body.appendChild(p);
+      });
+    </script>
+  </body>
+</html>

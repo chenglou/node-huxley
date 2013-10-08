@@ -1,0 +1,11 @@
+[
+  {
+    "name": "1 toggle",
+    "screenSize": [1000, 600],
+    "url": "http://localhost:8000/"
+  },
+  {
+    "name": "2 text area",
+    "url": "http://localhost:8000/"
+  }
+]

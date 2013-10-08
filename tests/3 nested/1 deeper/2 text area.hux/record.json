@@ -1,0 +1,83 @@
+[
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 66,
+    "x": 58
+  },
+  {
+    "action": "click",
+    "y": 60,
+    "x": 56
+  },
+  {
+    "action": "keypress",
+    "key": "h"
+  },
+  {
+    "action": "keypress",
+    "key": "e"
+  },
+  {
+    "action": "keypress",
+    "key": "r"
+  },
+  {
+    "action": "keypress",
+    "key": "e"
+  },
+  {
+    "action": "keypress",
+    "key": " "
+  },
+  {
+    "action": "click",
+    "y": 59,
+    "x": 148
+  },
+  {
+    "action": "keypress",
+    "key": " "
+  },
+  {
+    "action": "keypress",
+    "key": "a"
+  },
+  {
+    "action": "keypress",
+    "key": "n"
+  },
+  {
+    "action": "keypress",
+    "key": "d"
+  },
+  {
+    "action": "keypress",
+    "key": " "
+  },
+  {
+    "action": "keypress",
+    "key": "m"
+  },
+  {
+    "action": "keypress",
+    "key": "o"
+  },
+  {
+    "action": "keypress",
+    "key": "r"
+  },
+  {
+    "action": "keypress",
+    "key": "e"
+  },
+  {
+    "action": "keypress",
+    "key": "."
+  },
+  {
+    "action": "screenshot"
+  }
+]

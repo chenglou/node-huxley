@@ -1,0 +1,29 @@
+[
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 41,
+    "x": 22
+  },
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 39,
+    "x": 50
+  },
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 37,
+    "x": 18
+  },
+  {
+    "action": "screenshot"
+  }
+]

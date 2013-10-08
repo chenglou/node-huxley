@@ -1,0 +1,97 @@
+[
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 20,
+    "x": 14
+  },
+  {
+    "action": "keypress",
+    "key": "W"
+  },
+  {
+    "action": "keypress",
+    "key": "e"
+  },
+  {
+    "action": "keypress",
+    "key": " "
+  },
+  {
+    "action": "keypress",
+    "key": "S"
+  },
+  {
+    "action": "keypress",
+    "key": "h"
+  },
+  {
+    "action": "keypress",
+    "key": "o"
+  },
+  {
+    "action": "keypress",
+    "key": "u"
+  },
+  {
+    "action": "keypress",
+    "key": "l"
+  },
+  {
+    "action": "keypress",
+    "key": "d"
+  },
+  {
+    "action": "keypress",
+    "key": " "
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_RIGHT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_RIGHT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_RIGHT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_RIGHT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_RIGHT"
+  },
+  {
+    "action": "keypress",
+    "key": " "
+  },
+  {
+    "action": "keypress",
+    "key": "M"
+  },
+  {
+    "action": "keypress",
+    "key": "o"
+  },
+  {
+    "action": "keypress",
+    "key": "r"
+  },
+  {
+    "action": "keypress",
+    "key": "e"
+  },
+  {
+    "action": "keypress",
+    "key": "."
+  },
+  {
+    "action": "screenshot"
+  }
+]
