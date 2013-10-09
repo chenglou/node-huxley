@@ -3,7 +3,7 @@
 'use strict';
 
 var app = require('commander');
-var core = require('../');
+var huxley = require('../');
 var version = require('../package.json').version;
 
 app
@@ -28,9 +28,9 @@ var browser = app.browser;
 var path = app.dir;
 
 if (app.update) {
-  core.playbackTasksAndSaveScreenshots(browser, path);
+  huxley.playbackTasksAndSaveScreenshots(browser, path);
 } else if (app.record) {
-  core.recordTasks(browser, path);
+  huxley.recordTasks(browser, path);
 } else {
-  core.playbackTasksAndCompareScrenshots(browser, path);
+  huxley.playbackTasksAndCompareScrenshots(browser, path);
 }
