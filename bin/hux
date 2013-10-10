@@ -14,23 +14,27 @@ app
     '-b, --browser <browser>',
     'Default: Firefox. Chrome needs extra setup (See README).'
   )
-  .option(
-    '-d, --dir <dir>',
-    'Folder to search for the Huxleyfiles. Accepts glob patterns. Default: ' +
-    ' \'**/\' (every Huxleyfile in the current and nested folders).'
-  )
+  .on('--help', function() {
+    console.log(
+      '  Defaults to search every Huxleyfile in current and nested folders.'
+    );
+    console.log(
+      '  Optionally pass specific folders to search. Accept glob patterns.\n'
+    );
+    console.log('  Example:\n');
+    console.log('    hux --update ./test2 ./test3');
+    console.log('    hux -r examples/**\n');
+  })
   .parse(process.argv);
 
 var browser = app.browser;
-// TODO: might change every mention of path to dir
-// the project uses `path` instead of `dir` everywhere (more concise). The
-// argument's `dir` only because that's what lots of people expect
-var path = app.dir;
+// every unamed param is treated as a path to search
+var allFolders = app.args;
 
 if (app.update) {
-  huxley.playbackTasksAndSaveScreenshots(browser, path);
+  huxley.playbackTasksAndSaveScreenshots(browser, allFolders);
 } else if (app.record) {
-  huxley.recordTasks(browser, path);
+  huxley.recordTasks(browser, allFolders);
 } else {
-  huxley.playbackTasksAndCompareScrenshots(browser, path);
+  huxley.playbackTasksAndCompareScrenshots(browser, allFolders);
 }
