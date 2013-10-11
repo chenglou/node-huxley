@@ -189,7 +189,7 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action) {
   }
 
   // this is beautiful
-  var allHuxleyPaths = huxleyfilePaths
+  var allHuxleyPaths = Object.keys(huxleyfilePaths
     .map(function(path) {
     // use glob to find every huxleyfile in the path, including nested ones.
     // Normally we'd do a simple exec('find blabla'), but this wouldn't work on
@@ -197,16 +197,19 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action) {
       return glob.sync(process.cwd() + '/' + path + '/Huxleyfile.json');
     })
     .reduce(function(path1, path2) {
-      // remove all empty path
+      // flatten into a one-level array while eliminating empty path
       return path1.concat(path2);
     })
     .map(function(path) {
       // trim the file name to get the container folders, needed for storing
       // screenshots and such
       return path.substr(0, path.lastIndexOf('/'));
-    });
-
-  return console.log(allHuxleyPaths);
+    })
+    .reduce(function(obj, path) {
+      // turn into object to eliminate duplicate paths
+      obj[path] = true;
+      return obj;
+    }, {}));
 
   if (allHuxleyPaths.length === 0) {
     return console.error('No Huxleyfile.json found anywhere.'.red);
