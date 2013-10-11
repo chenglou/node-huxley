@@ -5,9 +5,11 @@
 var app = require('commander');
 var huxley = require('../');
 var version = require('../package.json').version;
+var colors = require('colors');
 
 app
   .version(version)
+  .usage('[options] <file ...>')
   .option('-r, --record', 'Record a new test')
   .option('-u, --update', 'Update screenshots using the automated steps')
   .option(
@@ -16,14 +18,14 @@ app
   )
   .on('--help', function() {
     console.log(
-      '  Defaults to search every Huxleyfile in current and nested folders.'
+      '  Defaults to search every Huxleyfile in current & nested folders.'.bold
     );
     console.log(
-      '  Optionally pass specific folders to search. Accept glob patterns.\n'
+      '  Optionally pass list of folders to search. Accept glob patterns.'.bold
     );
-    console.log('  Example:\n');
-    console.log('    hux --update ./test2 ./test3');
-    console.log('    hux -r examples/**\n');
+    console.log('\n  Example:\n');
+    console.log('    hux --update ./test ./tests-with-nested-folders/**');
+    console.log('    hux --record examples/**\n');
   })
   .parse(process.argv);
 
