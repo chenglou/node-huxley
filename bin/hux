@@ -33,10 +33,14 @@ var browser = app.browser;
 // every unamed param is treated as a path to search
 var allFolders = app.args;
 
+// the callback's used below. Mainly for third-party using the three functions,
+// e.g. grunt-huxley
+function nothing() {}
+
 if (app.update) {
-  huxley.playbackTasksAndSaveScreenshots(browser, allFolders);
+  huxley.playbackTasksAndSaveScreenshots(browser, allFolders, nothing);
 } else if (app.record) {
-  huxley.recordTasks(browser, allFolders);
+  huxley.recordTasks(browser, allFolders, nothing);
 } else {
-  huxley.playbackTasksAndCompareScrenshots(browser, allFolders);
+  huxley.playbackTasksAndCompareScrenshots(browser, allFolders, nothing);
 }

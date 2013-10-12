@@ -95,6 +95,10 @@ function playback(driver, events, options, done) {
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed the rest when
       // we saved the recording
+      if (currentEvent.action !== 'screenshot') {
+        return done('The last recorded item should have been a screenshot.');
+      }
+
       fn = _simulateScreenshot.bind(null, driver, screenshotCount, taskPath,
         compareWithOld, function(err) {
           if (err) return done(err);
@@ -127,7 +131,7 @@ function playback(driver, events, options, done) {
           break;
         default:
           return done(
-            'Unrecognized user action. Record.json might have been modified'
+            'Unrecognized user action. Record.json might have been modified.'
           );
       }
     }

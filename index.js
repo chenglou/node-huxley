@@ -29,10 +29,12 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
   try {
     tasks = require(huxleyfilePath + '/' + 'Huxleyfile.json');
   } catch (err) {
-    console.log(err);
-    return next('Failed to load Huxleyfile in ' + huxleyfilePath + '.');
+    return next('Failed to read Huxleyfile in ' + huxleyfilePath + '.');
   }
-
+  var badHuxleyfileErrorMessage = _validateHuxleyfile(tasks);
+  if (badHuxleyfileErrorMessage) {
+    return next(badHuxleyfileErrorMessage);
+  }
   // filter out every task that's marked skipped (i.e. has the key `xname`
   // rather than `name`)
   var unSkippedTasks = tasks.filter(function(task) {
@@ -183,7 +185,7 @@ function _playbackTask(browserName,
 }
 
 // the path doesn't include the name `Huxleyfile.json`
-function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action) {
+function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
   if (!huxleyfilePaths.length) {
     huxleyfilePaths = ['**/'];
   }
@@ -212,7 +214,8 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action) {
     }, {}));
 
   if (allHuxleyPaths.length === 0) {
-    return console.error('No Huxleyfile.json found anywhere.'.red);
+    console.error('No Huxleyfile.json found anywhere.'.red);
+    return done(false);
   }
 
   var currentHuxleyfileIndex = 0;
@@ -221,16 +224,15 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action) {
                           action,
                           function runNextHuxleyfile(err) {
     if (err) {
-      process.stdin.pause();
       console.error(typeof err === 'string' ? err.red : err.message.red);
       console.error(
         '\nThe tests now halts. You might have unfinished tasks.'.red
       );
-      return;
+      return done(false);
     }
     if (currentHuxleyfileIndex === allHuxleyPaths.length - 1) {
-      process.stdin.pause();
       console.log('\nAll done successfully!\n'.green);
+      return done();
     } else {
       currentHuxleyfileIndex++;
       _operateOnEachHuxleyfile(
@@ -243,19 +245,30 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action) {
   });
 }
 
-function recordTasks(browserName, huxleyfilePath) {
-  _operateOnAllHuxleyfiles(browserName, huxleyfilePath, _recordTask);
+function _validateHuxleyfile(tasks) {
+  if (!Array.isArray(tasks)) return 'Huxleyfile json should be an array.';
+  for (var i = 0; i < tasks.length; i++) {
+    if (!tasks[i].name && !tasks[i].xname) {
+      return 'Huxleyfile has no name field.';
+    }
+    if (!tasks[i].url) return 'Huxleyfile has no url.';
+  }
+  return;
 }
 
-function playbackTasksAndSaveScreenshots(browserName, huxleyfilePath) {
+function recordTasks(browserName, huxleyfilePath, done) {
+  _operateOnAllHuxleyfiles(browserName, huxleyfilePath, _recordTask, done);
+}
+
+function playbackTasksAndSaveScreenshots(browserName, huxleyfilePath, done) {
   _operateOnAllHuxleyfiles(
-    browserName, huxleyfilePath, _playbackTaskAndSaveScreenshot
+    browserName, huxleyfilePath, _playbackTaskAndSaveScreenshot, done
   );
 }
 
-function playbackTasksAndCompareScrenshots(browserName, huxleyfilePath) {
+function playbackTasksAndCompareScrenshots(browserName, huxleyfilePath, done) {
   _operateOnAllHuxleyfiles(
-    browserName, huxleyfilePath, _playbackTaskAndCompareScreenshot
+    browserName, huxleyfilePath, _playbackTaskAndCompareScreenshot, done
   );
 }
 
