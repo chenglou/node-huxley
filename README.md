@@ -79,7 +79,7 @@ When you modify your code in the future, `hux` to validate the new screenshots a
 
 ### One more thing
 
-The `record.json` file Huxley uses for the playback is completely hackable and optimized for reading. Feel free to tweak it!
+[grunt-huxley](https://github.com/chenglou/grunt-huxley) =).
 
 ## Philosophy and best practices
 

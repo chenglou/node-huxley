@@ -1,3 +1,9 @@
+## 0.5 (October 16th 2013)
+- New way to specify folders in which to search for `Huxleyfile.json`. Basically, just pass one or more flagless arguments. Accepts glob patterns.
+- [Grunt task for huxley](https://github.com/chenglou/grunt-huxley)!
+- Better warnings. Always better warnings.
+- Small Selenium webdriver version bump.
+
 ## 0.4 (September 10th 2013)
 - More error handling for cli argument errors.
 - Batched Huxley automation! `-d` or `--dir` to specify the directory in which `Huxleyfile.json` resides. Can target multiple with glob patterns, etc. Defaults to `**/`, which gets every Huxleyfile in the current directory and every subdirectory.
