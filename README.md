@@ -6,6 +6,8 @@ A port of the codeless front-end testing tool, [Huxley](https://github.com/faceb
 - Takes screenshots.
 - Compares new screenshots against the old ones and checks for differences.
 
+[Grunt task here](https://github.com/chenglou/grunt-huxley).
+
 ## Installation
 
 ```
@@ -76,10 +78,6 @@ Open `Huxleyfile.json` again. Change the first task's `name` key into `xname`. C
 That's it! _Don't forget to remove the `x` in `xname` of `Huxleyfile.json`_.
 
 When you modify your code in the future, `hux` to validate the new screenshots against the old ones and `hux -u` to update them. **If you want to batch run Huxleyfiles, see `hux --help`**.
-
-### One more thing
-
-[grunt-huxley](https://github.com/chenglou/grunt-huxley) =).
 
 ## Philosophy and best practices
 
