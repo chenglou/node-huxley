@@ -4,7 +4,8 @@
   "description": "New wave front-end testing.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "jshint": "jshint . --exclude node_modules"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "mkdirp": "~0.3.5",
     "colors": "~0.6.2",
     "read": "~1.0.5",
-    "glob": "~3.2.6"
+    "glob": "~3.2.6",
+    "jshint": "~2.3.0"
   }
 }
