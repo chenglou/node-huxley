@@ -1,0 +1,11 @@
+[
+  {
+    "name": "1 input",
+    "screenSize": [1000, 600],
+    "url": "http://localhost:8000/"
+  },
+  {
+    "xname": "2 input more",
+    "url": "http://localhost:8000/"
+  }
+]
