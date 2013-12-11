@@ -25,12 +25,12 @@ function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
             );
           }
           next();
-       }
+        }
       );
     } else {
       imageOperations.writeToFile(oldImagePath, tempImage, next);
     }
-   });
+  });
 }
 
 function _simulateKeypress(driver, key, next) {
