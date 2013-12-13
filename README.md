@@ -14,8 +14,6 @@ A port of the codeless front-end testing tool, [Huxley](https://github.com/faceb
 npm install -g huxley
 ```
 
-You'll also need [GraphicsMagick](http://www.graphicsmagick.org) (if you're on Mac, `brew install graphicsmagick`), used for comparing screenshots (works on Windows too!).
-
 [Selenium Server](http://docs.seleniumhq.org/download/) is used to automate the recorded browser actions. If you already have it, skip this. Don't have it and don't want the hassle of managing it? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
 
 ## Walkthrough and API
