@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var exec = require('child_process').exec;
+var PNGDiff = require('png-diff');
 
 function writeToFile(path, rawImageBuffer, done) {
   var imageBuffer = new Buffer(rawImageBuffer, 'base64');
@@ -17,50 +18,24 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
   var tempFileName = 'temp' + Math.random() + '.png';
 
   writeToFile(tempFileName, image1Buffer, function(err) {
-    try {
-      _checkIfDifferent(tempFileName, image2Path, function(err, areSame) {
-        if (!areSame) {
-          var diffPath = taskPath + '/diff.png';
-          _saveDiffImage(tempFileName, image2Path, diffPath, function(err) {
-            fs.unlinkSync(tempFileName);
-            done(err, areSame);
-          });
-        } else {
-          fs.unlinkSync(tempFileName);
+    PNGDiff.measureDiff(tempFileName, image2Path, function(err, diffMetric) {
+      if (err) {
+        fs.unlinkSync(tempFileName);
+        return done(err);
+      }
+
+      var areSame = diffMetric === 0;
+      if (!areSame) {
+        var diffPath = taskPath + '/diff.png';
+        PNGDiff.outputDiff(tempFileName, image2Path, diffPath, function(err) {
           done(err, areSame);
-        }
-      });
-    } catch (err) {
+        });
+      } else {
+        done(err, areSame);
+      }
       fs.unlinkSync(tempFileName);
-      done(err);
-    }
+    });
   });
-}
-
-function _checkIfDifferent(image1Path, image2Path, done) {
-  exec(
-    'gm compare -metric mse "' + image1Path + '" "' + image2Path + '"',
-    function (err, stdout) {
-      if (err) return done(err);
-
-      // the output is an ascii table, with the last row like this:
-      // Total: 0.0000607584        0.0
-      //           ^ what we want
-      var match = /Total: (\d+\.?\d*)/m.exec(stdout);
-      if (!match) return done('Unable to compare images: %s', stdout);
-
-      var equality = parseFloat(match[1]);
-      done(err, equality === 0);
-    }
-  );
-}
-
-function _saveDiffImage(image1Path, image2Path, diffPath, done) {
-  exec(
-    'gm compare -file "' + diffPath + '" "' + image1Path +
-    '" "' + image2Path + '"',
-    done
-  );
 }
 
 function removeDanglingImages(taskPath, index, done) {
@@ -70,6 +45,7 @@ function removeDanglingImages(taskPath, index, done) {
 
   fs.unlink(imagePath, function(err) {
     if (err) return done(err);
+
     removeDanglingImages(taskPath, index + 1, done);
   });
 }
