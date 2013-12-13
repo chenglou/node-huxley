@@ -1,11 +1,11 @@
 'use strict';
 
+var excludeLibrariesPattern = '!node_modules/**';
 module.exports = function(grunt) {
   grunt.initConfig({
     jshint: {
-      files: ['**/*.js'],
+      files: ['**/*.js', excludeLibrariesPattern],
       options: {
-        ignores: ['node_modules/**/*.js'],
         bitwise: true,
         camelcase: true,
         devel: true,
@@ -22,10 +22,26 @@ module.exports = function(grunt) {
         trailing: true,
         undef: true
       },
+    },
+
+    // TODO: get sensitive defaults, if these (taken from grunt-complexity
+    // README) aren't
+    complexity: {
+      generic: {
+        src: ['**/*.js', excludeLibrariesPattern, '!Gruntfile.js'],
+        options: {
+          breakOnErrors: true,
+          errorsOnly: false, // show only maintainability errors
+          cyclomatic: [3, 7, 12],
+          halstead: [8, 13, 20],
+          maintainability: 100
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-complexity');
 
-  grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('default', ['jshint', 'complexity']);
 };
