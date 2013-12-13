@@ -77,11 +77,11 @@ That's it! _Don't forget to remove the `x` in `xname` of `Huxleyfile.json`_.
 
 When you modify your code in the future, `hux` to validate the new screenshots against the old ones and `hux -u` to update them. **If you want to batch run Huxleyfiles, see `hux --help`**.
 
-## Philosophy and best practices
+## FAQ
+
+### What are the best practices?
 
 Node-huxley is a port, so every recommendation [here](https://github.com/facebook/huxley#best-practices) still applies.
-
-## FAQ
 
 ### How do I switch the default browser?
 
@@ -98,7 +98,3 @@ Make sure that:
 - Java is installed and in your environment path.
 - If the enter key doesn't register while recording, try typing anything (beside the reserved `q` or `l`) before pressing enter.
 - If you're using the `--file` flag, use only forward slashes (`/`) in your pattern.
-
-### But I like writing front-end unit tests the traditional way!
-
-Woah, really? =) Hop on to the next era of unit testing or we might leave without you!
