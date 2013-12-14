@@ -1,6 +1,9 @@
 'use strict';
 
+var exec = require('child_process').exec;
+var tests = require('./tests');
 var excludeLibrariesPattern = '!node_modules/**';
+
 module.exports = function(grunt) {
   grunt.initConfig({
     jshint: {
@@ -37,11 +40,39 @@ module.exports = function(grunt) {
           maintainability: 100
         }
       }
-    }
+    },
+
+    connect: {
+      server: {
+        options: {
+          port: 8000,
+          base: 'tests/webroot'
+        },
+      },
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-complexity');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
   grunt.registerTask('default', ['jshint', 'complexity']);
+
+
+  grunt.registerTask('testPasses', tests.testPasses);
+  grunt.registerTask('testFails', tests.testFails);
+  grunt.registerTask('selenium', function(grunt) {
+    var done = this.async();
+    // this is the same selenium wrapper than in README. It conveniently
+    // includes the .jar file and exposes a command to start it
+    exec('./node_modules/selenium-server/bin/selenium', function(err) {
+      if (err) return done(false);
+
+      done();
+    });
+  });
+
+  grunt.registerTask(
+    'tests', ['connect:server', 'selenium', 'testPasses', 'testFails']
+  );
 };
