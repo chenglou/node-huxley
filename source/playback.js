@@ -7,7 +7,6 @@ var specialKeys = require('selenium-webdriver').Key;
 var imageOperations = require('./imageOperations');
 var consts = require('./constants');
 
-// TODO: render next/done/callback parameter name consistent
 function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
   // parameter is the index of the screenshot
   console.log('  Taking screenshot ' + index);
@@ -79,8 +78,8 @@ function _simulateClick(driver, posX, posY, next) {
     .then(next);
 }
 
-function playback(driver, events, options, done) {
-  if (events.length === 0) return done('No previously recorded events.');
+function playback(driver, events, options, next) {
+  if (events.length === 0) return next('No previously recorded events.');
 
   var compareWithOld = options.compareWithOld || false;
   var taskPath = options.taskPath || '';
@@ -88,10 +87,10 @@ function playback(driver, events, options, done) {
   var currentEventIndex = 0;
   var screenshotCount = 1;
 
-  // pass `_next` or `done` as the callback when the current simulated event
+  // pass `_next` as the callback when the current simulated event
   // completes
   function _next(err) {
-    if (err) return done(err);
+    if (err) return next(err);
 
     var fn;
     var currentEvent = events[currentEventIndex];
@@ -100,15 +99,15 @@ function playback(driver, events, options, done) {
       // the last action is always taking a screenshot. We trimmed the rest when
       // we saved the recording
       if (currentEvent.action !== consts.STEP_SCREENSHOT) {
-        return done('The last recorded item should have been a screenshot.');
+        return next('The last recorded item should have been a screenshot.');
       }
 
       fn = _simulateScreenshot.bind(null, driver, screenshotCount, taskPath,
         compareWithOld, function(err) {
-          if (err) return done(err);
+          if (err) return next(err);
 
           imageOperations.removeDanglingImages(
-            taskPath, screenshotCount + 1, done
+            taskPath, screenshotCount + 1, next
           );
         }
       );
@@ -134,7 +133,7 @@ function playback(driver, events, options, done) {
           };
           break;
         default:
-          return done(
+          return next(
             'Unrecognized user action. Record.json might have been modified.'
           );
       }

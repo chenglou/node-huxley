@@ -5,7 +5,7 @@ var read = require('read');
 
 var consts = require('./constants');
 
-function startPromptAndInjectEventsScript(driver, done) {
+function startPromptAndInjectEventsScript(driver, next) {
   var screenshotCount = 0;
   var recordingStartTime;
   var screenshotEvents = [];
@@ -22,7 +22,7 @@ function startPromptAndInjectEventsScript(driver, done) {
   );
 
   read({prompt: '> '}, function handleKeyPress(err, key) {
-    if (key === 'q') return done(screenshotEvents);
+    if (key === 'q') return next(screenshotEvents);
 
     var event = {
       action: consts.STEP_SCREENSHOT,
@@ -40,7 +40,7 @@ function startPromptAndInjectEventsScript(driver, done) {
   });
 }
 
-function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
+function stopAndGetProcessedEvents(driver, screenshotEvents, next) {
   var browserAndScreenshotEvents;
   var prevScreenshotIsLivePlayback = false;
 
@@ -102,7 +102,7 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
 
       return browserAndScreenshotEvents;
     })
-    .then(done);
+    .then(next);
 }
 
 module.exports = {

@@ -15,13 +15,13 @@ var path = require('path');
 // relative path to here
 var currentFolder = path.relative(process.cwd(), __dirname);
 
-function _testPasses(done) {
+function _testPasses(next) {
   var browser = 'firefox';
   var paths = [currentFolder + '/passes/**'];
-  huxley.playbackTasksAndCompareScrenshots(browser, paths, done);
+  huxley.playbackTasksAndCompareScrenshots(browser, paths, next);
 }
 
-function _testFails(done) {
+function _testFails(next) {
   var browser = 'firefox';
   var failTestsPaths = glob
     .sync(currentFolder + '/fails/**/Huxleyfile.json')
@@ -40,8 +40,8 @@ function _testFails(done) {
                                             [failTestsPaths[currentTestIndex]],
                                             function(successful) {
       // we don't want it to be successful
-      if (successful !== false) return done(false);
-      if (currentTestIndex === failTestsPaths.length - 1) return done();
+      if (successful !== false) return next(false);
+      if (currentTestIndex === failTestsPaths.length - 1) return next();
 
       currentTestIndex++;
       runFailTest();
@@ -51,15 +51,15 @@ function _testFails(done) {
 
 function wrapTestsForGrunt(testMethod, errorMessage) {
   return function() {
-    var done = this.async();
+    var next = this.async();
 
     testMethod(function(successful) {
       if (successful === false) {
         grunt.log.error(errorMessage);
-        return done(false);
+        return next(false);
       }
 
-      done();
+      next();
     });
   };
 }

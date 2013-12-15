@@ -47,22 +47,22 @@ function getNewDriver(browserName) {
   return driver;
 }
 
-function openToUrl(driver, url, windowWidth, windowHeight, done) {
+function openToUrl(driver, url, windowWidth, windowHeight, next) {
   driver.manage().window()
     .setSize(windowWidth, windowHeight)
     .then(function() {
       driver.get(url);
     })
-    .then(done);
+    .then(next);
 }
 
-function quit(driver, done) {
+function quit(driver, next) {
   dummyDriver
     .quit()
     .then(function() {
       driver.quit();
     })
-    .then(done);
+    .then(next);
 }
 
 module.exports = {

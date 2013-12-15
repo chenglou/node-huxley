@@ -6,15 +6,15 @@ var PNGDiff = require('png-diff');
 
 var consts = require('./constants');
 
-function writeToFile(path, rawImageBuffer, done) {
+function writeToFile(path, rawImageBuffer, next) {
   var imageBuffer = new Buffer(rawImageBuffer, 'base64');
-  fs.writeFile(path, imageBuffer, done);
+  fs.writeFile(path, imageBuffer, next);
 }
 
 function compareAndSaveDiffOnMismatch(image1Buffer,
                                       image2Path,
                                       taskPath,
-                                      done) {
+                                      next) {
   // in our use case, iamge1Buffer will always be a buffer of the temp image we
   // created
   var tempFileName = 'temp' + Math.random() + '.png';
@@ -23,32 +23,32 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
     PNGDiff.measureDiff(tempFileName, image2Path, function(err, diffMetric) {
       if (err) {
         fs.unlinkSync(tempFileName);
-        return done(err);
+        return next('Cannot get images for difference comparison.');
       }
 
       var areSame = diffMetric === 0;
       if (!areSame) {
         var diffPath = taskPath + '/' + consts.DIFF_PNG_NAME;
         PNGDiff.outputDiff(tempFileName, image2Path, diffPath, function(err) {
-          done(err, areSame);
+          next(err, areSame);
         });
       } else {
-        done(err, areSame);
+        next(err, areSame);
       }
       fs.unlinkSync(tempFileName);
     });
   });
 }
 
-function removeDanglingImages(taskPath, index, done) {
+function removeDanglingImages(taskPath, index, next) {
   // a new recording might take less screenshots than the previous
   var imagePath = taskPath + '/' + index + '.png';
-  if (!fs.existsSync(imagePath)) return done();
+  if (!fs.existsSync(imagePath)) return next();
 
   fs.unlink(imagePath, function(err) {
-    if (err) return done(err);
+    if (err) return next(err);
 
-    removeDanglingImages(taskPath, index + 1, done);
+    removeDanglingImages(taskPath, index + 1, next);
   });
 }
 

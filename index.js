@@ -189,7 +189,7 @@ function _playbackTask(browserName,
 }
 
 // the path doesn't include the name `Huxleyfile.json`
-function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
+function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, next) {
   if (!huxleyfilePaths.length) {
     huxleyfilePaths = ['**/'];
   }
@@ -197,9 +197,9 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
   // this is beautiful
   var allHuxleyPaths = Object.keys(huxleyfilePaths
     .map(function(path) {
-    // use glob to find every huxleyfile in the path, including nested ones.
-    // Normally we'd do a simple exec('find blabla'), but this wouldn't work on
-    // Windows. So search every huxleyfile location
+      // use glob to find every huxleyfile in the path, including nested ones.
+      // Normally we'd do a simple exec('find blabla'), but this wouldn't work
+      // on Windows. So search every huxleyfile location
       return glob.sync(process.cwd() + '/' + path + '/' + consts.HUXLEYFILE_NAME);
     })
     .reduce(function(path1, path2) {
@@ -219,7 +219,7 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
 
   if (allHuxleyPaths.length === 0) {
     console.error('No %s found anywhere.'.red, consts.HUXLEYFILE_NAME);
-    return done(false);
+    return next(false);
   }
 
   var currentHuxleyfileIndex = 0;
@@ -232,11 +232,11 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
       console.error(
         '\nThe tests now halts. You might have unfinished tasks.'.red
       );
-      return done(false);
+      return next(false);
     }
     if (currentHuxleyfileIndex === allHuxleyPaths.length - 1) {
       console.log('\nAll done successfully!\n'.green);
-      return done();
+      return next();
     } else {
       currentHuxleyfileIndex++;
       _operateOnEachHuxleyfile(
@@ -261,19 +261,19 @@ function _validateHuxleyfileTasks(tasks) {
   return;
 }
 
-function recordTasks(browserName, huxleyfilePath, done) {
-  _operateOnAllHuxleyfiles(browserName, huxleyfilePath, _recordTask, done);
+function recordTasks(browserName, huxleyfilePath, next) {
+  _operateOnAllHuxleyfiles(browserName, huxleyfilePath, _recordTask, next);
 }
 
-function playbackTasksAndSaveScreenshots(browserName, huxleyfilePath, done) {
+function playbackTasksAndSaveScreenshots(browserName, huxleyfilePath, next) {
   _operateOnAllHuxleyfiles(
-    browserName, huxleyfilePath, _playbackTaskAndSaveScreenshot, done
+    browserName, huxleyfilePath, _playbackTaskAndSaveScreenshot, next
   );
 }
 
-function playbackTasksAndCompareScrenshots(browserName, huxleyfilePath, done) {
+function playbackTasksAndCompareScrenshots(browserName, huxleyfilePath, next) {
   _operateOnAllHuxleyfiles(
-    browserName, huxleyfilePath, _playbackTaskAndCompareScreenshot, done
+    browserName, huxleyfilePath, _playbackTaskAndCompareScreenshot, next
   );
 }
 
