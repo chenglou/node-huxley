@@ -4,6 +4,7 @@ var colors = require('colors');
 var fs = require('fs');
 var glob = require('glob');
 var mkdirp = require('mkdirp');
+var path = require('path');
 
 var browser = require('./source/browser');
 var consts = require('./source/constants');
@@ -31,9 +32,13 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
   try {
     tasks = require(huxleyfilePath + '/' + consts.HUXLEYFILE_NAME);
   } catch (err) {
-    return next('Failed to read Huxleyfile in ' + huxleyfilePath + '.');
+    return next(
+      'Failed to read Huxleyfile in ' +
+      path.relative(process.cwd(), huxleyfilePath) +
+      '.'
+    );
   }
-  var badHuxleyfileErrorMessage = _validateHuxleyfile(tasks);
+  var badHuxleyfileErrorMessage = _validateHuxleyfileTasks(tasks);
   if (badHuxleyfileErrorMessage) {
     return next(badHuxleyfileErrorMessage);
   }
@@ -43,16 +48,10 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
     return !task.xname;
   });
 
-  if (tasks.length === 0) {
-    return next(
-      'No runnable ' + consts.HUXLEYFILE_NAME + ' found at ' +
-      huxleyfilePath + '.'
-    );
-  }
-
   if (unSkippedTasks.length === 0) {
     console.warn(
-      '\nEvery task is marked as skipped at %s.\n'.yellow, huxleyfilePath
+      '\nEvery task is marked as skipped at %s.\n'.yellow,
+      path.relative(process.cwd(), huxleyfilePath)
     );
     return next();
   }
@@ -73,7 +72,7 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
           '\nYou\'ve skipped %s task%s at %s\n'.yellow,
           skippedTaskCount,
           skippedTaskCount > 1 ? 's' : '',
-          huxleyfilePath
+          path.relative(process.cwd(), huxleyfilePath)
         );
       }
       next();
@@ -250,8 +249,9 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
   });
 }
 
-function _validateHuxleyfile(tasks) {
+function _validateHuxleyfileTasks(tasks) {
   if (!Array.isArray(tasks)) return consts.HUXLEYFILE_NAME + ' should be an array.';
+  if (tasks.length === 0) return 'Empty ' + consts.HUXLEYFILE_NAME;
   for (var i = 0; i < tasks.length; i++) {
     if (!tasks[i].name && !tasks[i].xname) {
       return consts.HUXLEYFILE_NAME + ' has no name field.';
