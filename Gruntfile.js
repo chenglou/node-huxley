@@ -1,6 +1,6 @@
 'use strict';
 
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 var tests = require('./tests');
 var excludeLibrariesPattern = '!node_modules/**';
 
@@ -65,9 +65,11 @@ module.exports = function(grunt) {
     var done = this.async();
     // this is the same selenium wrapper than in README. It conveniently
     // includes the .jar file and exposes a command to start it
-    exec('./node_modules/selenium-server/bin/selenium', function(err) {
-      if (err) return done(false);
-
+    var selenium = spawn('./node_modules/selenium-server/bin/selenium');
+    selenium.stderr.once('data', function() {
+      done(false);
+    });
+    selenium.stdout.once('data', function() {
       done();
     });
   });
