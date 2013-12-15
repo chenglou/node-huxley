@@ -1,9 +1,10 @@
 'use strict';
 
-// TODO: input focus aura problem
-var imageOperations = require('./imageOperations');
 var colors = require('colors');
 var specialKeys = require('selenium-webdriver').Key;
+
+var imageOperations = require('./imageOperations');
+var consts = require('./constants');
 
 // TODO: render next/done/callback parameter name consistent
 function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
@@ -96,7 +97,7 @@ function playback(driver, events, options, done) {
     if (currentEventIndex === events.length - 1) {
       // the last action is always taking a screenshot. We trimmed the rest when
       // we saved the recording
-      if (currentEvent.action !== 'screenshot') {
+      if (currentEvent.action !== consts.STEP_SCREENSHOT) {
         return done('The last recorded item should have been a screenshot.');
       }
 
@@ -111,20 +112,20 @@ function playback(driver, events, options, done) {
       );
     } else {
       switch (currentEvent.action) {
-        case 'click':
+        case consts.STEP_CLICK:
           fn = _simulateClick.bind(
             null, driver, currentEvent.x, currentEvent.y, _next
           );
           break;
-        case 'keypress':
+        case consts.STEP_KEYPRESS:
           fn = _simulateKeypress.bind(null, driver, currentEvent.key, _next);
           break;
-        case 'screenshot':
+        case consts.STEP_SCREENSHOT:
           fn = _simulateScreenshot.bind(
             null, driver, screenshotCount++, taskPath, compareWithOld, _next
           );
           break;
-        case 'pause':
+        case consts.STEP_PAUSE:
           fn = function() {
             console.log('  Pause for %s ms'.grey, currentEvent.ms);
             setTimeout(_next, currentEvent.ms);

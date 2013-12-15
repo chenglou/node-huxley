@@ -3,7 +3,7 @@
 var fs = require('fs');
 var read = require('read');
 
-var driver;
+var consts = require('./constants');
 
 function startPromptAndInjectEventsScript(driver, done) {
   var screenshotCount = 0;
@@ -25,7 +25,7 @@ function startPromptAndInjectEventsScript(driver, done) {
     if (key === 'q') return done(screenshotEvents);
 
     var event = {
-      action: 'screenshot',
+      action: consts.STEP_SCREENSHOT,
       timeStamp: Date.now(),
     };
 
@@ -61,7 +61,7 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
       // TODO: maybe, instead of doing this, add a last screenshot here. It's
       // mostly due to mistakes
       for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
-        if (browserAndScreenshotEvents[i].action === 'screenshot') break;
+        if (browserAndScreenshotEvents[i].action === consts.STEP_SCREENSHOT) break;
 
         browserAndScreenshotEvents.pop();
       }
@@ -71,7 +71,7 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
       while (j < browserAndScreenshotEvents.length) {
         currentEvent = browserAndScreenshotEvents[j];
 
-        if (currentEvent.action === 'screenshot') {
+        if (currentEvent.action === consts.STEP_SCREENSHOT) {
           prevScreenshotIsLivePlayback = currentEvent.livePlayback;
         }
 
@@ -84,7 +84,7 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
         // previous for loop and last conditional garantees this isn't a
         // screenshot event
         var actionToAdd = {
-          action: 'pause',
+          action: consts.STEP_PAUSE,
           ms: browserAndScreenshotEvents[j + 1].timeStamp -
               currentEvent.timeStamp
         };

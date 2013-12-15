@@ -1,8 +1,10 @@
 'use strict';
 
-var fs = require('fs');
 var exec = require('child_process').exec;
+var fs = require('fs');
 var PNGDiff = require('png-diff');
+
+var consts = require('./constants');
 
 function writeToFile(path, rawImageBuffer, done) {
   var imageBuffer = new Buffer(rawImageBuffer, 'base64');
@@ -26,7 +28,7 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
 
       var areSame = diffMetric === 0;
       if (!areSame) {
-        var diffPath = taskPath + '/diff.png';
+        var diffPath = taskPath + '/' + consts.DIFF_PNG_NAME;
         PNGDiff.outputDiff(tempFileName, image2Path, diffPath, function(err) {
           done(err, areSame);
         });

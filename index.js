@@ -1,12 +1,14 @@
 'use strict';
 
-var fs = require('fs');
-var browser = require('./source/browser');
-var recorder = require('./source/recorder');
-var playback = require('./source/playback');
-var mkdirp = require('mkdirp');
 var colors = require('colors');
+var fs = require('fs');
 var glob = require('glob');
+var mkdirp = require('mkdirp');
+
+var browser = require('./source/browser');
+var consts = require('./source/constants');
+var playback = require('./source/playback');
+var recorder = require('./source/recorder');
 
 // optimal default screen size. 1200 is bootstrap's definition of 'large screen'
 // and 795 is a mba 13inch's available height for firefox window in Selenium.
@@ -27,7 +29,7 @@ var DEFAULT_SCREEN_SIZE = [1200, 795];
 function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
   var tasks;
   try {
-    tasks = require(huxleyfilePath + '/' + 'Huxleyfile.json');
+    tasks = require(huxleyfilePath + '/' + consts.HUXLEYFILE_NAME);
   } catch (err) {
     return next('Failed to read Huxleyfile in ' + huxleyfilePath + '.');
   }
@@ -42,7 +44,10 @@ function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
   });
 
   if (tasks.length === 0) {
-    return next('No runnable Huxleyfile.json found at ' + huxleyfilePath + '.');
+    return next(
+      'No runnable ' + consts.HUXLEYFILE_NAME + ' found at ' +
+      huxleyfilePath + '.'
+    );
   }
 
   if (unSkippedTasks.length === 0) {
@@ -123,10 +128,10 @@ function _recordTask(browserName, huxleyfilePath, task, next) {
 
 function _saveTaskAsJsonToFolder(taskName, huxleyfilePath, taskEvents, next) {
   // `taskEvents` should already have been processed by `_processRawTaskEvents`
-  var folderPath = huxleyfilePath + '/' + taskName + '.hux';
+  var folderPath = huxleyfilePath + '/' + taskName + consts.SCREENSHOTS_FOLDER_EXT;
   mkdirp(folderPath, function(err) {
     if (err) return next(err);
-    fs.writeFile(folderPath + '/record.json',
+    fs.writeFile(folderPath + '/' + consts.RECORD_FILE_NAME,
                 JSON.stringify(taskEvents, null, 2), // prettify, 2-space indent
                 function(err) {
       if (err) return next(err);
@@ -155,10 +160,10 @@ function _playbackTask(browserName,
                       compareInsteadOfOverride,
                       next) {
   var taskEvents;
-  var recordPath = huxleyfilePath + '/' + task.name + '.hux';
+  var recordPath = huxleyfilePath + '/' + task.name + consts.SCREENSHOTS_FOLDER_EXT;
 
   try {
-    taskEvents = require(recordPath + '/record.json');
+    taskEvents = require(recordPath + '/' + consts.RECORD_FILE_NAME);
   } catch (err) {
     return next('Cannot find enough info on recorded actions.');
   }
@@ -196,7 +201,7 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
     // use glob to find every huxleyfile in the path, including nested ones.
     // Normally we'd do a simple exec('find blabla'), but this wouldn't work on
     // Windows. So search every huxleyfile location
-      return glob.sync(process.cwd() + '/' + path + '/Huxleyfile.json');
+      return glob.sync(process.cwd() + '/' + path + '/' + consts.HUXLEYFILE_NAME);
     })
     .reduce(function(path1, path2) {
       // flatten into a one-level array while eliminating empty path
@@ -214,7 +219,7 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
     }, {}));
 
   if (allHuxleyPaths.length === 0) {
-    console.error('No Huxleyfile.json found anywhere.'.red);
+    console.error('No %s found anywhere.'.red, consts.HUXLEYFILE_NAME);
     return done(false);
   }
 
@@ -246,12 +251,12 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, done) {
 }
 
 function _validateHuxleyfile(tasks) {
-  if (!Array.isArray(tasks)) return 'Huxleyfile json should be an array.';
+  if (!Array.isArray(tasks)) return consts.HUXLEYFILE_NAME + ' should be an array.';
   for (var i = 0; i < tasks.length; i++) {
     if (!tasks[i].name && !tasks[i].xname) {
-      return 'Huxleyfile has no name field.';
+      return consts.HUXLEYFILE_NAME + ' has no name field.';
     }
-    if (!tasks[i].url) return 'Huxleyfile has no url.';
+    if (!tasks[i].url) return consts.HUXLEYFILE_NAME + ' has no url.';
   }
   return;
 }
