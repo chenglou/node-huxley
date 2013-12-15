@@ -5,23 +5,15 @@
   {
     "action": "click",
     "y": 41,
-    "x": 22
+    "x": 63
   },
   {
     "action": "screenshot"
   },
   {
     "action": "click",
-    "y": 39,
-    "x": 50
-  },
-  {
-    "action": "screenshot"
-  },
-  {
-    "action": "click",
-    "y": 37,
-    "x": 18
+    "y": 40,
+    "x": 106
   },
   {
     "action": "screenshot"

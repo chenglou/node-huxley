@@ -3,6 +3,13 @@
 var fs = require('fs');
 var webdriver = require('selenium-webdriver');
 
+// the sole purpose of this driver is to steal the focus away from the main
+// one; without the focus, the main window's form input won't get the highlight
+// hue; this behavior is more desirable than to have inconsistencies in
+// highlighting due to the user manually focusing/unfocusing the window at the
+// beginning
+var dummyDriver;
+
 function getNewDriver(browserName) {
   var browser;
   var serverUrl;
@@ -28,6 +35,15 @@ function getNewDriver(browserName) {
     .withCapabilities(browser)
     .build();
 
+  dummyDriver = new webdriver.Builder()
+    .usingServer(serverUrl)
+    .withCapabilities(browser)
+    .build();
+
+  // see comment above. Make this as unobstructive as possible
+  dummyDriver.manage().window().setSize(1, 1);
+  dummyDriver.manage().window().setPosition(9999, 9999);
+
   return driver;
 }
 
@@ -41,8 +57,11 @@ function openToUrl(driver, url, windowWidth, windowHeight, done) {
 }
 
 function quit(driver, done) {
-  driver
+  dummyDriver
     .quit()
+    .then(function() {
+      driver.quit();
+    })
     .then(done);
 }
 

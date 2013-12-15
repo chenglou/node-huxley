@@ -5,32 +5,33 @@ var imageOperations = require('./imageOperations');
 var colors = require('colors');
 var specialKeys = require('selenium-webdriver').Key;
 
+// TODO: render next/done/callback parameter name consistent
 function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
   // parameter is the index of the screenshot
   console.log('  Taking screenshot ' + index);
 
   driver
-   .takeScreenshot()
-   .then(function(tempImage) {
-    // TODO: browser name
-    var oldImagePath = taskPath + '/' + index + '.png';
-    if (compareWithOld) {
-      imageOperations.compareAndSaveDiffOnMismatch(
-        tempImage, oldImagePath, taskPath, function(err, areSame) {
-          if (err) return next(err);
-          if (!areSame) {
-            return next(
-              'New screenshot looks different at ' + taskPath +
-              '. The diff image is saved for you to examine.'
-            );
+    .takeScreenshot()
+    .then(function(tempImage) {
+      // TODO: browser name
+      var oldImagePath = taskPath + '/' + index + '.png';
+      if (compareWithOld) {
+        imageOperations.compareAndSaveDiffOnMismatch(
+          tempImage, oldImagePath, taskPath, function(err, areSame) {
+            if (err) return next(err);
+            if (!areSame) {
+              return next(
+                'New screenshot looks different at ' + taskPath +
+                '. The diff image is saved for you to examine.'
+              );
+            }
+            next();
           }
-          next();
-        }
-      );
-    } else {
-      imageOperations.writeToFile(oldImagePath, tempImage, next);
-    }
-  });
+        );
+      } else {
+        imageOperations.writeToFile(oldImagePath, tempImage, next);
+      }
+    });
 }
 
 function _simulateKeypress(driver, key, next) {
@@ -42,7 +43,7 @@ function _simulateKeypress(driver, key, next) {
       if (!activeElement) return next();
 
       // refer to `bigBrother.js`. The special keys are the arrow keys, stored
-      // like 'ARROW_LEFT', By chance, the webdriver's `Key` object store these
+      // like 'ARROW_LEFT', By chance, the webdriver's `Key` object stores these
       // keys
       if (key.length > 1) key = specialKeys[key];
       activeElement

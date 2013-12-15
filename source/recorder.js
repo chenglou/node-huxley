@@ -45,6 +45,7 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
   var prevScreenshotIsLivePlayback = false;
 
   driver
+    // this method has been injected when selenium browser window started
     .executeScript('return window._getHuxleyEvents();')
     // TODO: warn if page switched (can't get events)
     .then(function(browserEvents) {
@@ -60,11 +61,9 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, done) {
       // TODO: maybe, instead of doing this, add a last screenshot here. It's
       // mostly due to mistakes
       for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
-        if (browserAndScreenshotEvents[i].action !== 'screenshot') {
-          browserAndScreenshotEvents.pop();
-        } else {
-          break;
-        }
+        if (browserAndScreenshotEvents[i].action === 'screenshot') break;
+
+        browserAndScreenshotEvents.pop();
       }
 
       var j = 0;

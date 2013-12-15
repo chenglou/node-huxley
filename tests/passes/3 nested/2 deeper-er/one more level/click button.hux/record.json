@@ -4,16 +4,13 @@
   },
   {
     "action": "click",
-    "y": 205,
-    "x": 43
-  },
-  {
-    "action": "screenshot"
+    "y": 206,
+    "x": 27
   },
   {
     "action": "click",
-    "y": 207,
-    "x": 33
+    "y": 206,
+    "x": 27
   },
   {
     "action": "screenshot"
