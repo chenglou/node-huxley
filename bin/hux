@@ -2,10 +2,11 @@
 
 'use strict';
 
+var colors = require('colors');
 var app = require('commander');
+
 var huxley = require('../');
 var version = require('../package.json').version;
-var colors = require('colors');
 
 app
   .version(version)

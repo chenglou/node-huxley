@@ -40,59 +40,61 @@ function startPromptAndInjectEventsScript(driver, next) {
   });
 }
 
-function stopAndGetProcessedEvents(driver, screenshotEvents, next) {
-  var browserAndScreenshotEvents;
-  var prevScreenshotIsLivePlayback = false;
+function _insertPauseEvents(events) {
+  var previousScreenshotIsLivePlayback = false;
+  var returnEvents = [];
 
+  for (var i = 0; i < events.length; i++) {
+    var currentEvent = events[i];
+    returnEvents.push(currentEvent);
+
+    if (currentEvent.action === consts.STEP_SCREENSHOT) {
+      previousScreenshotIsLivePlayback = currentEvent.livePlayback;
+    }
+
+    if (!previousScreenshotIsLivePlayback || i === events.length - 1) continue;
+
+    returnEvents.push({
+      action: consts.STEP_PAUSE,
+      ms: events[i + 1].timeStamp - currentEvent.timeStamp
+    });
+  }
+
+  return returnEvents;
+}
+
+function _concatSortTrimEvents(screenshotEvents, browserEvents) {
+  var allEvents = browserEvents
+    .concat(screenshotEvents)
+    .sort(function(previous, current) {
+      return previous.timeStamp - current.timeStamp;
+    });
+
+  // every browser event happening after the last screenshot event is
+  // useless. Trim them
+
+  // TODO: maybe, instead of doing this, add a last screenshot here. It's
+  // mostly due to mistakes
+  for (var i = allEvents.length - 1; i >= 0; i--) {
+    if (allEvents[i].action === consts.STEP_SCREENSHOT) break;
+
+    allEvents.pop();
+  }
+
+  return allEvents;
+}
+
+function stopAndGetProcessedEvents(driver, screenshotEvents, next) {
   driver
     // this method has been injected when selenium browser window started
     .executeScript('return window._getHuxleyEvents();')
     // TODO: warn if page switched (can't get events)
     .then(function(browserEvents) {
-      browserAndScreenshotEvents = browserEvents
-        .concat(screenshotEvents)
-        .sort(function(previous, current) {
-          return previous.timeStamp - current.timeStamp;
-        });
+      var browserAndScreenshotEvents =
+        _concatSortTrimEvents(screenshotEvents, browserEvents);
 
-      // every browser event happening after the last screenshot event is
-      // useless. Trim them
-
-      // TODO: maybe, instead of doing this, add a last screenshot here. It's
-      // mostly due to mistakes
-      for (var i = browserAndScreenshotEvents.length - 1; i >= 0; i--) {
-        if (browserAndScreenshotEvents[i].action === consts.STEP_SCREENSHOT) break;
-
-        browserAndScreenshotEvents.pop();
-      }
-
-      var j = 0;
-      var currentEvent;
-      while (j < browserAndScreenshotEvents.length) {
-        currentEvent = browserAndScreenshotEvents[j];
-
-        if (currentEvent.action === consts.STEP_SCREENSHOT) {
-          prevScreenshotIsLivePlayback = currentEvent.livePlayback;
-        }
-
-        if (!prevScreenshotIsLivePlayback ||
-            j === browserAndScreenshotEvents.length - 1) {
-          j++;
-          continue;
-        }
-
-        // previous for loop and last conditional garantees this isn't a
-        // screenshot event
-        var actionToAdd = {
-          action: consts.STEP_PAUSE,
-          ms: browserAndScreenshotEvents[j + 1].timeStamp -
-              currentEvent.timeStamp
-        };
-
-        browserAndScreenshotEvents.splice(j + 1, 0, actionToAdd);
-        j += 2;
-        continue;
-      }
+      browserAndScreenshotEvents =
+        _insertPauseEvents(browserAndScreenshotEvents);
 
       browserAndScreenshotEvents.forEach(function(event) {
         // no need for these keys anymore

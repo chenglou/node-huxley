@@ -11,10 +11,6 @@ var consts = require('./source/constants');
 var playback = require('./source/playback');
 var recorder = require('./source/recorder');
 
-// optimal default screen size. 1200 is bootstrap's definition of 'large screen'
-// and 795 is a mba 13inch's available height for firefox window in Selenium.
-// The actual height of the chromeless viewport should be 689
-var DEFAULT_SCREEN_SIZE = [1200, 795];
 // TODO: integration with remote environment
 
 // TODO: following
@@ -28,7 +24,11 @@ var DEFAULT_SCREEN_SIZE = [1200, 795];
 // `_playbackTaskAndSaveScreenshot`
 // `_playbackTaskAndCompareScreenshot`
 function _operateOnEachHuxleyfile(browserName, huxleyfilePath, action, next) {
-  console.log('\nAt %s'.underline, path.relative(process.cwd(), huxleyfilePath));
+  var relativeCurrentPathDisplay = path.relative(process.cwd(), huxleyfilePath);
+  if (!relativeCurrentPathDisplay) {
+    relativeCurrentPathDisplay = 'current folder';
+  }
+  console.log('\nAt %s'.underline, relativeCurrentPathDisplay);
 
   var tasks;
   try {
@@ -86,7 +86,7 @@ function _recordTask(browserName, huxleyfilePath, task, next) {
   var driver = browser.getNewDriver(browserName);
   if (driver == null) return next('Unsupported browser.');
 
-  var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
+  var screenSize = task.screenSize || consts.DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: %s'.bold, task.name);
@@ -122,7 +122,9 @@ function _recordTask(browserName, huxleyfilePath, task, next) {
 
 function _saveTaskAsJsonToFolder(taskName, huxleyfilePath, taskEvents, next) {
   // `taskEvents` should already have been processed by `_processRawTaskEvents`
-  var folderPath = huxleyfilePath + '/' + taskName + consts.SCREENSHOTS_FOLDER_EXT;
+  var folderPath = huxleyfilePath + '/' + taskName +
+    consts.SCREENSHOTS_FOLDER_EXT;
+
   mkdirp(folderPath, function(err) {
     if (err) return next(err);
     fs.writeFile(folderPath + '/' + consts.RECORD_FILE_NAME,
@@ -154,7 +156,8 @@ function _playbackTask(browserName,
                       compareInsteadOfOverride,
                       next) {
   var taskEvents;
-  var recordPath = huxleyfilePath + '/' + task.name + consts.SCREENSHOTS_FOLDER_EXT;
+  var recordPath = huxleyfilePath + '/' + task.name +
+    consts.SCREENSHOTS_FOLDER_EXT;
 
   try {
     taskEvents = require(recordPath + '/' + consts.RECORD_FILE_NAME);
@@ -165,7 +168,7 @@ function _playbackTask(browserName,
   var driver = browser.getNewDriver(browserName);
   if (driver === null) return next('Unsupported browser.');
 
-  var screenSize = task.screenSize || DEFAULT_SCREEN_SIZE;
+  var screenSize = task.screenSize || consts.DEFAULT_SCREEN_SIZE;
 
   browser.openToUrl(driver, task.url, screenSize[0], screenSize[1], function() {
     console.log('Running test: %s', task.name);
@@ -184,18 +187,15 @@ function _playbackTask(browserName,
 }
 
 // the path doesn't include the name `Huxleyfile.json`
-function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, next) {
-  if (!huxleyfilePaths.length) {
-    huxleyfilePaths = ['**/'];
-  }
-
-  // this is beautiful
-  var allHuxleyPaths = Object.keys(huxleyfilePaths
+function _getAllHuxleyfilesPaths(globs) {
+  return Object.keys(globs
     .map(function(path) {
       // use glob to find every huxleyfile in the path, including nested ones.
       // Normally we'd do a simple exec('find blabla'), but this wouldn't work
       // on Windows. So search every huxleyfile location
-      return glob.sync(process.cwd() + '/' + path + '/' + consts.HUXLEYFILE_NAME);
+      return glob.sync(
+        process.cwd() + '/' + path + '/' + consts.HUXLEYFILE_NAME
+      );
     })
     .reduce(function(path1, path2) {
       // flatten into a one-level array while eliminating empty path
@@ -211,6 +211,14 @@ function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, next) {
       obj[path] = true;
       return obj;
     }, {}));
+}
+
+function _operateOnAllHuxleyfiles(browserName, huxleyfilePaths, action, next) {
+  if (!huxleyfilePaths.length) {
+    huxleyfilePaths = ['**/'];
+  }
+
+  var allHuxleyPaths = _getAllHuxleyfilesPaths(huxleyfilePaths);
 
   if (allHuxleyPaths.length === 0) {
     console.error('No %s found anywhere.'.red, consts.HUXLEYFILE_NAME);
