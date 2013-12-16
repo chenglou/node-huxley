@@ -1,7 +1,6 @@
 'use strict';
 
 var colors = require('colors');
-var path = require('path');
 var specialKeys = require('selenium-webdriver').Key;
 
 var imageOperations = require('./imageOperations');
@@ -22,9 +21,8 @@ function _simulateScreenshot(driver, index, taskPath, compareWithOld, next) {
             if (err) return next(err);
             if (!areSame) {
               return next(
-                'New screenshot looks different at ' +
-                path.relative(process.cwd(), taskPath) +
-                '. The diff image is saved for you to examine.'
+                'New screenshot looks different. ' +
+                'The diff image is saved for you to examine.'
               );
             }
             next();
@@ -134,7 +132,8 @@ function playback(driver, events, options, next) {
           break;
         default:
           return next(
-            'Unrecognized user action. Record.json might have been modified.'
+            'Unrecognized user action. The internal ' +
+            consts.RECORD_FILE_NAME + ' might have been modified.'
           );
       }
     }
