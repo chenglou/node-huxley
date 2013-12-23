@@ -3,11 +3,12 @@
 var spawn = require('child_process').spawn;
 var tests = require('./tests');
 var excludeLibrariesPattern = '!node_modules/**';
+var allJSFilesPattern = '**/*.js';
 
 module.exports = function(grunt) {
   grunt.initConfig({
     jshint: {
-      files: ['**/*.js', excludeLibrariesPattern],
+      files: [allJSFilesPattern, excludeLibrariesPattern],
       options: {
         bitwise: true,
         camelcase: true,
@@ -31,7 +32,7 @@ module.exports = function(grunt) {
     // README) aren't
     complexity: {
       generic: {
-        src: ['**/*.js', excludeLibrariesPattern, '!Gruntfile.js'],
+        src: [allJSFilesPattern, excludeLibrariesPattern, '!Gruntfile.js'],
         options: {
           breakOnErrors: true,
           errorsOnly: false, // show only maintainability errors
