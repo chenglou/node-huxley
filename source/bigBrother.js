@@ -18,7 +18,7 @@
 
   // slightly related: for a select, chrome triggers mousedown but not click
   // anyways
-  window.addEventListener('mousedown', function(e) {
+  window.addEventListener('mouseup', function(e) {
     events.push({
       action: 'click',
       timeStamp: Date.now(),
