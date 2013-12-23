@@ -4,9 +4,9 @@ var colors = require('colors');
 var exec = require('child_process').exec;
 var glob = require('glob');
 var grunt = require('grunt');
-var huxley = require('../');
 var path = require('path');
 
+var huxley = require('../');
 
 
 // TODO: start selenium and server
@@ -16,13 +16,33 @@ var path = require('path');
 var currentFolder = path.relative(process.cwd(), __dirname);
 
 function _testPasses(next) {
-  var browser = 'firefox';
+  var browserName = 'firefox';
   var paths = [currentFolder + '/passes/**'];
-  huxley.playbackTasksAndCompareScrenshots(browser, paths, next);
+  huxley.playbackTasksAndCompareScreenshots(browserName, paths, function(err) {
+    if (err) {
+      grunt.log.error(err);
+      return next(false);
+    }
+
+    next();
+  });
+}
+
+function _runFailTest(browserName, globs, next) {
+  huxley.playbackTasksAndCompareScreenshots(browserName, globs, function(err) {
+    // if the callback's called this mean nothing went wrong. But we don't
+    // want it to be successful!
+    if (err) {
+      console.log(err);
+      return next();
+    }
+
+    next(false);
+  });
 }
 
 function _testFails(next) {
-  var browser = 'firefox';
+  var browserName = 'firefox';
   var failTestsPaths = glob
     .sync(currentFolder + '/fails/**/Huxleyfile.json')
     .map(function(path) {
@@ -34,28 +54,21 @@ function _testFails(next) {
     });
 
   var currentTestIndex = 0;
+  _runFailTest(browserName, [failTestsPaths[currentTestIndex]], function nextTest(successful) {
+    if (successful === false) return next(false);
+    if (currentTestIndex === failTestsPaths.length - 1) return next();
 
-  (function runFailTest() {
-    huxley.playbackTasksAndCompareScrenshots(browser,
-                                            [failTestsPaths[currentTestIndex]],
-                                            function(successful) {
-      // we don't want it to be successful
-      if (successful !== false) return next(false);
-      if (currentTestIndex === failTestsPaths.length - 1) return next();
-
-      currentTestIndex++;
-      runFailTest();
-    });
-  })();
+    _runFailTest(browserName, [failTestsPaths[++currentTestIndex]], nextTest);
+  });
 }
 
-function wrapTestsForGrunt(testMethod, errorMessage) {
+function wrapTestsForGrunt(testMethod, errMessage) {
   return function() {
     var next = this.async();
 
     testMethod(function(successful) {
       if (successful === false) {
-        grunt.log.error(errorMessage);
+        grunt.log.error(errMessage);
         return next(false);
       }
 
