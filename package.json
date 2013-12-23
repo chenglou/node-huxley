@@ -34,7 +34,7 @@
     "colors": "~0.6.2",
     "read": "~1.0.5",
     "glob": "~3.2.6",
-    "png-diff": "~0.1.0"
+    "png-diff": "~0.1.1"
   },
   "devDependencies": {
     "grunt": "~0.4.2",
