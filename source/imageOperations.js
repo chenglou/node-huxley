@@ -23,22 +23,27 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
     PNGDiff.measureDiff(tempFileName, image2Path, function(err, diffMetric) {
       if (err) {
         fs.unlinkSync(tempFileName);
-        return next('Cannot get images for difference comparison.');
+        return next(err);
       }
 
       var areSame = diffMetric === 0;
       if (!areSame) {
         var diffPath = taskPath + '/' + consts.DIFF_PNG_NAME;
         PNGDiff.outputDiff(tempFileName, image2Path, diffPath, function(err) {
+          fs.unlinkSync(tempFileName);
           next(err, areSame);
         });
       } else {
-        next(err, areSame);
+        fs.unlinkSync(tempFileName);
+        next(null, areSame);
       }
-      fs.unlinkSync(tempFileName);
     });
   });
 }
+
+// function compareAndGetDiffMetric(image1Buffer, image2Path, taskPath, next) {
+//   PNGDiff.measureDiff(image1Buffer)
+// }
 
 function removeDanglingImages(taskPath, index, next) {
   // a new recording might take less screenshots than the previous

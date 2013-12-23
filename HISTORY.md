@@ -1,10 +1,20 @@
-## 0.5 (October 16th 2013)
+## 0.6.0 (December 22th 2013)
+- Drop dependency on GraphicsMagick! No more native dependency beside Selenium.
+- Way, way better console output:
+    - Better path indication.
+    - Better formatted messages.
+    - Relative path so that it's actually readable.
+- Faster testing. Huxley reuses the current browser instead of opening a new one each time. This can save up to 300% testing time if your tasks are small and separated, a practice which we encourage, and which now has 0 downside.
+- New behavior: recorded actions are now played back without the window focus. This is to render consistent the behavior of form input focus. The focus hue used to appear or not depending on whether the browser window had focus. From here onward, the window will be forcefully unfocused before each playback action.
+- To accelerate the procedure, the recording are done in one batch; only then are playbacks done (also in a batch).
+
+## 0.5.0 (October 16th 2013)
 - New way to specify folders in which to search for `Huxleyfile.json`. Basically, just pass one or more flagless arguments. Accepts glob patterns.
 - [Grunt task for huxley](https://github.com/chenglou/grunt-huxley)!
 - Better warnings. Always better warnings.
 - Small Selenium webdriver version bump.
 
-## 0.4 (September 10th 2013)
+## 0.4.0 (September 10th 2013)
 - More error handling for cli argument errors.
 - Batched Huxley automation! `-d` or `--dir` to specify the directory in which `Huxleyfile.json` resides. Can target multiple with glob patterns, etc. Defaults to `**/`, which gets every Huxleyfile in the current directory and every subdirectory.
 - Optimal default screen size of 1200 x 795: 1200 is the lower limit for what Bootstrap considers as "large screen", and 795 is the max height of Firefox's viewport on MBA 13 inch (actual chromeless screenshot should be 689). This should capture a bigger part of the user base.

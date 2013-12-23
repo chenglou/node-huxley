@@ -5,9 +5,9 @@ var read = require('read');
 
 var consts = require('./constants');
 
-function startPromptAndInjectEventsScript(driver, next) {
-  var screenshotCount = 0;
+function _startPromptAndInjectEventsScript(driver, next) {
   var recordingStartTime;
+  var screenshotCount = 0;
   var screenshotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
@@ -22,16 +22,14 @@ function startPromptAndInjectEventsScript(driver, next) {
   );
 
   read({prompt: '> '}, function handleKeyPress(err, key) {
-    if (key === 'q') return next(screenshotEvents);
+    if (key === 'q') return next(null, screenshotEvents);
 
     var event = {
       action: consts.STEP_SCREENSHOT,
       timeStamp: Date.now(),
     };
 
-    if (key === 'l') {
-      event.livePlayback = true;
-    }
+    if (key === 'l') event.livePlayback = true;
 
     screenshotEvents.push(event);
     screenshotCount++;
@@ -84,7 +82,7 @@ function _concatSortTrimEvents(screenshotEvents, browserEvents) {
   return allEvents;
 }
 
-function stopAndGetProcessedEvents(driver, screenshotEvents, next) {
+function _stopAndGetProcessedEvents(driver, screenshotEvents, next) {
   driver
     // this method has been injected when selenium browser window started
     .executeScript('return window._getHuxleyEvents();')
@@ -107,7 +105,15 @@ function stopAndGetProcessedEvents(driver, screenshotEvents, next) {
     .then(next);
 }
 
-module.exports = {
-  startPromptAndInjectEventsScript: startPromptAndInjectEventsScript,
-  stopAndGetProcessedEvents: stopAndGetProcessedEvents
-};
+function record(driver, next) {
+  _startPromptAndInjectEventsScript(driver, function(err, screenshotEvents) {
+    if (err) return next(err);
+
+    _stopAndGetProcessedEvents(driver, screenshotEvents, function(allEvents) {
+      // no err here
+      next(null, allEvents);
+    });
+  });
+}
+
+module.exports = record;
