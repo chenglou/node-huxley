@@ -10,22 +10,20 @@ var createValidHuxleyfileInfo = require('./createValidHuxleyfileInfo');
 // the path doesn't include the name `Huxleyfile.json`
 function _getAllHuxleyfilesPaths(globs) {
   return Object.keys(globs
-    .map(function(path) {
+    .map(function(path1) {
       // use glob to find every huxleyfile in the path, including nested ones.
       // Normally we'd do a simple exec('find blabla'), but this wouldn't work
       // on Windows. So search every huxleyfile location
-      return glob.sync(
-        process.cwd() + '/' + path + '/' + consts.HUXLEYFILE_NAME
-      );
+      return glob.sync(path.join(process.cwd(), path1, consts.HUXLEYFILE_NAME));
     })
     .reduce(function(path1, path2) {
       // flatten into a one-level array while eliminating empty path
       return path1.concat(path2);
     })
-    .map(function(path) {
-      // trim the file name to get the container folders, needed for storing
+    .map(function(path1) {
+      // get the container folders, needed for storing
       // screenshots and such
-      return path.substr(0, path.lastIndexOf('/'));
+      return path.dirname(path1);
     })
     .reduce(function(obj, path) {
       // turn into object to eliminate duplicate paths
@@ -45,7 +43,7 @@ function _getHuxleyfileInfos(globs, next) {
     var currentPath = allPaths[i];
     var relativeCurrentPath = path.relative(process.cwd(), currentPath);
     try {
-      huxleyfile = require(currentPath + '/' + consts.HUXLEYFILE_NAME);
+      huxleyfile = require(path.join(currentPath, consts.HUXLEYFILE_NAME));
     } catch (err) {
       return next(
         relativeCurrentPath + ': Failed to read ' + consts.HUXLEYFILE_NAME
@@ -80,8 +78,8 @@ function getPlaybackInfos(globs, loadRecords, next) {
       for (var j = 0; j < huxleyfileInfo.huxleyfileContent.length; j++) {
         var task = huxleyfileInfo.huxleyfileContent[j];
         var taskName = task.name != null ? task.name : task.xname;
-        var recordPath = huxleyfilePath + '/' + taskName +
-            consts.SCREENSHOTS_FOLDER_EXT;
+        var recordPath = path.join(huxleyfilePath, taskName +
+            consts.SCREENSHOTS_FOLDER_EXT);
 
         var playbackInfoParams = {
           screenSize: task.screenSize,
@@ -106,7 +104,7 @@ function getPlaybackInfos(globs, loadRecords, next) {
 
         var record;
         try {
-          record = require(recordPath + '/' + consts.RECORD_FILE_NAME);
+          record = require(path.join(recordPath, consts.RECORD_FILE_NAME));
         } catch (err) {
           return next(relativeCurrentPath + ': Failed to read record.');
         }

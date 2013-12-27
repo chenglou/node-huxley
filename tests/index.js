@@ -17,7 +17,7 @@ var currentFolder = path.relative(process.cwd(), __dirname);
 
 function _testPasses(next) {
   var browserName = 'firefox';
-  var paths = [currentFolder + '/passes/**'];
+  var paths = [path.join(currentFolder, 'passes/**')];
   huxley.playbackTasksAndCompareScreenshots(browserName, paths, function(err) {
     if (err) {
       grunt.log.error(err);
@@ -44,7 +44,7 @@ function _runFailTest(browserName, globs, next) {
 function _testFails(next) {
   var browserName = 'firefox';
   var failTestsPaths = glob
-    .sync(currentFolder + '/fails/**/Huxleyfile.json')
+    .sync(path.join(currentFolder, 'fails/**/Huxleyfile.json'))
     .map(function(path) {
       // huxley appends the 'Huxleyfile.json' part itself; no need to include it
       // here. Also,

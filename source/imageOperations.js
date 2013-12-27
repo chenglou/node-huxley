@@ -2,6 +2,7 @@
 
 var exec = require('child_process').exec;
 var fs = require('fs');
+var path = require('path');
 var PNGDiff = require('png-diff');
 
 var consts = require('./constants');
@@ -28,7 +29,7 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
 
       var areSame = diffMetric === 0;
       if (!areSame) {
-        var diffPath = taskPath + '/' + consts.DIFF_PNG_NAME;
+        var diffPath = path.join(taskPath, consts.DIFF_PNG_NAME);
         PNGDiff.outputDiff(tempFileName, image2Path, diffPath, function(err) {
           fs.unlinkSync(tempFileName);
           next(err, areSame);
@@ -47,7 +48,7 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
 
 function removeDanglingImages(taskPath, index, next) {
   // a new recording might take less screenshots than the previous
-  var imagePath = taskPath + '/' + index + '.png';
+  var imagePath = path.join(taskPath, index + '.png');
   if (!fs.existsSync(imagePath)) return next();
 
   fs.unlink(imagePath, function(err) {

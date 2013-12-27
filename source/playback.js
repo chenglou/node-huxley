@@ -1,6 +1,7 @@
 'use strict';
 
 var colors = require('colors');
+var path = require('path');
 var specialKeys = require('selenium-webdriver').Key;
 
 var imageOperations = require('./imageOperations');
@@ -18,7 +19,7 @@ function _simulateScreenshot(driver,
     // TODO: isolate the logic for saving image outside of this unrelated step
     .then(function(tempImage) {
       // TODO: browser name
-      var oldImagePath = recordPath + '/' + screenshotIndex + '.png';
+      var oldImagePath = path.join(recordPath, screenshotIndex + '.png');
       if (overrideScreenshots) {
         return imageOperations.writeToFile(oldImagePath, tempImage, next);
       }
