@@ -1,6 +1,5 @@
 'use strict';
 
-var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 var PNGDiff = require('png-diff');

@@ -2,7 +2,6 @@
 
 var colors = require('colors');
 var fs = require('fs');
-var glob = require('glob');
 var mkdirp = require('mkdirp');
 var path = require('path');
 

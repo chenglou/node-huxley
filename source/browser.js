@@ -1,6 +1,5 @@
 'use strict';
 
-var fs = require('fs');
 var webdriver = require('selenium-webdriver');
 
 function _open(browserName, next) {
