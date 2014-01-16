@@ -63,9 +63,12 @@ function _runEachPlayback(playbackInfos, action, next) {
 // does nothing but open and close the browser and handle its errors
 // needs to know nothing but a command to run in-between, and the callback
 function _openRunAndClose(playbackInfos, openDummy, action, next) {
-  var browserName = playbackInfos.browserName;
+  // playbackInfos all have the same browserName. Arbitrarily choose the first
+  var browserName = playbackInfos[0].browserName;
   browser.open(browserName, function(err, driver) {
     if (err) {
+      if (driver == null) return next(err);
+
       return browser.quit(driver, function(err2) {
         next(err || err2 || null);
       });

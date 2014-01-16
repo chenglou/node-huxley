@@ -1,3 +1,8 @@
+## 0.6.1 (January 16th 2014)
+- Make testing in Chrome work again. Sorry.
+- Better error handling for invalid browser.
+- The unfocus trick described in the last update doesn't work with Chrome.
+
 ## 0.6.0 (December 22th 2013)
 - Drop dependency on GraphicsMagick! No more native dependency beside Selenium.
 - Way, way better console output:
