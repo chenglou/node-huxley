@@ -1,7 +1,7 @@
 [
   {
     "name": "click button",
-    "screenSize": [1000, 600],
-    "url": "http://localhost:8000/"
+    "screenSize": [300, 200],
+    "url": "http://localhost:8000/form/button.html"
   }
 ]

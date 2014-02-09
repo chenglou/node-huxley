@@ -34,8 +34,9 @@ function _saveTaskAsJsonToFolder(recordPath, taskEvents, next) {
   mkdirp(recordPath, function(err) {
     if (err) return next(err);
 
+    // prettify, 2-space indent json + line feed
     fs.writeFile(path.join(recordPath, consts.RECORD_FILE_NAME),
-                JSON.stringify(taskEvents, null, 2), // prettify, 2-space indent
+                JSON.stringify(taskEvents, null, 2) + '\n',
                 next);
   });
 }

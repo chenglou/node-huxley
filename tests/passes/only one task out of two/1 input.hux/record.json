@@ -4,8 +4,35 @@
   },
   {
     "action": "click",
-    "y": 19,
-    "x": 16
+    "y": 24,
+    "x": 68
+  },
+  {
+    "action": "keypress",
+    "key": "\r"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_LEFT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_LEFT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_LEFT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_LEFT"
+  },
+  {
+    "action": "keypress",
+    "key": "ARROW_LEFT"
+  },
+  {
+    "action": "screenshot"
   },
   {
     "action": "keypress",
@@ -90,6 +117,10 @@
   {
     "action": "keypress",
     "key": "."
+  },
+  {
+    "action": "keypress",
+    "key": "\r"
   },
   {
     "action": "screenshot"

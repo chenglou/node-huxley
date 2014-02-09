@@ -1,8 +1,8 @@
 [
   {
     "name": "1 input",
-    "screenSize": [1000, 600],
-    "url": "http://localhost:8000/"
+    "screenSize": [200, 300],
+    "url": "http://localhost:8000/form/form-text-input.html"
   },
   {
     "xname": "2 input more",

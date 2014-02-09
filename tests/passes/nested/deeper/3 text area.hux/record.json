@@ -4,8 +4,12 @@
   },
   {
     "action": "click",
-    "y": 62,
-    "x": 58
+    "y": 19,
+    "x": 65
+  },
+  {
+    "action": "keypress",
+    "key": "BACK_SPACE"
   },
   {
     "action": "keypress",
@@ -32,7 +36,7 @@
   },
   {
     "action": "keypress",
-    "key": "ARROW_RIGHT"
+    "key": "e"
   },
   {
     "action": "keypress",
