@@ -4,52 +4,39 @@
   },
   {
     "action": "click",
-    "y": 64,
-    "x": 136
+    "y": 62,
+    "x": 58
   },
   {
     "action": "keypress",
-    "key": " "
+    "key": "BACK_SPACE"
   },
   {
     "action": "keypress",
-    "key": "a"
+    "key": "BACK_SPACE"
   },
   {
     "action": "keypress",
-    "key": "n"
+    "key": "DELETE"
   },
   {
     "action": "keypress",
-    "key": "d"
+    "key": "DELETE"
   },
   {
     "action": "keypress",
-    "key": " "
-  },
-  {
-    "action": "keypress",
-    "key": "m"
-  },
-  {
-    "action": "keypress",
-    "key": "o"
-  },
-  {
-    "action": "keypress",
-    "key": "r"
-  },
-  {
-    "action": "keypress",
-    "key": "e"
+    "key": "DELETE"
   },
   {
     "action": "screenshot"
   },
   {
-    "action": "click",
-    "y": 63,
-    "x": 95
+    "action": "keypress",
+    "key": "ARROW_RIGHT"
+  },
+  {
+    "action": "keypress",
+    "key": " "
   },
   {
     "action": "keypress",
@@ -57,11 +44,19 @@
   },
   {
     "action": "keypress",
-    "key": "n"
+    "key": " "
   },
   {
     "action": "keypress",
-    "key": "d"
+    "key": "l"
+  },
+  {
+    "action": "keypress",
+    "key": "o"
+  },
+  {
+    "action": "keypress",
+    "key": "t"
   },
   {
     "action": "keypress",
@@ -82,14 +77,6 @@
   {
     "action": "keypress",
     "key": "e"
-  },
-  {
-    "action": "keypress",
-    "key": " "
-  },
-  {
-    "action": "keypress",
-    "key": "ARROW_DOWN"
   },
   {
     "action": "keypress",
