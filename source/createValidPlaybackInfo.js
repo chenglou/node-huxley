@@ -28,7 +28,8 @@ var validRecordedActions = [
   consts.STEP_SCREENSHOT,
   consts.STEP_CLICK,
   consts.STEP_KEYPRESS,
-  consts.STEP_PAUSE
+  consts.STEP_PAUSE,
+  consts.STEP_SCROLL
 ];
 
 function _isValidAction(action) {

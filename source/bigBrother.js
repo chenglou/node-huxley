@@ -88,6 +88,15 @@
     });
   }, true);
 
+  window.onscroll = function() {
+    events.push({
+      action: 'scroll',
+      timeStamp: Date.now(),
+      x: window.scrollX,
+      y: window.scrollY
+    });
+  };
+
   // TODO: maybe double click and right click in the future, but Selenium
   // support and manual reproduction are shaky
   window._getHuxleyEvents = function() {

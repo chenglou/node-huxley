@@ -85,6 +85,15 @@ function _simulateClick(driver, posX, posY, next) {
     .then(next);
 }
 
+function _simulateScroll(driver, posX, posY, next) {
+  var posString = '(' + posX + ', ' + posY + ')';
+  console.log('  Scrolling to ' + posString);
+
+  driver
+    .executeScript('window.scrollTo(' + posX + ',' + posY + ')')
+    .then(next);
+}
+
 function playback(playbackInfo, next) {
   var currentEventIndex = 0;
   var driver = playbackInfo.driver;
@@ -137,6 +146,17 @@ function playback(playbackInfo, next) {
             console.log('  Pause for %s ms'.grey, currentEvent.ms);
             setTimeout(_next, currentEvent.ms);
           };
+          break;
+        case consts.STEP_SCROLL:
+          // this is really just to provide a visual cue during replay. Selenium
+          // records the whole page anyways
+          // we should technically set a delay here, but OSX' smooth scrolling
+          // would look really bad, adding the delay that Selenium has already
+          fn = _simulateScroll.bind(null,
+                                    driver,
+                                    currentEvent.x,
+                                    currentEvent.y,
+                                    _next);
           break;
       }
     }

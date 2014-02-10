@@ -1,0 +1,7 @@
+[
+  {
+    "name": "scroll",
+    "screenSize": [400, 400],
+    "url": "http://localhost:8000/scroll.html"
+  }
+]
