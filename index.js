@@ -66,7 +66,9 @@ function _runEachPlayback(playbackInfos, action, next) {
 function _openRunAndClose(playbackInfos, openDummy, action, next) {
   // playbackInfos all have the same browserName. Arbitrarily choose the first
   var browserName = playbackInfos[0].browserName;
-  browser.open(browserName, function(err, driver) {
+  var server = playbackInfos[0].server;
+  
+  browser.open(browserName, server, function(err, driver) {
     if (err) {
       if (driver == null) return next(err);
 
@@ -80,7 +82,7 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
     });
 
     if (openDummy) {
-      return browser.openDummy(browserName, function(err, dummyDriver) {
+      return browser.openDummy(browserName, server, function(err, dummyDriver) {
         if (err) {
           return browser.quit(dummyDriver, function(err2) {
             next(err || err2 || null);
@@ -124,12 +126,13 @@ function _runActionOrDisplaySkipMsg(playbackInfo, action, next) {
   });
 }
 
-function _recordTasks(browserName, globs, next) {
+function _recordTasks(browserName, server, globs, next) {
   _getRunnableRecords(globs, false, function(err, playbackInfos) {
     if (err) return next(err);
 
     playbackInfos.forEach(function(info) {
       info.browserName = browserName;
+      info.server = server;
     });
     _openRunAndClose(playbackInfos,
                     false,
@@ -140,6 +143,7 @@ function _recordTasks(browserName, globs, next) {
 
 // where `x` is either compare or update screenshot
 function _playbackTasksAndXScreenshots(browserName,
+                                      server,
                                       globs,
                                       saveInsteadOfCompare,
                                       next) {
@@ -174,20 +178,20 @@ function _getRunnableRecords(globs, loadRecords, next) {
   });
 }
 
-function recordTasks(browserName, globs, next) {
-  _recordTasks(browserName, globs, function(err) {
+function recordTasks(browserName, server, globs, next) {
+  _recordTasks(browserName, server, globs, function(err) {
     if (err) return next(err);
 
     console.log('\nDon\'t move! Simulating the recording now...'.yellow);
-    playbackTasksAndSaveScreenshots(browserName, globs, next);
+    playbackTasksAndSaveScreenshots(browserName, server, globs, next);
   });
 }
 
-function playbackTasksAndCompareScreenshots(browserName, globs, next) {
-  _playbackTasksAndXScreenshots(browserName, globs, false, next);
+function playbackTasksAndCompareScreenshots(browserName, server, globs, next) {
+  _playbackTasksAndXScreenshots(browserName, server, globs, false, next);
 }
-function playbackTasksAndSaveScreenshots(browserName, globs, next) {
-  _playbackTasksAndXScreenshots(browserName, globs, true, next);
+function playbackTasksAndSaveScreenshots(browserName, server, globs, next) {
+  _playbackTasksAndXScreenshots(browserName, server, globs, true, next);
 }
 
 function defaultDoneCallback(err) {

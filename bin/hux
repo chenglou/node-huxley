@@ -17,6 +17,10 @@ app
     '-b, --browser <browser>',
     'Default: Firefox. Chrome needs extra setup (See README).'
   )
+  .option(
+    '-s, --server <uri>',
+    'Default: http://localhost:4444/wd/hub. Address of the Selenium server to use'
+  )
   .on('--help', function() {
     console.log(
       '  Defaults to search every Huxleyfile in current & nested folders.'.bold
@@ -32,6 +36,7 @@ app
   .parse(process.argv);
 
 var browser = app.browser;
+var server = app.server;
 // every unamed param is treated as a path to search
 var allFolders = app.args;
 
@@ -40,9 +45,9 @@ var allFolders = app.args;
 var callback = huxley.defaultDoneCallback;
 
 if (app.update) {
-  huxley.playbackTasksAndSaveScreenshots(browser, allFolders, callback);
+  huxley.playbackTasksAndSaveScreenshots(browser, server, allFolders, callback);
 } else if (app.record) {
-  huxley.recordTasks(browser, allFolders, callback);
+  huxley.recordTasks(browser, server, allFolders, callback);
 } else {
-  huxley.playbackTasksAndCompareScreenshots(browser, allFolders, callback);
+  huxley.playbackTasksAndCompareScreenshots(browser, server, allFolders, callback);
 }

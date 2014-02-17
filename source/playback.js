@@ -9,17 +9,17 @@ var consts = require('./constants');
 
 function _simulateScreenshot(driver,
                             recordPath,
+                            screenshotNameBase,
                             screenshotIndex,
                             overrideScreenshots,
                             next) {
-  console.log('  Taking screenshot ' + screenshotIndex);
+  console.log('  Taking screenshot ' + screenshotNameBase+screenshotIndex);
 
   driver
     .takeScreenshot()
     // TODO: isolate the logic for saving image outside of this unrelated step
     .then(function(tempImage) {
-      // TODO: browser name
-      var oldImagePath = path.join(recordPath, screenshotIndex + '.png');
+      var oldImagePath = path.join(recordPath, screenshotNameBase+screenshotIndex + '.png');
       if (overrideScreenshots) {
         return imageOperations.writeToFile(oldImagePath, tempImage, next);
       }
@@ -101,6 +101,9 @@ function playback(playbackInfo, next) {
   var overrideScreenshots = playbackInfo.overrideScreenshots;
   var recordPath = playbackInfo.recordPath;
   var screenshotCount = 1;
+  var browserName = (typeof playbackInfo.browserName !== 'undefined')? playbackInfo.browserName : 'firefox';
+  var screenshotNameBase = browserName+'.';
+  
 
   // pass `_next` as the callback when the current simulated event
   // completes
@@ -114,11 +117,12 @@ function playback(playbackInfo, next) {
       fn = _simulateScreenshot.bind(null,
                                     driver,
                                     recordPath,
+                                    screenshotNameBase,
                                     screenshotCount,
                                     overrideScreenshots,
                                     function(err) {
         imageOperations.removeDanglingImages(
-          playbackInfo.recordPath, screenshotCount + 1, function(err2) {
+          playbackInfo.recordPath, screenshotNameBase, screenshotCount + 1, function(err2) {
             next(err || err2 || null);
           }
         );
@@ -137,6 +141,7 @@ function playback(playbackInfo, next) {
           fn = _simulateScreenshot.bind(null,
                                         driver,
                                         recordPath,
+                                        screenshotNameBase,
                                         screenshotCount++,
                                         overrideScreenshots,
                                         _next);
