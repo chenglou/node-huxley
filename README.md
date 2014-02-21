@@ -85,7 +85,9 @@ Node-huxley is a port, so every recommendation [here](https://github.com/faceboo
 
 ### How do I switch the default browser?
 
-Currently, only Firefox and Chrome are supported. For Chrome, you need [chromedriver](https://code.google.com/p/chromedriver/downloads/list), which doesn't come bundled with Selenium yet. Start that then do:
+Currently, only Firefox and Chrome are supported. For Chrome, you need [chromedriver](https://code.google.com/p/chromedriver/downloads/list), which doesn't come bundled with Selenium yet. If you're using [Brew](http://brew.sh), just do `brew install chromedriver`.
+
+Start that then do:
 
 ```
 hux -b chrome -flagForWhateverElseYouNeed
