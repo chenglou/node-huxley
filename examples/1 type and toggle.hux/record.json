@@ -8,6 +8,10 @@
     "x": 196
   },
   {
+    "action": "pause",
+    "ms": 500
+  },
+  {
     "action": "keypress",
     "key": "H"
   },
@@ -58,6 +62,10 @@
     "action": "click",
     "y": 128,
     "x": 150
+  },
+  {
+    "action": "pause",
+    "ms": 500
   },
   {
     "action": "screenshot"

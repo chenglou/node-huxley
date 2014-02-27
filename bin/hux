@@ -19,7 +19,7 @@ app
   )
   .option(
     '-s, --server <uri>',
-    'Default: http://localhost:4444/wd/hub. Address of the Selenium server to use'
+    'Default: http://localhost:4444/wd/hub. Address of the Selenium server'
   )
   .on('--help', function() {
     console.log(
@@ -37,6 +37,7 @@ app
 
 var browser = app.browser;
 var server = app.server;
+
 // every unamed param is treated as a path to search
 var allFolders = app.args;
 

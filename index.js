@@ -147,12 +147,14 @@ function _playbackTasksAndXScreenshots(browserName,
                                       globs,
                                       saveInsteadOfCompare,
                                       next) {
+  
   _getRunnableRecords(globs, true, function(err, playbackInfos) {
     if (err) return next(err);
 
     playbackInfos.forEach(function(info) {
       info.browserName = browserName;
       info.overrideScreenshots = saveInsteadOfCompare;
+      info.server = server;
     });
     _openRunAndClose(playbackInfos,
                     true,

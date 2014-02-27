@@ -22,15 +22,21 @@ function _open(browserName, server, next) {
     browser = webdriver.Capabilities.chrome();
     serverUrl = server || 'http://localhost:9515';
   } else {
-    return next('Unsupported browser');
+    return next('Unsupported browser.');
   }
+
+  console.log('=======================');
+  console.log('Webdriver Created with:');
+  console.log('Browser: ', browserName);
+  console.log('Server:  ', serverUrl);
+  console.log('=======================');
 
   var driver = new webdriver.Builder()
     .usingServer(serverUrl)
     .withCapabilities(browser)
     .build();
 
-  if (driver === null) return next('Unsupported browser');
+  if (driver === null) return next('Unsupported browser.');
 
   next(null, driver);
 }
