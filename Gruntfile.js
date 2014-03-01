@@ -76,6 +76,12 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask(
-    'tests', ['connect:server', 'selenium', 'testPasses', 'testFails']
+    'test', ['connect:server', 'selenium', 'testPasses', 'testFails']
+  );
+  grunt.registerTask(
+    'test:passes', ['connect:server', 'selenium', 'testPasses']
+  );
+  grunt.registerTask(
+    'test:fails', ['connect:server', 'selenium', 'testFails']
   );
 };
