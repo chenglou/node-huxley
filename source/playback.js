@@ -101,9 +101,9 @@ function playback(playbackInfo, next) {
   var overrideScreenshots = playbackInfo.overrideScreenshots;
   var recordPath = playbackInfo.recordPath;
   var screenshotCount = 1;
-  var browserName = (typeof playbackInfo.browserName !== 'undefined')? playbackInfo.browserName : 'firefox';
-  var screenshotNameBase = browserName+'.';
-  
+  var browserName = (playbackInfo.browserName != null)? playbackInfo.browserName : 'firefox';
+  var screenshotNameBase = browserName+'-';
+
 
   // pass `_next` as the callback when the current simulated event
   // completes
