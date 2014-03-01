@@ -14,7 +14,7 @@ function _getAllHuxleyfilesPaths(globs) {
       // use glob to find every huxleyfile in the path, including nested ones.
       // Normally we'd do a simple exec('find blabla'), but this wouldn't work
       // on Windows. So search every huxleyfile location
-      return glob.sync(path.join(process.cwd(), path1, consts.HUXLEYFILE_NAME));
+      return glob.sync(path.join(path.resolve(path1), consts.HUXLEYFILE_NAME));
     })
     .reduce(function(path1, path2) {
       // flatten into a one-level array while eliminating empty path
