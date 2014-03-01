@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var read = require('read');
 
 var consts = require('./constants');
@@ -11,7 +12,10 @@ function _startPromptAndInjectEventsScript(driver, next) {
   var screenshotEvents = [];
 
   // I'm sick of callbacks and promises, sync read this
-  var scriptToInject = fs.readFileSync(__dirname + '/bigBrother.js', 'utf8');
+  var scriptToInject = fs.readFileSync(
+    path.join(__dirname, 'browser', 'actionTracker.js'),
+    'utf8'
+  );
 
   driver.executeScript(scriptToInject);
 

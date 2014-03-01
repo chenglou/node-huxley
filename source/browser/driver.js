@@ -1,6 +1,3 @@
-/* jshint node: true */
-/* global require, console, module */
-
 'use strict';
 
 var webdriver = require('selenium-webdriver');

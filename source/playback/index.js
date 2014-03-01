@@ -4,8 +4,8 @@ var colors = require('colors');
 var path = require('path');
 var specialKeys = require('selenium-webdriver').Key;
 
-var imageOperations = require('./imageOperations');
-var consts = require('./constants');
+var imageOperations = require('../imageOperations');
+var consts = require('../constants');
 
 function _simulateScreenshot(driver,
                             recordPath,
@@ -51,9 +51,9 @@ function _simulateKeypress(driver, key, next) {
     .then(function(activeElement) {
       if (!activeElement) return next();
 
-      // refer to `bigBrother.js`. The special keys are the arrow keys, stored
-      // like 'ARROW_LEFT', By chance, the webdriver's `Key` object stores these
-      // keys
+      // refer to `actionTracker.js`. The special keys are the arrow keys,
+      // stored like 'ARROW_LEFT', By chance, the webdriver's `Key` object
+      // stores these keys
       if (key.length > 1) key = specialKeys[key];
       activeElement
         .sendKeys(key)

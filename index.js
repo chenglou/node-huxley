@@ -5,11 +5,12 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var path = require('path');
 
-var browser = require('./source/browser');
+var browser = require('./source/browser/driver');
 var consts = require('./source/constants');
+var defaultDoneCallback = require('./source/defaultDoneCallback');
 var playback = require('./source/playback');
 var record = require('./source/record');
-var getPlaybackInfos = require('./source/getPlaybackInfos');
+var getPlaybackInfos = require('./source/playback/getPlaybackInfos');
 
 // TODO: integration with remote environment
 
@@ -67,7 +68,7 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
   // playbackInfos all have the same browserName. Arbitrarily choose the first
   var browserName = playbackInfos[0].browserName;
   var server = playbackInfos[0].server;
-  
+
   browser.open(browserName, server, function(err, driver) {
     if (err) {
       if (driver == null) return next(err);
@@ -147,7 +148,7 @@ function _playbackTasksAndXScreenshots(browserName,
                                       globs,
                                       saveInsteadOfCompare,
                                       next) {
-  
+
   _getRunnableRecords(globs, true, function(err, playbackInfos) {
     if (err) return next(err);
 
@@ -196,19 +197,9 @@ function playbackTasksAndSaveScreenshots(browserName, server, globs, next) {
   _playbackTasksAndXScreenshots(browserName, server, globs, true, next);
 }
 
-function defaultDoneCallback(err) {
-  if (err) {
-    console.error(typeof err === 'string' ? err.red : err.message.red);
-    console.error('\nThe tests now halt. You might have unfinished tasks.'.red);
-  } else {
-    console.log('\nAll done successfully!'.green);
-  }
-}
-
 module.exports = {
   recordTasks: recordTasks,
   playbackTasksAndSaveScreenshots: playbackTasksAndSaveScreenshots,
   playbackTasksAndCompareScreenshots: playbackTasksAndCompareScreenshots,
-  // third-party's (e.g. grunt-huxley) entrance point. See bin/hux
   defaultDoneCallback: defaultDoneCallback
 };

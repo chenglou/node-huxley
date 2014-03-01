@@ -41,10 +41,6 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
   });
 }
 
-// function compareAndGetDiffMetric(image1Buffer, image2Path, taskPath, next) {
-//   PNGDiff.measureDiff(image1Buffer)
-// }
-
 function removeDanglingImages(taskPath, screenshotNameBase, index, next) {
   // a new recording might take less screenshots than the previous
   var imagePath = path.join(taskPath, screenshotNameBase+index + '.png');

@@ -3,7 +3,7 @@
 var glob = require('glob');
 var path = require('path');
 
-var consts = require('./constants');
+var consts = require('../constants');
 var createValidPlaybackInfo = require('./createValidPlaybackInfo');
 var createValidHuxleyfileInfo = require('./createValidHuxleyfileInfo');
 

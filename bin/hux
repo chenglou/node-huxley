@@ -41,8 +41,7 @@ var server = app.server;
 // every unamed param is treated as a path to search
 var allFolders = app.args;
 
-// third-party's (e.g. grunt-huxley) entrance point is this callback. Replace
-// this by something else to receive all huxley error messages
+// this executable simply dogfoods Huxley's public API methods
 var callback = huxley.defaultDoneCallback;
 
 if (app.update) {

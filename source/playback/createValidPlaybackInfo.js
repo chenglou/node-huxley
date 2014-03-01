@@ -1,6 +1,6 @@
 'use strict';
 
-var consts = require('./constants');
+var consts = require('../constants');
 
 function createPlaybackInfo(info, verifyRecordContent) {
   var returnObj = {
@@ -11,8 +11,6 @@ function createPlaybackInfo(info, verifyRecordContent) {
     overrideScreenshots: info.overrideScreenshots || false,
     recordPath: info.recordPath,
     recordContent: info.recordContent,
-    // TODO: not used right now. Use this for storing screenshots from different
-    // browsers
     browserName: info.browserName,
     driver: info.driver
   };

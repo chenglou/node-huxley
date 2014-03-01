@@ -1,6 +1,6 @@
 'use strict';
 
-var consts = require('./constants');
+var consts = require('../constants');
 
 function createHuxleyfileInfo(info) {
   var returnObj = {
