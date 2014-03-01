@@ -17,8 +17,9 @@ var currentFolder = path.relative(process.cwd(), __dirname);
 
 function _testPasses(next) {
   var browserName = 'firefox';
+  var server = 'http://localhost:4444/wd/hub';
   var paths = [path.join(currentFolder, 'passes/**')];
-  huxley.playbackTasksAndCompareScreenshots(browserName, paths, function(err) {
+  huxley.playbackTasksAndCompareScreenshots(browserName, server, paths, function(err) {
     if (err) {
       grunt.log.error(err);
       return next(false);
@@ -28,8 +29,8 @@ function _testPasses(next) {
   });
 }
 
-function _runFailTest(browserName, globs, next) {
-  huxley.playbackTasksAndCompareScreenshots(browserName, globs, function(err) {
+function _runFailTest(browserName, server, globs, next) {
+  huxley.playbackTasksAndCompareScreenshots(browserName, server, globs, function(err) {
     // if the callback's called this mean nothing went wrong. But we don't
     // want it to be successful!
     if (err) {
@@ -43,6 +44,7 @@ function _runFailTest(browserName, globs, next) {
 
 function _testFails(next) {
   var browserName = 'firefox';
+  var server = 'http://localhost:4444/wd/hub';
   var failTestsPaths = glob
     .sync(path.join(currentFolder, 'fails/**/Huxleyfile.json'))
     .map(function(path) {
@@ -54,11 +56,11 @@ function _testFails(next) {
     });
 
   var currentTestIndex = 0;
-  _runFailTest(browserName, [failTestsPaths[currentTestIndex]], function nextTest(successful) {
+  _runFailTest(browserName, server, [failTestsPaths[currentTestIndex]], function nextTest(successful) {
     if (successful === false) return next(false);
     if (currentTestIndex === failTestsPaths.length - 1) return next();
 
-    _runFailTest(browserName, [failTestsPaths[++currentTestIndex]], nextTest);
+    _runFailTest(browserName, server, [failTestsPaths[++currentTestIndex]], nextTest);
   });
 }
 

@@ -45,15 +45,15 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
 //   PNGDiff.measureDiff(image1Buffer)
 // }
 
-function removeDanglingImages(taskPath, index, next) {
+function removeDanglingImages(taskPath, screenshotNameBase, index, next) {
   // a new recording might take less screenshots than the previous
-  var imagePath = path.join(taskPath, index + '.png');
+  var imagePath = path.join(taskPath, screenshotNameBase+index + '.png');
   if (!fs.existsSync(imagePath)) return next();
 
   fs.unlink(imagePath, function(err) {
     if (err) return next(err);
 
-    removeDanglingImages(taskPath, index + 1, next);
+    removeDanglingImages(taskPath, screenshotNameBase, index + 1, next);
   });
 }
 
