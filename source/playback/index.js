@@ -130,7 +130,8 @@ function playback(playbackInfo, next) {
               next(err || err2 || null);
             }
           );
-      });
+        }
+      );
     } else {
       switch (currentEvent.action) {
         case consts.STEP_CLICK:

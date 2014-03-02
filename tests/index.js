@@ -1,25 +1,20 @@
 'use strict';
 
 var colors = require('colors');
-var exec = require('child_process').exec;
 var glob = require('glob');
 var grunt = require('grunt');
 var path = require('path');
 
+var consts = require('../source/constants');
 var huxley = require('../');
-
-
-// TODO: start selenium and server
 
 // since this script's loaded by grunt, this is the only good way to get the
 // relative path to here
 var currentFolder = path.relative(process.cwd(), __dirname);
 
-function _testPasses(next) {
-  var browserName = 'firefox';
-  var server = 'http://localhost:4444/wd/hub';
+function _testPasses(browserName, serverUrl, next) {
   var paths = [path.join(currentFolder, 'passes/**')];
-  huxley.playbackTasksAndCompareScreenshots(browserName, server, paths, function(err) {
+  huxley.playbackTasksAndCompareScreenshots(browserName, serverUrl, paths, function(err) {
     if (err) {
       grunt.log.error(err);
       return next(false);
@@ -42,9 +37,7 @@ function _runFailTest(browserName, server, globs, next) {
   });
 }
 
-function _testFails(next) {
-  var browserName = 'firefox';
-  var server = 'http://localhost:4444/wd/hub';
+function _testFails(browserName, serverUrl, next) {
   var failTestsPaths = glob
     .sync(path.join(currentFolder, 'fails/**/Huxleyfile.json'))
     .map(function(path) {
@@ -56,11 +49,11 @@ function _testFails(next) {
     });
 
   var currentTestIndex = 0;
-  _runFailTest(browserName, server, [failTestsPaths[currentTestIndex]], function nextTest(successful) {
+  _runFailTest(browserName, serverUrl, [failTestsPaths[currentTestIndex]], function nextTest(successful) {
     if (successful === false) return next(false);
     if (currentTestIndex === failTestsPaths.length - 1) return next();
 
-    _runFailTest(browserName, server, [failTestsPaths[++currentTestIndex]], nextTest);
+    _runFailTest(browserName, serverUrl, [failTestsPaths[++currentTestIndex]], nextTest);
   });
 }
 
@@ -68,21 +61,27 @@ function wrapTestsForGrunt(testMethod, errMessage) {
   return function() {
     var next = this.async();
 
-    testMethod(function(successful) {
+    testMethod('firefox', consts.DEFAULT_SERVER_URL_FIREFOX, function(successful) {
       if (successful === false) {
         grunt.log.error(errMessage);
         return next(false);
       }
+      return next();
 
-      next();
+      // testMethod('chrome', consts.DEFAULT_SERVER_URL_CHROME, function(successful) {
+      //   if (successful === false) {
+      //     grunt.log.error(errMessage);
+      //     return next(false);
+      //   }
+
+      //   next();
+      // });
     });
   };
 }
 
 module.exports = {
-  testPasses: wrapTestsForGrunt(
-    _testPasses, 'Some tests didn\'t pass.'
-  ),
+  testPasses: wrapTestsForGrunt(_testPasses, 'Some tests didn\'t pass.'),
   testFails: wrapTestsForGrunt(
     _testFails, 'Some tests that should have failed didn\'t'
   )

@@ -36,9 +36,11 @@ function _saveTaskAsJsonToFolder(recordPath, taskEvents, next) {
     if (err) return next(err);
 
     // prettify, 2-space indent json + line feed
-    fs.writeFile(path.join(recordPath, consts.RECORD_FILE_NAME),
-                JSON.stringify(taskEvents, null, 2) + '\n',
-                next);
+    fs.writeFile(
+      path.join(recordPath, consts.RECORD_FILE_NAME),
+      JSON.stringify(taskEvents, null, 2) + '\n',
+      next
+    );
   });
 }
 
@@ -51,15 +53,17 @@ function _recordAndSave(playbackInfo, next) {
 function _runEachPlayback(playbackInfos, action, next) {
   var currentIndex = 0;
 
-  _runActionOrDisplaySkipMsg(playbackInfos[currentIndex],
-                            action,
-                            function _next(err) {
-    if (err) return next(err);
+  _runActionOrDisplaySkipMsg(
+    playbackInfos[currentIndex],
+    action,
+    function _next(err) {
+      if (err) return next(err);
 
-    if (currentIndex === playbackInfos.length - 1) return next();
+      if (currentIndex === playbackInfos.length - 1) return next();
 
-    _runActionOrDisplaySkipMsg(playbackInfos[++currentIndex], action, _next);
-  });
+      _runActionOrDisplaySkipMsg(playbackInfos[++currentIndex], action, _next);
+    }
+  );
 }
 
 // does nothing but open and close the browser and handle its errors
@@ -67,9 +71,9 @@ function _runEachPlayback(playbackInfos, action, next) {
 function _openRunAndClose(playbackInfos, openDummy, action, next) {
   // playbackInfos all have the same browserName. Arbitrarily choose the first
   var browserName = playbackInfos[0].browserName;
-  var server = playbackInfos[0].server;
+  var serverUrl = playbackInfos[0].serverUrl;
 
-  browser.open(browserName, server, function(err, driver) {
+  browser.open(browserName, serverUrl, function(err, driver) {
     if (err) {
       if (driver == null) return next(err);
 
@@ -83,7 +87,7 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
     });
 
     if (openDummy) {
-      return browser.openDummy(browserName, server, function(err, dummyDriver) {
+      return browser.openDummy(browserName, serverUrl, function(err, dummyDriver) {
         if (err) {
           return browser.quit(dummyDriver, function(err2) {
             next(err || err2 || null);
@@ -118,49 +122,57 @@ function _runActionOrDisplaySkipMsg(playbackInfo, action, next) {
     return next();
   }
 
-  browser.goToUrl(playbackInfo.driver,
-                  playbackInfo.url,
-                  playbackInfo.screenSize[0],
-                  playbackInfo.screenSize[1],
-                  function(err) {
-    action(playbackInfo, next);
-  });
+  browser.goToUrl(
+    playbackInfo.driver,
+    playbackInfo.url,
+    playbackInfo.screenSize[0],
+    playbackInfo.screenSize[1],
+    function(err) {
+      action(playbackInfo, next);
+    }
+  );
 }
 
-function _recordTasks(browserName, server, globs, next) {
+function _recordTasks(browserName, serverUrl, globs, next) {
   _getRunnableRecords(globs, false, function(err, playbackInfos) {
     if (err) return next(err);
 
     playbackInfos.forEach(function(info) {
       info.browserName = browserName;
-      info.server = server;
+      info.serverUrl = serverUrl;
     });
-    _openRunAndClose(playbackInfos,
-                    false,
-                    _runEachPlayback.bind(null, playbackInfos, _recordAndSave),
-                    next);
+    _openRunAndClose(
+      playbackInfos,
+      false,
+      _runEachPlayback.bind(null, playbackInfos, _recordAndSave),
+      next
+    );
   });
 }
 
 // where `x` is either compare or update screenshot
-function _playbackTasksAndXScreenshots(browserName,
-                                      server,
-                                      globs,
-                                      saveInsteadOfCompare,
-                                      next) {
-
+function _playbackTasksAndXScreenshots(
+  browserName,
+  serverUrl,
+  globs,
+  saveInsteadOfCompare,
+  next
+) {
   _getRunnableRecords(globs, true, function(err, playbackInfos) {
     if (err) return next(err);
 
     playbackInfos.forEach(function(info) {
       info.browserName = browserName;
       info.overrideScreenshots = saveInsteadOfCompare;
-      info.server = server;
+      info.serverUrl = serverUrl;
     });
-    _openRunAndClose(playbackInfos,
-                    true,
-                    _runEachPlayback.bind(null, playbackInfos, playback),
-                    next);
+
+    _openRunAndClose(
+      playbackInfos,
+      true,
+      _runEachPlayback.bind(null, playbackInfos, playback),
+      next
+    );
   });
 }
 
@@ -181,20 +193,23 @@ function _getRunnableRecords(globs, loadRecords, next) {
   });
 }
 
-function recordTasks(browserName, server, globs, next) {
-  _recordTasks(browserName, server, globs, function(err) {
+function recordTasks(browserName, serverUrl, globs, next) {
+  browserName = browserName || 'firefox';
+  _recordTasks(browserName, serverUrl, globs, function(err) {
     if (err) return next(err);
 
     console.log('\nDon\'t move! Simulating the recording now...'.yellow);
-    playbackTasksAndSaveScreenshots(browserName, server, globs, next);
+    playbackTasksAndSaveScreenshots(browserName, serverUrl, globs, next);
   });
 }
 
-function playbackTasksAndCompareScreenshots(browserName, server, globs, next) {
-  _playbackTasksAndXScreenshots(browserName, server, globs, false, next);
+function playbackTasksAndCompareScreenshots(browserName, serverUrl, globs, next) {
+  browserName = browserName || 'firefox';
+  _playbackTasksAndXScreenshots(browserName, serverUrl, globs, false, next);
 }
-function playbackTasksAndSaveScreenshots(browserName, server, globs, next) {
-  _playbackTasksAndXScreenshots(browserName, server, globs, true, next);
+function playbackTasksAndSaveScreenshots(browserName, serverUrl, globs, next) {
+  browserName = browserName || 'firefox';
+  _playbackTasksAndXScreenshots(browserName, serverUrl, globs, true, next);
 }
 
 module.exports = {

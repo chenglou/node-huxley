@@ -18,8 +18,8 @@ app
     'Default: Firefox. Chrome needs extra setup (See README).'
   )
   .option(
-    '-s, --server <uri>',
-    'Default: http://localhost:4444/wd/hub. Address of the Selenium server'
+    '-s, --server <url>',
+    'Default: Firefox: http://localhost:4444/wd/hub. Chrome: http://localhost:9515. Address of the Selenium server.'
   )
   .on('--help', function() {
     console.log(
@@ -36,7 +36,7 @@ app
   .parse(process.argv);
 
 var browser = app.browser;
-var server = app.server;
+var serverUrl = app.server;
 
 // every unamed param is treated as a path to search
 var allFolders = app.args;
@@ -45,9 +45,19 @@ var allFolders = app.args;
 var callback = huxley.defaultDoneCallback;
 
 if (app.update) {
-  huxley.playbackTasksAndSaveScreenshots(browser, server, allFolders, callback);
+  huxley.playbackTasksAndSaveScreenshots(
+    browser,
+    serverUrl,
+    allFolders,
+    callback
+  );
 } else if (app.record) {
-  huxley.recordTasks(browser, server, allFolders, callback);
+  huxley.recordTasks(browser, serverUrl, allFolders, callback);
 } else {
-  huxley.playbackTasksAndCompareScreenshots(browser, server, allFolders, callback);
+  huxley.playbackTasksAndCompareScreenshots(
+    browser,
+    serverUrl,
+    allFolders,
+    callback
+  );
 }
