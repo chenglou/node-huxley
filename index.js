@@ -102,13 +102,13 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
           });
         });
       });
-    }
-
-    action(function(err) {
-      browser.quit(driver, function(err2) {
-        next(err || err2 || null);
+    } else {
+      action(function(err) {
+        browser.quit(driver, function(err2) {
+          next(err || err2 || null);
+        });
       });
-    });
+    }
   });
 }
 

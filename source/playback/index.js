@@ -53,7 +53,7 @@ function _simulateKeypress(driver, key, next) {
     .then(function(activeElement) {
       if (!activeElement) return next();
 
-      // refer to `actionTracker.js`. The special keys are the arrow keys,
+      // refer to `actionsTracker.js`. The special keys are the arrow keys,
       // stored like 'ARROW_LEFT', By chance, the webdriver's `Key` object
       // stores these keys
       if (key.length > 1) key = specialKeys[key];
@@ -178,7 +178,25 @@ function playback(playbackInfo, next) {
     fn();
   }
 
-  _next();
+  // Selenium chromedriver screenshot captures the scrollbar, whose changing
+  // transparency screws with the screenshot diffing. Hide it. This doesnt work
+  // on firefox; fortunately, Selenium also doesn't capture the scroll bar in
+  // screenshot in ff
+
+  // it seems that we also need to trigger a scrolling to make the hiding work
+  if (browserName === 'chrome') {
+    driver.executeScript(
+      'document.styleSheets[0].insertRule("body::-webkit-scrollbar {width: 0 !important}", 0);' +
+      'var oldOverflowValue = document.body.style.overflow;' +
+      'document.body.style.overflow = "hidden";' +
+      'window.scrollTo(0, 10);' +
+      'window.scrollTo(0, 0);' +
+      'document.body.style.overflow = oldOverflowValue;'
+    )
+    .then(_next);
+  } else {
+    _next();
+  }
 }
 
 module.exports = playback;

@@ -88,14 +88,15 @@
     });
   }, true);
 
-  window.onscroll = function() {
+  // known issue: doesn't work when scrolling something else than window
+  window.addEventListener('scroll', function(e) {
     events.push({
       action: 'scroll',
       timeStamp: Date.now(),
       x: window.scrollX,
       y: window.scrollY
     });
-  };
+  }, true);
 
   // TODO: maybe double click and right click in the future, but Selenium
   // support and manual reproduction are shaky

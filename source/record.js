@@ -13,7 +13,7 @@ function _startPromptAndInjectEventsScript(driver, next) {
 
   // I'm sick of callbacks and promises, sync read this
   var scriptToInject = fs.readFileSync(
-    path.join(__dirname, 'browser', 'actionTracker.js'),
+    path.join(__dirname, 'browser', 'actionsTracker.js'),
     'utf8'
   );
 
