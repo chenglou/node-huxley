@@ -82,9 +82,9 @@ function getPlaybackInfos(globs, loadRecords, next) {
             consts.SCREENSHOTS_FOLDER_EXT);
 
         var playbackInfoParams = {
+          recordPath: recordPath,
           screenSize: task.screenSize,
-          url: task.url,
-          recordPath: recordPath
+          url: task.url
         };
 
         var playbackInfo;

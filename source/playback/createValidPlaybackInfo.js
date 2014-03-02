@@ -6,13 +6,14 @@ function createPlaybackInfo(info, verifyRecordContent) {
   var returnObj = {
     isSkipped: info.isSkipped || false,
 
-    screenSize: info.screenSize || consts.DEFAULT_SCREEN_SIZE,
-    url: info.url,
-    overrideScreenshots: info.overrideScreenshots || false,
-    recordPath: info.recordPath,
-    recordContent: info.recordContent,
+    // TODO: some fields belong to a global playback info
     browserName: info.browserName,
-    driver: info.driver
+    driver: info.driver,
+    overrideScreenshots: info.overrideScreenshots || false,
+    recordContent: info.recordContent,
+    recordPath: info.recordPath,
+    screenSize: info.screenSize || consts.DEFAULT_SCREEN_SIZE,
+    url: info.url
   };
 
   if (!verifyRecordContent) return returnObj;

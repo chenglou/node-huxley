@@ -98,12 +98,13 @@ function _simulateScroll(driver, posX, posY, next) {
 
 function playback(playbackInfo, next) {
   var currentEventIndex = 0;
+  var screenshotIndex = 1;
+
+  var browserName = playbackInfo.browserName;
   var driver = playbackInfo.driver;
   var events = playbackInfo.recordContent;
   var overrideScreenshots = playbackInfo.overrideScreenshots;
   var recordPath = playbackInfo.recordPath;
-  var screenshotIndex = 1;
-  var browserName = (playbackInfo.browserName != null)? playbackInfo.browserName : 'firefox';
 
   // pass `_next` as the callback when the current simulated event
   // completes
