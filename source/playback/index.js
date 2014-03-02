@@ -7,27 +7,29 @@ var specialKeys = require('selenium-webdriver').Key;
 var imageOperations = require('../imageOperations');
 var consts = require('../constants');
 
-function _simulateScreenshot(driver,
-                            recordPath,
-                            screenshotNameBase,
-                            screenshotIndex,
-                            overrideScreenshots,
-                            next) {
-  console.log('  Taking screenshot ' + screenshotNameBase+screenshotIndex);
+function _simulateScreenshot(
+  driver,
+  recordPath,
+  screenshotName,
+  overrideScreenshots,
+  next
+) {
+  console.log('  Taking screenshot ' + screenshotName);
 
   driver
     .takeScreenshot()
     // TODO: isolate the logic for saving image outside of this unrelated step
     .then(function(tempImage) {
-      var oldImagePath = path.join(recordPath, screenshotNameBase+screenshotIndex + '.png');
+      var oldImagePath = path.join(recordPath, screenshotName);
       if (overrideScreenshots) {
         return imageOperations.writeToFile(oldImagePath, tempImage, next);
       }
 
-      imageOperations.compareAndSaveDiffOnMismatch(tempImage,
-                                                  oldImagePath,
-                                                  recordPath,
-                                                  function(err, areSame) {
+      imageOperations.compareAndSaveDiffOnMismatch(
+        tempImage,
+        oldImagePath,
+        recordPath,
+        function(err, areSame) {
           if (err) return next(err);
 
           if (!areSame) {
@@ -100,10 +102,8 @@ function playback(playbackInfo, next) {
   var events = playbackInfo.recordContent;
   var overrideScreenshots = playbackInfo.overrideScreenshots;
   var recordPath = playbackInfo.recordPath;
-  var screenshotCount = 1;
+  var screenshotIndex = 1;
   var browserName = (playbackInfo.browserName != null)? playbackInfo.browserName : 'firefox';
-  var screenshotNameBase = browserName+'-';
-
 
   // pass `_next` as the callback when the current simulated event
   // completes
@@ -114,18 +114,21 @@ function playback(playbackInfo, next) {
     var fn;
 
     if (currentEventIndex === events.length - 1) {
-      fn = _simulateScreenshot.bind(null,
-                                    driver,
-                                    recordPath,
-                                    screenshotNameBase,
-                                    screenshotCount,
-                                    overrideScreenshots,
-                                    function(err) {
-        imageOperations.removeDanglingImages(
-          playbackInfo.recordPath, screenshotNameBase, screenshotCount + 1, function(err2) {
-            next(err || err2 || null);
-          }
-        );
+      fn = _simulateScreenshot.bind(
+        null,
+        driver,
+        recordPath,
+        imageOperations.getImageName(browserName, screenshotIndex),
+        overrideScreenshots,
+        function(err) {
+          imageOperations.removeDanglingImages(
+            playbackInfo.recordPath,
+            browserName,
+            screenshotIndex + 1,
+            function(err2) {
+              next(err || err2 || null);
+            }
+          );
       });
     } else {
       switch (currentEvent.action) {
@@ -138,13 +141,14 @@ function playback(playbackInfo, next) {
           fn = _simulateKeypress.bind(null, driver, currentEvent.key, _next);
           break;
         case consts.STEP_SCREENSHOT:
-          fn = _simulateScreenshot.bind(null,
-                                        driver,
-                                        recordPath,
-                                        screenshotNameBase,
-                                        screenshotCount++,
-                                        overrideScreenshots,
-                                        _next);
+          fn = _simulateScreenshot.bind(
+            null,
+            driver,
+            recordPath,
+            imageOperations.getImageName(browserName, screenshotIndex++),
+            overrideScreenshots,
+            _next
+          );
           break;
         case consts.STEP_PAUSE:
           fn = function() {
@@ -157,11 +161,13 @@ function playback(playbackInfo, next) {
           // records the whole page anyways
           // we should technically set a delay here, but OSX' smooth scrolling
           // would look really bad, adding the delay that Selenium has already
-          fn = _simulateScroll.bind(null,
-                                    driver,
-                                    currentEvent.x,
-                                    currentEvent.y,
-                                    _next);
+          fn = _simulateScroll.bind(
+            null,
+            driver,
+            currentEvent.x,
+            currentEvent.y,
+            _next
+          );
           break;
       }
     }

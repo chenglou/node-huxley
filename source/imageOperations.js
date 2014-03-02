@@ -6,15 +6,22 @@ var PNGDiff = require('png-diff');
 
 var consts = require('./constants');
 
+function getImageName(browserName, imageIndex) {
+  // image format will be 'firefox-1.png'
+  return browserName + '-' + imageIndex + '.png';
+}
+
 function writeToFile(path, rawImageBuffer, next) {
   var imageBuffer = new Buffer(rawImageBuffer, 'base64');
   fs.writeFile(path, imageBuffer, next);
 }
 
-function compareAndSaveDiffOnMismatch(image1Buffer,
-                                      image2Path,
-                                      taskPath,
-                                      next) {
+function compareAndSaveDiffOnMismatch(
+  image1Buffer,
+  image2Path,
+  taskPath,
+  next
+) {
   // in our use case, iamge1Buffer will always be a buffer of the temp image we
   // created
   var tempFileName = 'temp' + Math.random() + '.png';
@@ -41,20 +48,21 @@ function compareAndSaveDiffOnMismatch(image1Buffer,
   });
 }
 
-function removeDanglingImages(taskPath, screenshotNameBase, index, next) {
-  // a new recording might take less screenshots than the previous
-  var imagePath = path.join(taskPath, screenshotNameBase+index + '.png');
+// a new recording might take less screenshots than the previous
+function removeDanglingImages(taskPath, browserName, startIndex, next) {
+  var imagePath = path.join(taskPath, getImageName(browserName, startIndex));
   if (!fs.existsSync(imagePath)) return next();
 
   fs.unlink(imagePath, function(err) {
     if (err) return next(err);
 
-    removeDanglingImages(taskPath, screenshotNameBase, index + 1, next);
+    removeDanglingImages(taskPath, browserName, startIndex + 1, next);
   });
 }
 
 module.exports = {
-  writeToFile: writeToFile,
   compareAndSaveDiffOnMismatch: compareAndSaveDiffOnMismatch,
-  removeDanglingImages: removeDanglingImages
+  getImageName: getImageName,
+  removeDanglingImages: removeDanglingImages,
+  writeToFile: writeToFile
 };
