@@ -122,11 +122,28 @@ function _runActionOrDisplaySkipMsg(playbackInfo, action, next) {
     return next();
   }
 
+  var browserChromeWidth;
+  var browserChromeHeight;
+  if (playbackInfo.browserName === 'firefox') {
+    // for FF, one place where quirks show up is when (page scrolls to the
+    // bottom && browser exceeds max monitor screen size): say, for height,
+    // viewport ~600, screenSize 700, scrollY 1000, page height 1600. If we
+    // naively cut at scrollY til bottom, we don't get the 700 we want. This is
+    // fixed in playback @ _simulateScreenshot, for config top/left
+    browserChromeWidth = consts.FIREFOX_CHROME_SIZE[0];
+    browserChromeHeight = consts.FIREFOX_CHROME_SIZE[1];
+  } else {
+    // assume Chrome
+    browserChromeWidth = consts.CHROME_CHROME_SIZE[0];
+    browserChromeHeight = consts.CHROME_CHROME_SIZE[1];
+  }
+
+
   browser.goToUrl(
     playbackInfo.driver,
     playbackInfo.url,
-    playbackInfo.screenSize[0],
-    playbackInfo.screenSize[1],
+    playbackInfo.screenSize[0] + browserChromeWidth,
+    playbackInfo.screenSize[1] + browserChromeHeight,
     function(err) {
       action(playbackInfo, next);
     }

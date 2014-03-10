@@ -1,6 +1,7 @@
 'use strict';
 
 var colors = require('colors');
+var consts = require('constants');
 var path = require('path');
 var specialKeys = require('selenium-webdriver').Key;
 
@@ -12,36 +13,74 @@ function _simulateScreenshot(
   recordPath,
   screenshotName,
   overrideScreenshots,
+  screenSize,
+  browserName,
   next
 ) {
   console.log('  Taking screenshot ' + screenshotName);
 
+  var dimsAndScrollInfos;
+
   driver
-    .takeScreenshot()
+    .executeScript(
+      'return [window.scrollX, window.scrollY, document.body.scrollWidth, document.body.scrollHeight];'
+    )
+    .then(function(obtainedScrollPos) {
+      dimsAndScrollInfos = obtainedScrollPos;
+      return driver.takeScreenshot();
+    })
     // TODO: isolate the logic for saving image outside of this unrelated step
-    .then(function(tempImage) {
-      var oldImagePath = path.join(recordPath, screenshotName);
-      if (overrideScreenshots) {
-        return imageOperations.writeToFile(oldImagePath, tempImage, next);
+    .then(function(rawImageString) {
+      // see comments in index.js @ _runActionOrDisplaySkipMsg
+      var left = Math.min(dimsAndScrollInfos[0], dimsAndScrollInfos[2] - screenSize[0]);
+      var top = Math.min(dimsAndScrollInfos[1], dimsAndScrollInfos[3] - screenSize[1]);
+
+      var config = {
+        left: left < 0 ? 0 : left,
+        top: top < 0 ? 0 : top,
+        width: screenSize[0],
+        height: screenSize[1]
+      };
+
+      if (browserName === 'chrome') {
+        // chrome already takes partial ss. Browser size is adjusted correctly
+        // except for weight
+        config = {
+          left: 0,
+          top: 0,
+          width: screenSize[0],
+          height: 99999,
+        };
       }
+      var imageStream = imageOperations
+        .turnRawImageStringIntoStream(rawImageString);
 
-      imageOperations.compareAndSaveDiffOnMismatch(
-        tempImage,
-        oldImagePath,
-        recordPath,
-        function(err, areSame) {
-          if (err) return next(err);
+      imageOperations.cropToStream(imageStream, config, function(err, outputStream) {
+        if (err) return next(err);
 
-          if (!areSame) {
-            return next(
-              'New screenshot looks different. ' +
-              'The diff image is saved for you to examine.'
-            );
-          }
-
-          next();
+        var oldImagePath = path.join(recordPath, screenshotName);
+        if (overrideScreenshots) {
+          return imageOperations.save(outputStream, oldImagePath, next);
         }
-      );
+
+        imageOperations.compareAndSaveDiffOnMismatch(
+          outputStream,
+          oldImagePath,
+          recordPath,
+          function(err, areSame) {
+            if (err) return next(err);
+
+            if (!areSame) {
+              return next(
+                'New screenshot looks different. ' +
+                'The diff image is saved for you to examine.'
+              );
+            }
+
+            next();
+          }
+        );
+      });
     });
 }
 
@@ -121,6 +160,8 @@ function playback(playbackInfo, next) {
         recordPath,
         imageOperations.getImageName(browserName, screenshotIndex),
         overrideScreenshots,
+        playbackInfo.screenSize,
+        playbackInfo.browserName,
         function(err) {
           imageOperations.removeDanglingImages(
             playbackInfo.recordPath,
@@ -149,6 +190,8 @@ function playback(playbackInfo, next) {
             recordPath,
             imageOperations.getImageName(browserName, screenshotIndex++),
             overrideScreenshots,
+            playbackInfo.screenSize,
+            playbackInfo.browserName,
             _next
           );
           break;
@@ -186,7 +229,10 @@ function playback(playbackInfo, next) {
   // it seems that we also need to trigger a scrolling to make the hiding work
   if (browserName === 'chrome') {
     driver.executeScript(
-      'document.styleSheets[0].insertRule("body::-webkit-scrollbar {width: 0 !important}", 0);' +
+      'var _huxleyStyle = document.createElement("style");' +
+      '_huxleyStyle.type = "text/css";' +
+      '_huxleyStyle.innerHTML = "body::-webkit-scrollbar {width: 0 !important}";' +
+      'document.getElementsByTagName("head")[0].appendChild(_huxleyStyle);' +
       'var oldOverflowValue = document.body.style.overflow;' +
       'document.body.style.overflow = "hidden";' +
       'window.scrollTo(0, 10);' +

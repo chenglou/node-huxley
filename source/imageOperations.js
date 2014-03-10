@@ -2,7 +2,9 @@
 
 var fs = require('fs');
 var path = require('path');
+var PNGCrop = require('png-crop');
 var PNGDiff = require('png-diff');
+var streamifier = require('streamifier');
 
 var consts = require('./constants');
 
@@ -11,39 +13,28 @@ function getImageName(browserName, imageIndex) {
   return browserName + '-' + imageIndex + '.png';
 }
 
-function writeToFile(path, rawImageBuffer, next) {
-  var imageBuffer = new Buffer(rawImageBuffer, 'base64');
-  fs.writeFile(path, imageBuffer, next);
+function save(imageStream, path, next) {
+  imageStream
+    .pipe(fs.createWriteStream(path))
+    .once('error', next)
+    .on('close', next);
 }
 
 function compareAndSaveDiffOnMismatch(
-  image1Buffer,
+  image1Stream,
   image2Path,
   taskPath,
   next
 ) {
-  // in our use case, iamge1Buffer will always be a buffer of the temp image we
-  // created
-  var tempFileName = 'temp' + Math.random() + '.png';
+  PNGDiff.measureDiff(image1Stream, image2Path, function(err, diffMetric) {
+    if (err) return next(err);
 
-  writeToFile(tempFileName, image1Buffer, function(err) {
-    PNGDiff.measureDiff(tempFileName, image2Path, function(err, diffMetric) {
-      if (err) {
-        fs.unlinkSync(tempFileName);
-        return next(err);
-      }
+    var areSame = diffMetric === 0;
+    if (areSame) return next(null, areSame);
 
-      var areSame = diffMetric === 0;
-      if (!areSame) {
-        var diffPath = path.join(taskPath, consts.DIFF_PNG_NAME);
-        PNGDiff.outputDiff(tempFileName, image2Path, diffPath, function(err) {
-          fs.unlinkSync(tempFileName);
-          next(err, areSame);
-        });
-      } else {
-        fs.unlinkSync(tempFileName);
-        next(null, areSame);
-      }
+    var diffPath = path.join(taskPath, consts.DIFF_PNG_NAME);
+    PNGDiff.outputDiff(image1Stream, image2Path, diffPath, function(err) {
+      next(err, areSame);
     });
   });
 }
@@ -60,9 +51,21 @@ function removeDanglingImages(taskPath, browserName, startIndex, next) {
   });
 }
 
+// config example: {height: 100, width: 40, top: 15, left: 20}
+// top and left optional
+function cropToStream(imageStream, config, next) {
+  PNGCrop.cropToStream(imageStream, config, next);
+}
+
+function turnRawImageStringIntoStream(rawImageString) {
+  return streamifier.createReadStream(new Buffer(rawImageString, 'base64'));
+}
+
 module.exports = {
   compareAndSaveDiffOnMismatch: compareAndSaveDiffOnMismatch,
+  cropToStream: cropToStream,
   getImageName: getImageName,
   removeDanglingImages: removeDanglingImages,
-  writeToFile: writeToFile
+  save: save,
+  turnRawImageStringIntoStream: turnRawImageStringIntoStream
 };
