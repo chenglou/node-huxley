@@ -28,6 +28,8 @@ function compareAndSaveDiffOnMismatch(
 ) {
   var diffPath = path.join(taskPath, consts.DIFF_PNG_NAME);
   PNGDiff.outputDiffStream(image1Stream, image2Path, function(err, outputStream, diffMetric) {
+    if (err) return next(err);
+
     var areSame = diffMetric === 0;
     if (areSame) {
       return next(null, areSame);

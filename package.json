@@ -1,6 +1,6 @@
 {
   "name": "huxley",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "New wave front-end testing.",
   "main": "index.js",
   "scripts": {

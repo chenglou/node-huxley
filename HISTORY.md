@@ -3,6 +3,9 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
+### 0.7.2 (March 12th 2014)
+- [F] Fix output for bad images dimensions also.
+
 ### 0.7.1 (March 12th 2014)
 - [F] Emergency fix for making diffing work again. Do upgrade. Sorry.
 
