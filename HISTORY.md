@@ -3,6 +3,9 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
+### 0.7.1 (March 12th 2014)
+- [F] Emergency fix for making diffing work again. Do upgrade. Sorry.
+
 ## 0.7.0 (March 10th 2014)
 - [I] Display old/new screenshot dimensions when there's a mismatch.
 - [I] Remote support! See README or `hux -h`.

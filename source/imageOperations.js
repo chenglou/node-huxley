@@ -26,16 +26,17 @@ function compareAndSaveDiffOnMismatch(
   taskPath,
   next
 ) {
-  PNGDiff.measureDiff(image1Stream, image2Path, function(err, diffMetric) {
-    if (err) return next(err);
-
+  var diffPath = path.join(taskPath, consts.DIFF_PNG_NAME);
+  PNGDiff.outputDiffStream(image1Stream, image2Path, function(err, outputStream, diffMetric) {
     var areSame = diffMetric === 0;
-    if (areSame) return next(null, areSame);
-
-    var diffPath = path.join(taskPath, consts.DIFF_PNG_NAME);
-    PNGDiff.outputDiff(image1Stream, image2Path, diffPath, function(err) {
-      next(err, areSame);
-    });
+    if (areSame) {
+      return next(null, areSame);
+    }
+    outputStream.pipe(fs.createWriteStream(diffPath))
+      .once('error', next)
+      .on('close', function() {
+        return next(err, areSame);
+      });
   });
 }
 

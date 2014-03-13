@@ -1,6 +1,6 @@
 {
   "name": "huxley",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "New wave front-end testing.",
   "main": "index.js",
   "scripts": {
@@ -35,7 +35,7 @@
     "read": "~1.0.5",
     "glob": "~3.2.9",
     "png-crop": "0.0.0",
-    "png-diff": "^0.2.1",
+    "png-diff": "^0.3.0",
     "streamifier": "^0.1.0"
   },
   "devDependencies": {
