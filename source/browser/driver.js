@@ -1,8 +1,8 @@
 'use strict';
 
 var webdriver = require('selenium-webdriver');
-
 var consts = require('../constants');
+var capabilities = {};
 
 function _open(browserName, serverUrl, next) {
   // haven't tested on ie. Safari is buggy (can't receive sent keys correctly)
@@ -17,6 +17,12 @@ function _open(browserName, serverUrl, next) {
   } else if (browserName === 'chrome') {
     browser = webdriver.Capabilities.chrome();
     serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_CHROME;
+  } else if (browserName === 'browserstack') {
+    // We need pass some data into BrowserStack (authorization)
+    // http://www.browserstack.com/automate/node
+    browser = capabilities;
+    driver = require('browserstack-webdriver');
+    serverUrl = serverUrl || 'http://hub.browserstack.com/wd/hub';
   } else {
     return next('Unsupported browser.');
   }
@@ -71,9 +77,14 @@ function quit(driver, next) {
   driver.quit().then(next);
 }
 
+function setBrowserStackCapabilities(capabilitiesParam) {
+  capabilities = capabilitiesParam || {};
+}
+
 module.exports = {
   open: open,
   openDummy: openDummy,
   goToUrl: goToUrl,
-  quit: quit
+  quit: quit,
+  setBrowserStackCapabilities: setBrowserStackCapabilities
 };
