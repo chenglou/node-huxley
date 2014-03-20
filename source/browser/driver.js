@@ -77,7 +77,7 @@ function quit(driver, next) {
   driver.quit().then(next);
 }
 
-function setCapabilities(capabilitiesParam) {
+function setBrowserStackCapabilities(capabilitiesParam) {
   capabilities = capabilitiesParam || {};
 }
 
@@ -86,5 +86,5 @@ module.exports = {
   openDummy: openDummy,
   goToUrl: goToUrl,
   quit: quit,
-  setCapabilities: setCapabilities
+  setBrowserStackCapabilities: setBrowserStackCapabilities
 };

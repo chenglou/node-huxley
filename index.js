@@ -229,8 +229,8 @@ function playbackTasksAndSaveScreenshots(browserName, serverUrl, globs, next) {
   _playbackTasksAndXScreenshots(browserName, serverUrl, globs, true, next);
 }
 
-function setCapabilities(capabilities) {
-  browser.setCapabilities(capabilities);
+function setBrowserStackCapabilities(capabilities) {
+  browser.setBrowserStackCapabilities(capabilities);
 }
 
 module.exports = {
@@ -238,5 +238,5 @@ module.exports = {
   playbackTasksAndSaveScreenshots: playbackTasksAndSaveScreenshots,
   playbackTasksAndCompareScreenshots: playbackTasksAndCompareScreenshots,
   defaultDoneCallback: defaultDoneCallback,
-  setCapabilities: setCapabilities
+  setBrowserStackCapabilities: setBrowserStackCapabilities
 };
