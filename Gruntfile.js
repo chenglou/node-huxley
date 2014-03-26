@@ -62,6 +62,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('testPasses', tests.testPasses);
   grunt.registerTask('testFails', tests.testFails);
+  grunt.registerTask('testInjectedDriver', tests.testInjectedDriver);
   grunt.registerTask('selenium', function(grunt) {
     var done = this.async();
     // this is the same selenium wrapper than in README. It conveniently
@@ -76,7 +77,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask(
-    'test', ['connect:server', 'selenium', 'testPasses', 'testFails']
+    'test', ['connect:server', 'selenium', 'testPasses', 'testFails', 'testInjectedDriver']
   );
   grunt.registerTask(
     'test:passes', ['connect:server', 'selenium', 'testPasses']

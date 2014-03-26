@@ -3,6 +3,7 @@
 var webdriver = require('selenium-webdriver');
 
 var consts = require('../constants');
+var _injectedDriver;
 
 function _open(browserName, serverUrl, next) {
   // haven't tested on ie. Safari is buggy (can't receive sent keys correctly)
@@ -32,6 +33,12 @@ function _open(browserName, serverUrl, next) {
 }
 
 function open(browserName, serverUrl, next) {
+  if (_injectedDriver) {
+    console.log('Using injected driver.');
+    next(null, _injectedDriver);
+    return;
+  }
+
   console.log('\n%s opening.', browserName);
   if (serverUrl) {
     // conveniently hide the server detail if not passed as cmd line param by
@@ -71,7 +78,12 @@ function quit(driver, next) {
   driver.quit().then(next);
 }
 
+function injectDriver(driver) {
+  _injectedDriver = driver;
+}
+
 module.exports = {
+  injectDriver: injectDriver,
   open: open,
   openDummy: openDummy,
   goToUrl: goToUrl,

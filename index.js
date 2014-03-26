@@ -230,6 +230,7 @@ function playbackTasksAndSaveScreenshots(browserName, serverUrl, globs, next) {
 }
 
 module.exports = {
+  injectDriver: browser.injectDriver,
   recordTasks: recordTasks,
   playbackTasksAndSaveScreenshots: playbackTasksAndSaveScreenshots,
   playbackTasksAndCompareScreenshots: playbackTasksAndCompareScreenshots,

@@ -57,6 +57,25 @@ function _testFails(browserName, serverUrl, next) {
   });
 }
 
+function _testInjectedDriver(browserName, serverUrl, next) {
+  var webdriver = require('selenium-webdriver');
+  var browser = webdriver.Capabilities.firefox();
+  var driver = new webdriver.Builder()
+    .usingServer(serverUrl)
+    .withCapabilities(browser)
+    .build();
+
+  huxley.injectDriver(driver);
+
+  _testPasses(browserName, serverUrl, function(err) {
+    if (err) return next(false);
+
+    next();
+    // Erase the injected driver. Just for sure, that we didn't broke next test.
+    huxley.injectDriver(null);
+  });
+}
+
 function wrapTestsForGrunt(testMethod, errMessage) {
   return function() {
     var next = this.async();
@@ -83,6 +102,9 @@ function wrapTestsForGrunt(testMethod, errMessage) {
 module.exports = {
   testPasses: wrapTestsForGrunt(_testPasses, 'Some tests didn\'t pass.'),
   testFails: wrapTestsForGrunt(
-    _testFails, 'Some tests that should have failed didn\'t'
+    _testFails, 'Some tests that should have failed didn\'t.'
+  ),
+  testInjectedDriver: wrapTestsForGrunt(
+    _testInjectedDriver, 'Injected driver does not work.'
   )
 };
