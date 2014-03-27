@@ -3,6 +3,9 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
+### 0.7.3 (March 27th 2014)
+- [I] Support for third-party drivers, e.g. BrowserStack. See Grunt-huxley's [README](https://github.com/chenglou/grunt-huxley#browserstack).
+
 ### 0.7.2 (March 12th 2014)
 - [F] Fix output for bad images dimensions also.
 
