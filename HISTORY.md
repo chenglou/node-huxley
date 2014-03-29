@@ -3,6 +3,9 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
+### Unreleased
+- [I] Gracefully exit browsers when process dies.
+
 ### 0.7.3 (March 27th 2014)
 - [I] Support for third-party drivers, e.g. BrowserStack. See Grunt-huxley's [README](https://github.com/chenglou/grunt-huxley#browserstack).
 

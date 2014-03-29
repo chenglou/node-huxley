@@ -88,6 +88,11 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
 
     if (openDummy) {
       return browser.openDummy(browserName, serverUrl, function(err, dummyDriver) {
+        process.on('SIGINT', function() {
+          browser.quit(driver, function() {
+            browser.quit(dummyDriver, process.exit);
+          });
+        });
         if (err) {
           return browser.quit(dummyDriver, function(err2) {
             next(err || err2 || null);
@@ -103,6 +108,9 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
         });
       });
     } else {
+      process.on('SIGINT', function() {
+        browser.quit(driver, process.exit);
+      });
       action(function(err) {
         browser.quit(driver, function(err2) {
           next(err || err2 || null);
