@@ -65,7 +65,9 @@ function _testInjectedDriver(browserName, serverUrl, next) {
     .withCapabilities(browser)
     .build();
 
-  huxley.injectDriver(driver);
+  huxley.injectDriver(function() {
+    return driver;
+  });
 
   _testPasses(browserName, serverUrl, function(err) {
     if (err) return next(false);
