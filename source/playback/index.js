@@ -7,6 +7,7 @@ var specialKeys = require('selenium-webdriver').Key;
 
 var imageOperations = require('../imageOperations');
 var consts = require('../constants');
+var runtimeConfig = require('../runtimeConfig');
 
 function _simulateScreenshot(
   driver,
@@ -139,10 +140,10 @@ function playback(playbackInfo, next) {
   var currentEventIndex = 0;
   var screenshotIndex = 1;
 
-  var browserName = playbackInfo.browserName;
-  var driver = playbackInfo.driver;
+  var browserName = runtimeConfig.config.browserName;
+  var driver = runtimeConfig.config.driver;
   var events = playbackInfo.recordContent;
-  var overrideScreenshots = playbackInfo.overrideScreenshots;
+  var overrideScreenshots = runtimeConfig.config.mode === consts.MODE_UPDATE;
   var recordPath = playbackInfo.recordPath;
 
   // pass `_next` as the callback when the current simulated event
@@ -161,7 +162,7 @@ function playback(playbackInfo, next) {
         imageOperations.getImageName(browserName, screenshotIndex),
         overrideScreenshots,
         playbackInfo.screenSize,
-        playbackInfo.browserName,
+        browserName,
         function(err) {
           imageOperations.removeDanglingImages(
             playbackInfo.recordPath,
@@ -191,7 +192,7 @@ function playback(playbackInfo, next) {
             imageOperations.getImageName(browserName, screenshotIndex++),
             overrideScreenshots,
             playbackInfo.screenSize,
-            playbackInfo.browserName,
+            browserName,
             _next
           );
           break;

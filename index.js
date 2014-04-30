@@ -12,7 +12,7 @@ var playback = require('./source/playback');
 var record = require('./source/record');
 var getPlaybackInfos = require('./source/playback/getPlaybackInfos');
 
-// TODO: integration with remote environment
+var runtimeConfig = require('./source/runtimeConfig');
 
 // whenever 'path' is mentioned and it concerns a file, the file's name itself
 // isn't included
@@ -45,7 +45,7 @@ function _saveTaskAsJsonToFolder(recordPath, taskEvents, next) {
 }
 
 function _recordAndSave(playbackInfo, next) {
-  record(playbackInfo.driver, function(err, allEvents) {
+  record(runtimeConfig.config.driver, function(err, allEvents) {
     _saveTaskAsJsonToFolder(playbackInfo.recordPath, allEvents, next);
   });
 }
@@ -70,8 +70,8 @@ function _runEachPlayback(playbackInfos, action, next) {
 // needs to know nothing but a command to run in-between, and the callback
 function _openRunAndClose(playbackInfos, openDummy, action, next) {
   // playbackInfos all have the same browserName. Arbitrarily choose the first
-  var browserName = playbackInfos[0].browserName;
-  var serverUrl = playbackInfos[0].serverUrl;
+  var browserName = runtimeConfig.config.browserName;
+  var serverUrl = runtimeConfig.config.serverUrl;
 
   browser.open(browserName, serverUrl, function(err, driver) {
     if (err) {
@@ -82,11 +82,10 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
       });
     }
 
-    playbackInfos.forEach(function(info) {
-      info.driver = driver;
-    });
+    runtimeConfig.config.driver = driver;
 
     if (openDummy) {
+      // TODO: pass a config obj instead.
       return browser.openDummy(browserName, serverUrl, function(err, dummyDriver) {
         process.on('SIGINT', function() {
           browser.quit(driver, function() {
@@ -132,7 +131,7 @@ function _runActionOrDisplaySkipMsg(playbackInfo, action, next) {
 
   var browserChromeWidth;
   var browserChromeHeight;
-  if (playbackInfo.browserName === 'firefox') {
+  if (runtimeConfig.config.browserName === 'firefox') {
     // for FF, one place where quirks show up is when (page scrolls to the
     // bottom && browser exceeds max monitor screen size): say, for height,
     // viewport ~600, screenSize 700, scrollY 1000, page height 1600. If we
@@ -148,7 +147,7 @@ function _runActionOrDisplaySkipMsg(playbackInfo, action, next) {
 
 
   browser.goToUrl(
-    playbackInfo.driver,
+    runtimeConfig.config.driver,
     playbackInfo.url,
     playbackInfo.screenSize[0] + browserChromeWidth,
     playbackInfo.screenSize[1] + browserChromeHeight,
@@ -162,10 +161,6 @@ function _recordTasks(browserName, serverUrl, globs, next) {
   _getRunnableRecords(globs, false, function(err, playbackInfos) {
     if (err) return next(err);
 
-    playbackInfos.forEach(function(info) {
-      info.browserName = browserName;
-      info.serverUrl = serverUrl;
-    });
     _openRunAndClose(
       playbackInfos,
       false,
@@ -176,21 +171,9 @@ function _recordTasks(browserName, serverUrl, globs, next) {
 }
 
 // where `x` is either compare or update screenshot
-function _playbackTasksAndXScreenshots(
-  browserName,
-  serverUrl,
-  globs,
-  saveInsteadOfCompare,
-  next
-) {
+function _playbackTasksAndXScreenshots(globs, next) {
   _getRunnableRecords(globs, true, function(err, playbackInfos) {
     if (err) return next(err);
-
-    playbackInfos.forEach(function(info) {
-      info.browserName = browserName;
-      info.overrideScreenshots = saveInsteadOfCompare;
-      info.serverUrl = serverUrl;
-    });
 
     _openRunAndClose(
       playbackInfos,
@@ -219,7 +202,12 @@ function _getRunnableRecords(globs, loadRecords, next) {
 }
 
 function recordTasks(browserName, serverUrl, globs, next) {
-  browserName = browserName || 'firefox';
+  runtimeConfig.config = {
+    browserName: browserName || 'firefox',
+    serverUrl: serverUrl,
+    mode: consts.MODE_RECORD
+  };
+
   _recordTasks(browserName, serverUrl, globs, function(err) {
     if (err) return next(err);
 
@@ -229,12 +217,22 @@ function recordTasks(browserName, serverUrl, globs, next) {
 }
 
 function playbackTasksAndCompareScreenshots(browserName, serverUrl, globs, next) {
-  browserName = browserName || 'firefox';
-  _playbackTasksAndXScreenshots(browserName, serverUrl, globs, false, next);
+  runtimeConfig.config = {
+    browserName: browserName || 'firefox',
+    serverUrl: serverUrl,
+    mode: consts.MODE_COMPARE
+  };
+
+  _playbackTasksAndXScreenshots(globs, next);
 }
 function playbackTasksAndSaveScreenshots(browserName, serverUrl, globs, next) {
-  browserName = browserName || 'firefox';
-  _playbackTasksAndXScreenshots(browserName, serverUrl, globs, true, next);
+  runtimeConfig.config = {
+    browserName: browserName || 'firefox',
+    serverUrl: serverUrl,
+    mode: consts.MODE_UPDATE
+  };
+
+  _playbackTasksAndXScreenshots(globs, next);
 }
 
 module.exports = {

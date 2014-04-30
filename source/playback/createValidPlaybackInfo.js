@@ -6,10 +6,6 @@ function createPlaybackInfo(info, verifyRecordContent) {
   var returnObj = {
     isSkipped: info.isSkipped || false,
 
-    // TODO: some fields belong to a global playback info
-    browserName: info.browserName,
-    driver: info.driver,
-    overrideScreenshots: info.overrideScreenshots || false,
     recordContent: info.recordContent,
     recordPath: info.recordPath,
     screenSize: info.screenSize || consts.DEFAULT_SCREEN_SIZE,

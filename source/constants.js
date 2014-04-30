@@ -10,6 +10,9 @@ module.exports = {
   // see explanation in index.js @ _runActionOrDisplaySkipMsg
   FIREFOX_CHROME_SIZE: [0, 106],
   HUXLEYFILE_NAME: 'Huxleyfile.json',
+  MODE_COMPARE: 'compare',
+  MODE_RECORD: 'record',
+  MODE_UPDATE: 'update',
   RECORD_FILE_NAME: 'record.json',
   SCREENSHOTS_FOLDER_EXT: '.hux',
   STEP_CLICK: 'click',
