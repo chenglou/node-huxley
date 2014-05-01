@@ -3,138 +3,15 @@
 var colors = require('colors');
 var consts = require('constants');
 var path = require('path');
-var specialKeys = require('selenium-webdriver').Key;
 
 var imageOperations = require('../imageOperations');
 var consts = require('../constants');
 var runtimeConfig = require('../runtimeConfig');
 
-function _simulateScreenshot(
-  driver,
-  recordPath,
-  screenshotName,
-  overrideScreenshots,
-  screenSize,
-  browserName,
-  next
-) {
-  console.log('  Taking screenshot ' + screenshotName);
-
-  var dimsAndScrollInfos;
-
-  driver
-    .executeScript(
-      'return [window.scrollX, window.scrollY, document.body.scrollWidth, document.body.scrollHeight];'
-    )
-    .then(function(obtainedScrollPos) {
-      dimsAndScrollInfos = obtainedScrollPos;
-      return driver.takeScreenshot();
-    })
-    // TODO: isolate the logic for saving image outside of this unrelated step
-    .then(function(rawImageString) {
-      // see comments in index.js @ _runActionOrDisplaySkipMsg
-      var left = Math.min(dimsAndScrollInfos[0], dimsAndScrollInfos[2] - screenSize[0]);
-      var top = Math.min(dimsAndScrollInfos[1], dimsAndScrollInfos[3] - screenSize[1]);
-
-      var config = {
-        left: left < 0 ? 0 : left,
-        top: top < 0 ? 0 : top,
-        width: screenSize[0],
-        height: screenSize[1]
-      };
-
-      if (browserName === 'chrome') {
-        // chrome already takes partial ss. Browser size is adjusted correctly
-        // except for weight
-        config = {
-          left: 0,
-          top: 0,
-          width: screenSize[0],
-          height: 99999,
-        };
-      }
-      var imageStream = imageOperations
-        .turnRawImageStringIntoStream(rawImageString);
-
-      imageOperations.cropToStream(imageStream, config, function(err, outputStream) {
-        if (err) return next(err);
-
-        var oldImagePath = path.join(recordPath, screenshotName);
-        if (overrideScreenshots) {
-          return imageOperations.save(outputStream, oldImagePath, next);
-        }
-
-        imageOperations.compareAndSaveDiffOnMismatch(
-          outputStream,
-          oldImagePath,
-          recordPath,
-          function(err, areSame) {
-            if (err) return next(err);
-
-            if (!areSame) {
-              return next(
-                'New screenshot looks different. ' +
-                'The diff image is saved for you to examine.'
-              );
-            }
-
-            next();
-          }
-        );
-      });
-    });
-}
-
-function _simulateKeypress(driver, key, next) {
-  console.log('  Typing ' + key);
-
-  driver
-    .executeScript('return document.activeElement;')
-    .then(function(activeElement) {
-      if (!activeElement) return next();
-
-      // refer to `actionsTracker.js`. The special keys are the arrow keys,
-      // stored like 'ARROW_LEFT', By chance, the webdriver's `Key` object
-      // stores these keys
-      if (key.length > 1) key = specialKeys[key];
-      activeElement
-        .sendKeys(key)
-        .then(next);
-    });
-}
-
-// TODO: handle friggin select menu click, can't right now bc browsers
-function _simulateClick(driver, posX, posY, next) {
-  var posString = '(' + posX + ', ' + posY + ')';
-  console.log('  Clicking ' + posString);
-
-  driver
-    // TODO: isolate this into a script file clicking on an input/textarea
-    // element focuses it but doesn't place the carret at the correct position;
-    // do it here (only works for ff)
-    .executeScript(
-      'var el = document.elementFromPoint' + posString + ';' +
-      'if ((el.tagName === "TEXTAREA" || el.tagName === "INPUT") && document.caretPositionFromPoint) {' +
-        'var range = document.caretPositionFromPoint' + posString + ';' +
-        'var offset = range.offset;' +
-        'document.elementFromPoint' + posString + '.setSelectionRange(offset, offset);' +
-      '}' +
-      'return document.elementFromPoint' + posString + ';'
-    )
-    .then(function(el) {
-      el.click();
-    })
-    .then(next);
-}
-
-function _simulateScroll(driver, posX, posY, next) {
-  var posString = '(' + posX + ', ' + posY + ')';
-  console.log('  Scrolling to ' + posString);
-
-  driver
-    .executeScript('window.scrollTo(' + posX + ',' + posY + ')')
-    .then(next);
-}
+var simulateScreenshot = require('./simulateScreenshot');
+var simulateKeypress = require('./simulateKeypress');
+var simulateClick = require('./simulateClick');
+var simulateScroll = require('./simulateScroll');
 
 function playback(playbackInfo, next) {
   var currentEventIndex = 0;
@@ -143,8 +20,32 @@ function playback(playbackInfo, next) {
   var browserName = runtimeConfig.config.browserName;
   var driver = runtimeConfig.config.driver;
   var events = playbackInfo.recordContent;
-  var overrideScreenshots = runtimeConfig.config.mode === consts.MODE_UPDATE;
   var recordPath = playbackInfo.recordPath;
+  var screenshotName;
+
+  function handleScreenshot(outputStream, oldImagePath, next) {
+    if (runtimeConfig.config.mode === consts.MODE_UPDATE) {
+      imageOperations.save(outputStream, oldImagePath, next);
+    } else {
+      imageOperations.compareAndSaveDiffOnMismatch(
+        outputStream,
+        oldImagePath,
+        recordPath,
+        function(err, areSame) {
+          if (err) return next(err);
+
+          if (!areSame) {
+            return next(
+              'New screenshot looks different. ' +
+              'The diff image is saved for you to examine.'
+            );
+          }
+
+          next();
+        }
+      );
+    }
+  }
 
   // pass `_next` as the callback when the current simulated event
   // completes
@@ -155,46 +56,56 @@ function playback(playbackInfo, next) {
     var fn;
 
     if (currentEventIndex === events.length - 1) {
-      fn = _simulateScreenshot.bind(
+      screenshotName = imageOperations.getImageName(browserName, screenshotIndex);
+      console.log('  Taking screenshot ' + screenshotName);
+      fn = simulateScreenshot.bind(
         null,
         driver,
-        recordPath,
-        imageOperations.getImageName(browserName, screenshotIndex),
-        overrideScreenshots,
         playbackInfo.screenSize,
         browserName,
-        function(err) {
-          imageOperations.removeDanglingImages(
-            playbackInfo.recordPath,
-            browserName,
-            screenshotIndex + 1,
-            function(err2) {
-              next(err || err2 || null);
-            }
-          );
+        function(err, outputStream) {
+          if (err) {
+            return next(err);
+          }
+
+          var oldImagePath = path.join(recordPath, screenshotName);
+
+          handleScreenshot(outputStream, oldImagePath, function(err) {
+            imageOperations.removeDanglingImages(
+              playbackInfo.recordPath,
+              browserName,
+              screenshotIndex + 1,
+              function(err2) {
+                next(err || err2 || null);
+              }
+            );
+          });
         }
       );
     } else {
       switch (currentEvent.action) {
         case consts.STEP_CLICK:
-          fn = _simulateClick.bind(
+          console.log('  Clicking (%s, %s)', currentEvent.x, currentEvent.y);
+          fn = simulateClick.bind(
             null, driver, currentEvent.x, currentEvent.y, _next
           );
           break;
         case consts.STEP_KEYPRESS:
-          fn = _simulateKeypress.bind(null, driver, currentEvent.key, _next);
+          console.log('  Typing ' + currentEvent.key);
+          fn = simulateKeypress.bind(null, driver, currentEvent.key, _next);
           break;
         case consts.STEP_SCREENSHOT:
-          fn = _simulateScreenshot.bind(
-            null,
-            driver,
-            recordPath,
-            imageOperations.getImageName(browserName, screenshotIndex++),
-            overrideScreenshots,
-            playbackInfo.screenSize,
-            browserName,
-            _next
-          );
+          screenshotName = imageOperations.getImageName(browserName, screenshotIndex);
+          screenshotIndex++;
+
+          console.log('  Taking screenshot ' + screenshotName);
+          fn = simulateScreenshot.bind(null, driver, playbackInfo.screenSize, browserName, function(err, outputStream) {
+            if (err) {
+              return _next(err);
+            }
+            var oldImagePath = path.join(recordPath, screenshotName);
+            handleScreenshot(outputStream, oldImagePath, _next);
+          });
           break;
         case consts.STEP_PAUSE:
           fn = function() {
@@ -203,11 +114,12 @@ function playback(playbackInfo, next) {
           };
           break;
         case consts.STEP_SCROLL:
+          console.log('  Scrolling to (%s, %s)', currentEvent.x, currentEvent.y);
           // this is really just to provide a visual cue during replay. Selenium
           // records the whole page anyways
           // we should technically set a delay here, but OSX' smooth scrolling
           // would look really bad, adding the delay that Selenium has already
-          fn = _simulateScroll.bind(
+          fn = simulateScroll.bind(
             null,
             driver,
             currentEvent.x,
@@ -228,6 +140,7 @@ function playback(playbackInfo, next) {
   // screenshot in ff
 
   // it seems that we also need to trigger a scrolling to make the hiding work
+  // TODO: try offsetHeight
   if (browserName === 'chrome') {
     driver.executeScript(
       'var _huxleyStyle = document.createElement("style");' +
