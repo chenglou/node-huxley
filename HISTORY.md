@@ -3,6 +3,9 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
+### Publishing soon
+- [I] Show stack trace when erroring.
+
 ### 0.7.4 (April 6th 2014)
 - [I] Gracefully exit browsers when process dies.
 - [F] Remote driver `quit()` [fix](https://github.com/chenglou/node-huxley/pull/55).
