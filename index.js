@@ -84,7 +84,7 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
 
     runtimeConfig.config.driver = driver;
 
-    if (openDummy) {
+    if (openDummy && !driver.__huxleyInjectedDriver) {
       // TODO: pass a config obj instead.
       return browser.openDummy(browserName, serverUrl, function(err, dummyDriver) {
         process.on('SIGINT', function() {
