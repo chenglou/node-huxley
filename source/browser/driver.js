@@ -35,7 +35,9 @@ function _open(browserName, serverUrl, next) {
 function open(browserName, serverUrl, next) {
   if (_injectedDriver) {
     console.log('Using injected driver.');
-    next(null, _injectedDriver());
+    var injectedDriver = _injectedDriver();
+    injectedDriver.__huxleyInjectedDriver = true;
+    next(null, injectedDriver);
     return;
   }
 
