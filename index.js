@@ -177,7 +177,7 @@ function _playbackTasksAndXScreenshots(globs, next) {
 
     _openRunAndClose(
       playbackInfos,
-      true,
+      false,
       _runEachPlayback.bind(null, playbackInfos, playback),
       next
     );
