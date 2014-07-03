@@ -6,6 +6,7 @@ module.exports = {
   DEFAULT_SCREEN_SIZE: [1200, 687],
   DEFAULT_SERVER_URL_CHROME: 'http://localhost:9515',
   DEFAULT_SERVER_URL_FIREFOX: 'http://localhost:4444/wd/hub',
+  DEFAULT_SERVER_URL_IPHONE: 'http://localhost:5555/wd/hub',
   DIFF_PNG_NAME: 'diff.png',
   // see explanation in index.js @ _runActionOrDisplaySkipMsg
   FIREFOX_CHROME_SIZE: [0, 106],

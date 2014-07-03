@@ -18,6 +18,9 @@ function _open(browserName, serverUrl, next) {
   } else if (browserName === 'chrome') {
     browser = webdriver.Capabilities.chrome();
     serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_CHROME;
+  } else if (browserName === 'iphone') {
+    browser = webdriver.Capabilities.iphone();
+    serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_IPHONE;
   } else {
     return next('Unsupported browser.');
   }
