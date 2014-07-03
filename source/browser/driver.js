@@ -62,19 +62,19 @@ function openDummy(browserName, serverUrl, next) {
     if (err) return next(err);
 
     // make this as unobstructive as possible
-    driver.manage().window().setSize(1, 1);
+    // driver.manage().window().setSize(1, 1);
     driver.manage().window().setPosition(9999, 9999);
     next(null, driver);
   });
 }
 
 function goToUrl(driver, url, windowWidth, windowHeight, next) {
-  driver.manage().window()
-    .setSize(windowWidth, windowHeight)
-    .then(function() {
-      driver.get(url);
-    })
-    .then(next);
+  // driver.manage().window()
+    // .setSize(windowWidth, windowHeight)
+    // .then(function() {
+      driver.get(url).then(next);
+    // })
+    // .then(next);
 }
 
 function quit(driver, next) {
