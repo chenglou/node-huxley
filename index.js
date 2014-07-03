@@ -45,7 +45,10 @@ function _saveTaskAsJsonToFolder(recordPath, taskEvents, next) {
 }
 
 function _recordAndSave(playbackInfo, next) {
-  record(runtimeConfig.config.driver, function(err, allEvents) {
+  var driver = runtimeConfig.config.driver;
+  var browser = runtimeConfig.config.browserName;
+
+  record(driver, browser, function(err, allEvents) {
     _saveTaskAsJsonToFolder(playbackInfo.recordPath, allEvents, next);
   });
 }
@@ -177,7 +180,7 @@ function _playbackTasksAndXScreenshots(globs, next) {
 
     _openRunAndClose(
       playbackInfos,
-      true,
+      false,
       _runEachPlayback.bind(null, playbackInfos, playback),
       next
     );

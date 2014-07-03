@@ -18,6 +18,9 @@ function _open(browserName, serverUrl, next) {
   } else if (browserName === 'chrome') {
     browser = webdriver.Capabilities.chrome();
     serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_CHROME;
+  } else if (browserName === 'iphone') {
+    browser = webdriver.Capabilities.iphone();
+    serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_IPHONE;
   } else {
     return next('Unsupported browser.');
   }
@@ -59,19 +62,19 @@ function openDummy(browserName, serverUrl, next) {
     if (err) return next(err);
 
     // make this as unobstructive as possible
-    driver.manage().window().setSize(1, 1);
+    // driver.manage().window().setSize(1, 1);
     driver.manage().window().setPosition(9999, 9999);
     next(null, driver);
   });
 }
 
 function goToUrl(driver, url, windowWidth, windowHeight, next) {
-  driver.manage().window()
-    .setSize(windowWidth, windowHeight)
-    .then(function() {
-      driver.get(url);
-    })
-    .then(next);
+  // driver.manage().window()
+    // .setSize(windowWidth, windowHeight)
+    // .then(function() {
+      driver.get(url).then(next);
+    // })
+    // .then(next);
 }
 
 function quit(driver, next) {

@@ -1,19 +1,17 @@
 [
   {
-    "action": "screenshot"
-  },
-  {
     "action": "click",
-    "y": 90,
-    "x": 196
+    "y": 79,
+    "x": 410
   },
   {
-    "action": "pause",
-    "ms": 500
+    "action": "scroll",
+    "y": 0,
+    "x": 130
   },
   {
     "action": "keypress",
-    "key": "H"
+    "key": "h"
   },
   {
     "action": "keypress",
@@ -33,39 +31,7 @@
   },
   {
     "action": "keypress",
-    "key": " "
-  },
-  {
-    "action": "keypress",
-    "key": "W"
-  },
-  {
-    "action": "keypress",
-    "key": "o"
-  },
-  {
-    "action": "keypress",
-    "key": "r"
-  },
-  {
-    "action": "keypress",
-    "key": "l"
-  },
-  {
-    "action": "keypress",
-    "key": "d"
-  },
-  {
-    "action": "screenshot"
-  },
-  {
-    "action": "click",
-    "y": 128,
-    "x": 150
-  },
-  {
-    "action": "pause",
-    "ms": 500
+    "key": "!"
   },
   {
     "action": "screenshot"
