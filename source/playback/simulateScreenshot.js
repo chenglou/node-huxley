@@ -34,6 +34,16 @@ function simulateScreenshot(driver, screenSize, browserName, next) {
           height: 99999,
         };
       }
+      if (browserName === 'iphone') {
+        // iphone has a toolbar and clock at the top of the screen. Screenshots
+        // must crop out the clock or it will break image diffs
+        config = {
+          left: 0,
+          top: 140,
+          width: screenSize[0],
+          height: 99999,
+        };
+      }
       var imageStream = imageOperations
         .turnRawImageStringIntoStream(rawImageString);
 

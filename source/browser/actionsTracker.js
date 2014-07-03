@@ -27,6 +27,11 @@
       x: e.clientX,
       y: e.clientY
     });
+
+    events.push({
+      action: 'pause',
+      ms: 300
+    });
   }, true);
 
   // only `keypress` returns the correct character. `keydown` returns `A` when
