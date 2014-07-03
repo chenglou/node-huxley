@@ -6,10 +6,12 @@ var read = require('read');
 
 var consts = require('./constants');
 
-function _startPromptAndInjectEventsScript(driver, next) {
+function _startPromptAndInjectEventsScript(driver, browser, next) {
   var recordingStartTime;
   var screenshotCount = 0;
   var screenshotEvents = [];
+
+  driver.executeScript('window._huxleyBrowser = "' + browser + '"');
 
   // I'm sick of callbacks and promises, sync read this
   var scriptToInject = fs.readFileSync(
@@ -109,8 +111,8 @@ function _stopAndGetProcessedEvents(driver, screenshotEvents, next) {
     .then(next);
 }
 
-function record(driver, next) {
-  _startPromptAndInjectEventsScript(driver, function(err, screenshotEvents) {
+function record(driver, browser, next) {
+  _startPromptAndInjectEventsScript(driver, browser, function(err, screenshotEvents) {
     if (err) return next(err);
 
     _stopAndGetProcessedEvents(driver, screenshotEvents, function(allEvents) {

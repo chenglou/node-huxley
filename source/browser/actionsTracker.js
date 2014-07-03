@@ -28,10 +28,13 @@
       y: e.clientY
     });
 
-    events.push({
-      action: 'pause',
-      ms: 300
-    });
+    // Add 300ms delay on iphone
+    if (window._huxleyBrowser == 'iphone') {
+      events.push({
+        action: 'pause',
+        ms: 300
+      });
+    }
   }, true);
 
   // only `keypress` returns the correct character. `keydown` returns `A` when
