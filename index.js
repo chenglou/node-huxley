@@ -84,38 +84,14 @@ function _openRunAndClose(playbackInfos, openDummy, action, next) {
 
     runtimeConfig.config.driver = driver;
 
-    if (openDummy) {
-      // TODO: pass a config obj instead.
-      return browser.openDummy(browserName, serverUrl, function(err, dummyDriver) {
-        process.on('SIGINT', function() {
-          browser.quit(driver, function() {
-            browser.quit(dummyDriver, process.exit);
-          });
-        });
-        if (err) {
-          return browser.quit(dummyDriver, function(err2) {
-            next(err || err2 || null);
-          });
-        }
-
-        action(function(err) {
-          browser.quit(driver, function(err2) {
-            browser.quit(dummyDriver, function(err3) {
-              next(err || err2 || err3 || null);
-            });
-          });
-        });
+    process.on('SIGINT', function() {
+      browser.quit(driver, process.exit);
+    });
+    action(function(err) {
+      browser.quit(driver, function(err2) {
+        next(err || err2 || null);
       });
-    } else {
-      process.on('SIGINT', function() {
-        browser.quit(driver, process.exit);
-      });
-      action(function(err) {
-        browser.quit(driver, function(err2) {
-          next(err || err2 || null);
-        });
-      });
-    }
+    });
   });
 }
 

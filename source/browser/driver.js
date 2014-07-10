@@ -49,22 +49,6 @@ function open(browserName, serverUrl, next) {
   _open(browserName, serverUrl, next);
 }
 
-// the sole purpose of this driver is to steal the focus away from the main
-// one; without the focus, the main window's form input won't get the highlight
-// hue; this behavior is more desirable than to have inconsistencies in
-// highlighting due to the user manually focusing/unfocusing the window at the
-// beginning
-function openDummy(browserName, serverUrl, next) {
-  _open(browserName, serverUrl, function(err, driver) {
-    if (err) return next(err);
-
-    // make this as unobstructive as possible
-    driver.manage().window().setSize(1, 1);
-    driver.manage().window().setPosition(9999, 9999);
-    next(null, driver);
-  });
-}
-
 function goToUrl(driver, url, windowWidth, windowHeight, next) {
   driver.manage().window()
     .setSize(windowWidth, windowHeight)
@@ -85,7 +69,6 @@ function injectDriver(driver) {
 module.exports = {
   injectDriver: injectDriver,
   open: open,
-  openDummy: openDummy,
   goToUrl: goToUrl,
   quit: quit
 };
