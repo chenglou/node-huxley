@@ -5,7 +5,7 @@
 var colors = require('colors');
 var app = require('commander');
 
-var huxley = require('../');
+var huxley = require('../source');
 var version = require('../package.json').version;
 
 app
@@ -35,29 +35,15 @@ app
   })
   .parse(process.argv);
 
-var browser = app.browser;
-var serverUrl = app.server;
-
-// every unamed param is treated as a path to search
-var allFolders = app.args;
-
-// this executable simply dogfoods Huxley's public API methods
-var callback = huxley.defaultDoneCallback;
-
+var fn;
 if (app.update) {
-  huxley.playbackTasksAndSaveScreenshots(
-    browser,
-    serverUrl,
-    allFolders,
-    callback
-  );
+  fn = huxley.writeScreenshots;
 } else if (app.record) {
-  huxley.recordTasks(browser, serverUrl, allFolders, callback);
+  fn = huxley.recordTasks;
 } else {
-  huxley.playbackTasksAndCompareScreenshots(
-    browser,
-    serverUrl,
-    allFolders,
-    callback
-  );
+  fn = huxley.compareScreenshots;
 }
+
+// globs, browserName, serverUrl, callback
+// every unamed param is treated as a path to search in app.args
+fn(app.args, app.browser, app.server);

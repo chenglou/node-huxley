@@ -1,0 +1,57 @@
+[
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 97,
+    "x": 186
+  },
+  {
+    "action": "keypress",
+    "key": "a"
+  },
+  {
+    "action": "keypress",
+    "key": "s"
+  },
+  {
+    "action": "keypress",
+    "key": "d"
+  },
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "pause",
+    "ms": 1402
+  },
+  {
+    "action": "click",
+    "y": 170,
+    "x": 121
+  },
+  {
+    "action": "pause",
+    "ms": 1241
+  },
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "pause",
+    "ms": 863
+  },
+  {
+    "action": "click",
+    "y": 170,
+    "x": 121
+  },
+  {
+    "action": "pause",
+    "ms": 949
+  },
+  {
+    "action": "screenshot"
+  }
+]

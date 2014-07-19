@@ -1,0 +1,25 @@
+[
+  {
+    "action": "screenshot"
+  },
+  {
+    "action": "click",
+    "y": 89,
+    "x": 302
+  },
+  {
+    "action": "keypress",
+    "key": "a"
+  },
+  {
+    "action": "keypress",
+    "key": "s"
+  },
+  {
+    "action": "keypress",
+    "key": "d"
+  },
+  {
+    "action": "screenshot"
+  }
+]
