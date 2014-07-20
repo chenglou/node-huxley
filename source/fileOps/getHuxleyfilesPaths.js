@@ -3,7 +3,7 @@
 var Promise = require("bluebird");
 
 var _ = require('lodash');
-var globP = require('./globP');
+var globP = require('../promisified/globP');
 var path = require('path');
 var consts = require('../constants');
 

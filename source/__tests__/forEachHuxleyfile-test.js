@@ -34,6 +34,7 @@ describe('forEachHuxleyfile', function() {
   xit('should provide defaults and pass good arguments', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
     forEachHuxleyfile(spy, [p], null, null, function(err) {
+      expect(callParams[1].length).toBe(2);
       expect(callParams[2].indexOf('/nested') > 1).toBe(true);
       expect(callParams[3]).toEqual('firefox');
       done(err);
@@ -43,8 +44,9 @@ describe('forEachHuxleyfile', function() {
   xit('should work', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
     forEachHuxleyfile(spy, [p], 'firefox', null, function(err) {
-      // once for each huxleyfile
-      expect(callParams).toEqual(2);
+      expect(callParams[1].length).toBe(2);
+      expect(callParams[2].indexOf('/nested') > 1).toBe(true);
+      expect(callParams[3]).toEqual('firefox');
       done(err);
     });
   });

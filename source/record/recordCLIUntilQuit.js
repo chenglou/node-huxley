@@ -3,7 +3,7 @@
 var Promise = require('bluebird');
 
 var consts = require('../constants');
-var readP = require('./readP');
+var readP = require('../promisified/readP');
 
 function recordCLIUntilQuit() {
   var screenshotActions = [];

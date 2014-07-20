@@ -7,13 +7,11 @@ var fs;
 var path;
 var fsP;
 
-var asd = require('png-diff');
-
 describe('actOnScreenshot', function() {
   beforeEach(function() {
     actOnScreenshot = require('../actOnScreenshot');
     fs = require('fs');
-    fsP = require('../../fileOps/fsP');
+    fsP = require('../../promisified/fsP');
     path = require('path');
   });
 

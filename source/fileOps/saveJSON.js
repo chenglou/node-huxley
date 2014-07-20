@@ -1,5 +1,5 @@
-var fsP = require('./fsP');
-var mkdirpP = require('./mkdirpP');
+var fsP = require('../promisified/fsP');
+var mkdirpP = require('../promisified/mkdirpP');
 var path = require('path');
 
 function saveJSON(p, data) {

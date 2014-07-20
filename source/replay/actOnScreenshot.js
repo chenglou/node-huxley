@@ -1,8 +1,8 @@
 'use strict';
 
-var fsP = require('../fileOps/fsP');
+var fsP = require('../promisified/fsP');
 var Promise = require('bluebird');
-var outputDiffP = require('./outputDiffP');
+var outputDiffP = require('../promisified/outputDiffP');
 
 function update(buf, p) {
   fsP.writeFileAsync(p, buf);

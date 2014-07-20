@@ -3,7 +3,7 @@
 var Promise = require('bluebird');
 
 var browser = require('../../browser/browser');
-var fsP = require('../../fileOps/fsP');
+var fsP = require('../../promisified/fsP');
 var path = require('path');
 
 function injectScript(driver) {

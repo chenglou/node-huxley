@@ -6,7 +6,7 @@ var browser = require('../browser/browser');
 var colors = require('colors');
 var actOnScreenshot = require('./actOnScreenshot');
 var consts = require('../constants');
-var fsP = require('../fileOps/fsP');
+var fsP = require('../promisified/fsP');
 var path = require('path');
 
 var simulateClick = require('./simulate/click');

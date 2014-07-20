@@ -1,7 +1,7 @@
 var Promise = require('bluebird');
 
 var browser = require('../../browser/browser');
-var cropP = require('../cropP');
+var cropP = require('../../promisified/cropP');
 
 // I want to unfocus the component before taking a screenshot (the hue screws up
 // stuff), but focus might trigger other interface changes
