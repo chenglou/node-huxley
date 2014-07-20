@@ -80,15 +80,17 @@ function replay(driver, task, actions, browserName, HuxleyfileContainerPath, com
         consts.HUXLEY_FOLDER_NAME,
         task.name || task.nameOnly
       );
-      return simulateEach(driver, w, h, actions, browserName, taskDirname, compare)
+      return simulateEach(driver, w, h, actions, browserName, taskDirname, compare);
     })
     .catch(function(err) {
       // probably screenshot-related. Continue and finish other tasks nonetheless
       if (err.cause && err.cause.errno === 34 && err.cause.code === 'ENOENT') {
-        console.log(err.message);
+        console.log(err.message.red);
         console.log('You probably tried to compare screenshot against non-existant ones.');
       } else if (err.message.indexOf('Different screenshot!') > -1) {
-        console.log(err.message);
+        console.log(err.message.red);
+      } else if (err.message.indexOf('Images not the same dimension') > -1) {
+        console.log((err.message.red));
       } else {
         // unrecognized. Throw again to have the stack trace
         throw err;

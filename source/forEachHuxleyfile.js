@@ -5,6 +5,7 @@ var Promise = require('bluebird');
 var browser = require('./browser/browser');
 var defaultCb = require('./defaultCb');
 var getHuxleyfilesPaths = require('./fileOps/getHuxleyfilesPaths');
+var getRunnables = require('./getRunnables');
 var loadJSON = require('./fileOps/loadJSON');
 var path = require('path');
 
@@ -24,8 +25,16 @@ function forEachHuxleyfileRaw(fn, globs, browserName, serverUrl, cb) {
       // I cannot understand. Do it as late as possible if the above stuff
       // throws
       driver = browser.open(browserName, serverUrl);
-      return Promise.each(JSONs, function(content, i) {
-        return fn(driver, content, ps[i], browserName);
+
+      var runnables = getRunnables(JSONs, ps);
+      var runnableTasks = runnables[0];
+      var runnablePaths = runnables[1];
+      if (runnableTasks[0][0].nameOnly != null) {
+        console.log('Running only the tasks marked as "nameOnly".'.yellow);
+      }
+
+      return Promise.each(runnableTasks, function(content, i) {
+        return fn(driver, content, runnablePaths[i], browserName);
       });
     })
     .finally(function() {

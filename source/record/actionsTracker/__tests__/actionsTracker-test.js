@@ -13,7 +13,7 @@ xdescribe('actionsTracker', function() {
 
   this.timeout(4000);
 
-  it('should inject and retrive actions correctly', function(done) {
+  it('should record events correctly', function(done) {
     var driver = browser.open('firefox');
 
     actionsTracker.injectScript(driver)

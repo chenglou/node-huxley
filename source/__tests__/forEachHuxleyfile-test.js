@@ -8,6 +8,7 @@ var path;
 describe('forEachHuxleyfile', function() {
   var spy;
   var callParams;
+
   beforeEach(function() {
     forEachHuxleyfile = require('../forEachHuxleyfile');
     path = require('path');
