@@ -35,7 +35,7 @@ function simulateEach(driver, w, h, actions, browserName, taskDirname, compare) 
     switch (action.action) {
       case consts.STEP_CLICK:
         console.log('  Clicking (%s, %s)', action.x, action.y);
-        return simulateClick(driver, action.y, action.y);
+        return simulateClick(driver, action.x, action.y);
       case consts.STEP_KEYPRESS:
         console.log('  Typing ' + action.key);
         return simulateKeypress(driver, action.key);
@@ -44,7 +44,7 @@ function simulateEach(driver, w, h, actions, browserName, taskDirname, compare) 
         return simulatePause(action.ms);
       case consts.STEP_SCROLL:
         console.log('  Scrolling to (%s, %s)', action.x, action.y);
-        return simulateScroll(driver, action.y, action.y);
+        return simulateScroll(driver, action.x, action.y);
       case consts.STEP_SCREENSHOT:
         var msg = compare ? 'Comparing' : 'Taking';
         console.log('  ' + msg + ' screenshot %s', ++screenshotCount);
