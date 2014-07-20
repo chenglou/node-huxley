@@ -2,27 +2,11 @@
 
 var Promise = require('bluebird');
 
+var actionsTracker = require('./actionsTracker/actionsTracker');
 var browser = require('../browser/browser');
 var consts = require('../constants');
-var fsP = require('../fileOps/fsP');
-var path = require('path');
 var processActions = require('./processActions');
 var recordCLIUntilQuit = require('./recordCLIUntilQuit');
-
-function injectTrackingScript(driver) {
-  fsP
-    .readFileAsync(
-      path.join(__dirname, './actionsTracker.js'),
-      {encoding: 'utf8'}
-    )
-    .then(function(script) {
-      return browser.executeScript(driver, script);
-    });
-}
-
-function getTrackedActions(driver) {
-  return browser.executeScript(driver, 'return window._getHuxleyEvents();');
-}
 
 function displayPrompt() {
   console.log('Begin record');
@@ -45,7 +29,7 @@ function recordTask(driver, task) {
   return browser
     .goToUrl(driver, task.url)
     .then(function() {
-      return injectTrackingScript(driver);
+      return actionsTracker.injectScript(driver);
     })
     .then(function() {
       return browser.setSize(driver, w, h);
@@ -55,7 +39,7 @@ function recordTask(driver, task) {
       return recordCLIUntilQuit();
     })
     .then(function(screenshotActions) {
-      return [getTrackedActions(driver), screenshotActions];
+      return [actionsTracker.getActions(driver), screenshotActions];
     })
     .spread(processActions);
 }

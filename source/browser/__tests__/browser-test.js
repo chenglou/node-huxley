@@ -18,11 +18,8 @@ xdescribe('browser', function() {
   it('should open the browser correctly', function(done) {
     var ff = browser.open('firefox');
     browser.goToUrl(ff, 'localhost:8000/')
-      .then(function() {
-        done();
-        return browser.quit(ff);
-      }, function(err) {
-        done(err);
+      .then(done.bind(null, null), done)
+      .finally(function() {
         return browser.quit(ff);
       });
   });
@@ -32,9 +29,10 @@ xdescribe('browser', function() {
     browser.goToUrl(ff, 'asd://localhost:8000/')
       .then(function() {
         done(new Error('Browser should not have been opened correctly'));
-        return browser.quit(ff);
       }, function() {
         done();
+      })
+      .finally(function() {
         return browser.quit(ff);
       });
   });

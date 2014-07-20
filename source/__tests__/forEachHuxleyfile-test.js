@@ -18,7 +18,7 @@ describe('forEachHuxleyfile', function() {
 
   this.timeout(4000);
 
-  xit('should stop if no huxleyfile was found', function(done) {
+  it('should stop if no huxleyfile was found', function(done) {
     // not a valid glob for huxleyfile
     var p = path.join(__dirname, '../fileOps/__tests__/');
     forEachHuxleyfile(spy, [p], 'firefox', null, function(err) {
@@ -31,12 +31,11 @@ describe('forEachHuxleyfile', function() {
     });
   });
 
-  it('should provide defaults and pass good arguments', function(done) {
+  xit('should provide defaults and pass good arguments', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
     forEachHuxleyfile(spy, [p], null, null, function(err) {
       expect(callParams[2].indexOf('/nested') > 1).toBe(true);
       expect(callParams[3]).toEqual('firefox');
-      console.log(callParams);
       done(err);
     });
   });
