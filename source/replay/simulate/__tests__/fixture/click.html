@@ -1,0 +1,22 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <div>Default text</div>
+  <input value="This text shouldn't appear on the screenshot" />
+  <div>Should be clicked at 20, 40</div>
+
+  <script>
+    var a = document.querySelector('div');
+    window.addEventListener('click', function(e) {
+      a.innerHTML = e.clientX + ', ' + e.clientY;
+    });
+    var b = document.querySelector('input');
+    b.addEventListener('focus', function() {
+      b.value = 'focused';
+    });
+  </script>
+</body>
+</html>
