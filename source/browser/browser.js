@@ -79,7 +79,14 @@ function goToUrl(driver, url) {
   // url (https://code.google.com/p/selenium/issues/detail?id=6988). Default to
   // http
   var prom = new Promise(function(resolve, reject) {
-    driver.get(normalizeUrl(url)).then(resolve, reject);
+    driver.get(normalizeUrl(url))
+      .then(function() {
+        // wow selenium
+        // right now the url bar has focus. So if you try to programmatically
+        // focus an html node it'd fail. Bring the focus back
+        return executeScript(driver, 'window.focus();');
+      })
+      .then(resolve, reject);
   });
   return prom;
 }
