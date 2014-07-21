@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <div id="press">keypress wasn't triggered</div>
+  <div id="up">keyup wasn't triggered</div>
+  <div id="window">window keyup wasn't triggered</div>
+  <input autofocus/>
+
+  <script>
+    var b = document.querySelector('input');
+    b.addEventListener('keypress', function() {
+      document.querySelector('#press').innerHTML = 'pressed';
+    });
+    b.addEventListener('keyup', function(e) {
+      document.querySelector('#up').innerHTML = 'upped';
+      // next up, direct focus to window and see if selenium can send the
+      // document a key
+      b.blur();
+      e.stopPropagation();
+    });
+    window.addEventListener('keyup', function() {
+      document.querySelector('#window').innerHTML = 'window keyup received';
+    });
+  </script>
+</body>
+</html>
