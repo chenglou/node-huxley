@@ -21,13 +21,15 @@ xdescribe('keypress', function() {
 
   this.timeout(5000);
 
-  it('clicks', function(done) {
+  it('key presses', function(done) {
     var driver = browser.open('firefox');
     var url = 'file://' + __dirname + '/fixture/keypress.html';
+    var w = 300;
+    var h = 200;
 
     browser.goToUrl(driver, url)
       .then(function() {
-        return browser.setSize(driver, 150, 300);
+        return browser.setSize(driver, w, h);
       })
       .then(function() {
         return keypress(driver, 'a');
@@ -36,7 +38,7 @@ xdescribe('keypress', function() {
         return keypress(driver, 'b');
       })
       .then(function() {
-        return browser.takeScreenshot(driver);
+        return screenshot(driver, w, h, 'firefox');
       })
       .then(function(img) {
         var expected =

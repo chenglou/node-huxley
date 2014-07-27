@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+  * {
+    margin: 0;
+  }
+  span {
+    width: 50px;
+    height: 50px;
+    outline: 1px solid gray;
+    display: inline-block;
+    font-size: 12px;
+  }
+  div {
+    width: 1000px;
+    font-size: 0px;
+  }
+  .red {
+    color: red;
+  }
+  </style>
+</head>
+<body>
+  <script>
+  for (var i = 0; i < 20; i++) {
+    var div = document.createElement('div');
+    for (var j = 0; j < 20; j++) {
+      var span = document.createElement('span');
+      span.innerHTML = j * 50 + ', ' + i * 50;
+      if (i === 4 && j === 3) {
+        span.className = 'red';
+      }
+      div.appendChild(span);
+    }
+    document.body.appendChild(div);
+  }
+  </script>
+</body>
+</html>
