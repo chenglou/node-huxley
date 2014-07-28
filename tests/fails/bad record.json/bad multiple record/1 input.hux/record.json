@@ -1,9 +1,0 @@
-[
-  {
-    "action": "screenshot"
-  },
-  {
-    "action": "keypress",
-    "key": "a"
-  }
-]
