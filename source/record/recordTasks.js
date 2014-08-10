@@ -14,7 +14,7 @@ function recordTasks(driver, JSONContent, HuxleyfileContainerPath) {
         var p = path.join(
           HuxleyfileContainerPath,
           consts.HUXLEY_FOLDER_NAME,
-          task.name || task.nameOnly,
+          task.name,
           consts.RECORD_FILE_NAME
         );
         return saveJSON(p, actions);

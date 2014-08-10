@@ -78,7 +78,7 @@ function replay(driver, task, actions, browserName, HuxleyfileContainerPath, com
       var taskDirname = path.join(
         HuxleyfileContainerPath,
         consts.HUXLEY_FOLDER_NAME,
-        task.name || task.nameOnly
+        task.name
       );
       return simulateEach(driver, w, h, actions, browserName, taskDirname, compare);
     })

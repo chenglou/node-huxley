@@ -12,11 +12,13 @@ app
   .version(version)
   .usage('[options] <file ...>')
   .option('-r, --record', 'Record a new test')
-  .option('-u, --update', 'Update screenshots using the automated steps')
+  .option('-w, --write', 'Write new screenshots using the automated steps')
+  .option('-c, --compare', 'Compare screenshots against preexisting written ones')
   .option(
     '-b, --browser <browser>',
     'Default: Firefox. Chrome needs extra setup (See README).'
   )
+  .option('-o, --only <taskName>', '(Optional) Run only the designated task.')
   .option(
     '-s, --server <url>',
     'Default: Firefox: http://localhost:4444/wd/hub. Chrome: http://localhost:9515. Address of the Selenium server.'
@@ -31,19 +33,27 @@ app
     );
     console.log('\n  Example:\n');
     console.log('    hux --update ./test ./tests-with-nested-folders/**');
-    console.log('    hux --record examples/**\n');
+    console.log('    hux --record examples/**');
+    console.log('    hux --compare examples/nested/ --only testInput1\n');
   })
   .parse(process.argv);
 
 var fn;
-if (app.update) {
+if (app.write) {
   fn = huxley.writeScreenshots;
 } else if (app.record) {
   fn = huxley.recordTasks;
-} else {
+} else if (app.compare) {
   fn = huxley.compareScreenshots;
 }
 
 // globs, browserName, serverUrl, callback
 // every unamed param is treated as a path to search in app.args
-fn(app.args, app.browser, app.server);
+var params = {
+  globs: app.args,
+  browserName: app.browser,
+  serverUrl: app.server,
+  taskName: app.only,
+};
+
+fn(params);

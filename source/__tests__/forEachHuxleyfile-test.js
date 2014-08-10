@@ -22,7 +22,11 @@ describe('forEachHuxleyfile', function() {
   it('should stop if no huxleyfile was found', function(done) {
     // not a valid glob for huxleyfile
     var p = path.join(__dirname, '../fileOps/__tests__/');
-    forEachHuxleyfile(spy, [p], 'firefox', null, function(err) {
+    var opts = {
+      globs: [p],
+      browserName: 'firefox',
+    };
+    forEachHuxleyfile(spy, opts, function(err) {
       expect(callParams).toEqual([]);
       if (err != null) {
         done();
@@ -32,9 +36,12 @@ describe('forEachHuxleyfile', function() {
     });
   });
 
-  xit('should provide defaults and pass good arguments', function(done) {
+  it('should provide defaults and pass good arguments', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
-    forEachHuxleyfile(spy, [p], null, null, function(err) {
+    var opts = {
+      globs: [p],
+    };
+    forEachHuxleyfile(spy, opts, function(err) {
       expect(callParams[1].length).toBe(2);
       expect(callParams[2].indexOf('/nested') > 1).toBe(true);
       expect(callParams[3]).toEqual('firefox');
@@ -42,9 +49,13 @@ describe('forEachHuxleyfile', function() {
     });
   });
 
-  xit('should work', function(done) {
+  it('should work', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
-    forEachHuxleyfile(spy, [p], 'firefox', null, function(err) {
+    var opts = {
+      globs: [p],
+      browserName: 'firefox',
+    };
+    forEachHuxleyfile(spy, opts, function(err) {
       expect(callParams[1].length).toBe(2);
       expect(callParams[2].indexOf('/nested') > 1).toBe(true);
       expect(callParams[3]).toEqual('firefox');
