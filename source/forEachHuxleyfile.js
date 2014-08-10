@@ -2,7 +2,9 @@
 
 var Promise = require('bluebird');
 
+var _ = require('lodash');
 var browser = require('./browser/browser');
+var consts = require('./constants');
 var defaultCb = require('./defaultCb');
 var getHuxleyfilesPaths = require('./fileOps/getHuxleyfilesPaths');
 var getRunnables = require('./getRunnables');
@@ -56,9 +58,15 @@ function forEachHuxleyfile(fn, opts, cb) {
   var newOpts = {};
 
   if (opts.globs && opts.globs.length !== 0) {
-    newOpts.globs = opts.globs;
+    newOpts.globs = opts.globs.map(function(g) {
+      // if the user didn't append 'Huxleyfile.json' at the end of the glob, do
+      // it for them
+      return _.endsWith(g, consts.HUXLEYFILE_NAME) ?
+        g :
+        path.join(g, consts.HUXLEYFILE_NAME);
+    });
   } else {
-    newOpts.globs = [path.join(process.cwd(), '**')];
+    newOpts.globs = [path.join(process.cwd(), '**', consts.HUXLEYFILE_NAME)];
   }
   newOpts.browserName = (opts.browserName && opts.browserName.toLowerCase()) || 'firefox';
   newOpts.serverUrl = opts.serverUrl;

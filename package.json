@@ -4,7 +4,7 @@
   "description": "New wave front-end testing.",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha 'source/**/*-test.js'"
+    "test": "./node_modules/.bin/selenium & node_modules/.bin/mocha 'source/**/*-test.js'"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "colors": "~0.6.2",
     "commander": "~2.1.0",
     "glob": "~3.2.9",
+    "lodash": "git+https://git@github.com/lodash/lodash.git",
     "mkdirp": "~0.3.5",
     "png-crop": "0.0.0",
     "png-diff": "^0.3.0",

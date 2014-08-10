@@ -28,8 +28,7 @@ app
       '  Defaults to search every Huxleyfile in current & nested folders.'.bold
     );
     console.log(
-      '  Optionally pass list of relative folders to search. Accept glob ' +
-      'patterns.'.bold
+      '  Optionally pass list of Huxleyfile paths. Accepts glob patterns.'.bold
     );
     console.log('\n  Example:\n');
     console.log('    hux --update ./test ./tests-with-nested-folders/**');

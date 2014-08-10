@@ -24,11 +24,16 @@ describe('getHuxleyfilesPaths', function() {
       'fixture/Huxleyfile.json',
       'fixture/nested/Huxleyfile.json',
     ];
-    compare(getHuxleyfilesPaths, [__dirname + '/fixture/**'], expected, done);
+    compare(
+      getHuxleyfilesPaths,
+      [__dirname + '/fixture/**/Huxleyfile.json'],
+      expected,
+      done
+    );
   });
 
   it('dedupes paths', function(done) {
-    var glob = __dirname + '/fixture/**';
+    var glob = __dirname + '/fixture/**/Huxleyfile.json';
     var expected = [
       'fixture/Huxleyfile.json',
       'fixture/nested/Huxleyfile.json',
