@@ -1,7 +1,8 @@
 'use strict';
 
-var fsP = require('../promisified/fsP');
 var Promise = require('bluebird');
+
+var fsP = require('../promisified/fsP');
 var outputDiffP = require('../promisified/outputDiffP');
 
 function update(buf, p) {
@@ -17,10 +18,15 @@ function diff(a, b, diffPath) {
         return Promise.resolve();
       }
 
+      var err = {
+        name: 'DifferentScreenshot',
+        message: 'Different screenshot!',
+        diffPath: diffPath
+      };
       return fsP
         .writeFileAsync(diffPath, buf)
         .then(function() {
-          return Promise.reject(new Error('Different screenshot! ' + diffPath));
+          return Promise.reject(err);
         });
     });
 }

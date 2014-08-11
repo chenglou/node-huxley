@@ -28,7 +28,7 @@ describe('actOnScreenshot', function() {
         done('This should have errored and saved a diff.');
       })
       .catch(function(err) {
-        expect(err.message.indexOf('Different screenshot! ') > -1).toBe(true);
+        expect(err.name).toBe('DifferentScreenshot');
         var res = fs.readFileSync(dest);
         var expectedDiff = fs.readFileSync(pj('fixture/expectedDiff.png'));
         return actOnScreenshot.diff(res, expectedDiff, errPath);

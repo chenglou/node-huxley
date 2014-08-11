@@ -58,7 +58,7 @@ function simulateEach(driver, w, h, actions, browserName, taskDirname, compare) 
   });
 }
 
-function replay(driver, task, actions, browserName, HuxleyfileContainerPath, compare) {
+function replay(compare, driver, task, actions, browserName, HuxleyfileContainerPath) {
   var w;
   var h;
   if (!task.screenSize) {
@@ -87,8 +87,8 @@ function replay(driver, task, actions, browserName, HuxleyfileContainerPath, com
       if (err.cause && err.cause.errno === 34 && err.cause.code === 'ENOENT') {
         console.log(err.message.red);
         console.log('You probably tried to compare screenshot against non-existant ones.');
-      } else if (err.message.indexOf('Different screenshot!') > -1) {
-        console.log(err.message.red);
+      } else if (err.name === 'DifferentScreenshot') {
+        console.log((err.message + ' ' + err.diffPath).red);
       } else if (err.message.indexOf('Images not the same dimension') > -1) {
         console.log((err.message.red));
       } else {

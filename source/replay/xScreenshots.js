@@ -8,7 +8,7 @@ var loadJSON = require('../fileOps/loadJSON');
 var path = require('path');
 
 // where x is one of (compare|write)
-function xScreenshots(driver, JSONContent, HuxleyfileContainerPath, browserName, compare) {
+function xScreenshots(compare, driver, JSONContent, HuxleyfileContainerPath, browserName) {
   return Promise.each(JSONContent, function(task) {
     var p = path.join(
       HuxleyfileContainerPath,
@@ -18,7 +18,7 @@ function xScreenshots(driver, JSONContent, HuxleyfileContainerPath, browserName,
     );
     return loadJSON(p)
       .then(function(actions) {
-        return replay(driver, task, actions, browserName, HuxleyfileContainerPath, compare);
+        return replay(compare, driver, task, actions, browserName, HuxleyfileContainerPath);
       });
   });
 }
