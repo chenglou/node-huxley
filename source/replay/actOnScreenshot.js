@@ -3,10 +3,15 @@
 var Promise = require('bluebird');
 
 var fsP = require('../promisified/fsP');
+var mkdirpP = require('../promisified/mkdirpP');
 var outputDiffP = require('../promisified/outputDiffP');
+var path = require('path');
 
 function update(buf, p) {
-  fsP.writeFileAsync(p, buf);
+  return mkdirpP(path.dirname(p))
+    .then(function() {
+      return fsP.writeFileAsync(p, buf);
+    });
 }
 
 function diff(a, b, diffPath) {
