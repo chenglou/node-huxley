@@ -2,17 +2,17 @@
 
 var Promise = require('bluebird');
 
-var _ = require('lodash');
 var browser = require('./browser/browser');
-var consts = require('./constants');
-var defaultCb = require('./defaultCb');
+var getDefaultOpts = require('./getDefaultOpts');
 var getHuxleyfilesPaths = require('./fileOps/getHuxleyfilesPaths');
 var getRunnables = require('./getRunnables');
 var loadJSON = require('./fileOps/loadJSON');
 var path = require('path');
 
-function forEachHuxleyfileRaw(fn, opts, cb) {
+function forEachHuxleyfile(fn, opts) {
   var driver;
+
+  opts = getDefaultOpts(opts);
 
   return getHuxleyfilesPaths(opts.globs)
     .then(function(ps) {
@@ -50,31 +50,7 @@ function forEachHuxleyfileRaw(fn, opts, cb) {
       if (driver) {
         return browser.quit(driver);
       }
-    })
-    .then(cb.bind(null, null), cb);
-}
-
-function forEachHuxleyfile(fn, opts, cb) {
-  var newOpts = {};
-
-  if (opts.globs && opts.globs.length !== 0) {
-    newOpts.globs = opts.globs.map(function(g) {
-      // if the user didn't append 'Huxleyfile.json' at the end of the glob, do
-      // it for them
-      return _.endsWith(g, consts.HUXLEYFILE_NAME) ?
-        g :
-        path.join(g, consts.HUXLEYFILE_NAME);
     });
-  } else {
-    newOpts.globs = [path.join(process.cwd(), '**', consts.HUXLEYFILE_NAME)];
-  }
-  newOpts.browserName = (opts.browserName && opts.browserName.toLowerCase()) || 'firefox';
-  newOpts.serverUrl = opts.serverUrl;
-  newOpts.taskName = opts.taskName;
-
-  cb = cb || defaultCb;
-
-  return forEachHuxleyfileRaw(fn, newOpts, cb);
 }
 
 module.exports = forEachHuxleyfile;

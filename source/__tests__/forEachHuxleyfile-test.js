@@ -24,30 +24,30 @@ describe('forEachHuxleyfile', function() {
     var p = path.join(__dirname, '../fileOps/__tests__/');
     var opts = {
       globs: [p],
-      browserName: 'firefox',
     };
-    forEachHuxleyfile(spy, opts, function(err) {
-      expect(callParams).toEqual([]);
-      if (err != null) {
-        done();
-      } else {
+    forEachHuxleyfile(spy, opts)
+      .then(function() {
         done('Should have errored.');
-      }
-    });
+      })
+      .catch(function() {
+        expect(callParams).toEqual([]);
+        done();
+      });
   });
 
-  xit('should provide defaults and pass good arguments', function(done) {
+  xit('should pass good arguments', function(done) {
     // not appending 'huxleyfile.json' at the end
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
     var opts = {
       globs: [p],
     };
-    forEachHuxleyfile(spy, opts, function(err) {
-      expect(callParams[1].length).toBe(2);
-      expect(callParams[2].indexOf('/nested') > 1).toBe(true);
-      expect(callParams[3]).toEqual('firefox');
-      done(err);
-    });
+    forEachHuxleyfile(spy, opts)
+      .then(function(err) {
+        expect(callParams[1].length).toBe(2);
+        expect(callParams[2].indexOf('/nested') > 1).toBe(true);
+        expect(callParams[3]).toEqual('firefox');
+        done();
+      });
   });
 
   xit('should work', function(done) {
@@ -57,12 +57,13 @@ describe('forEachHuxleyfile', function() {
       globs: [p],
       browserName: 'firefox',
     };
-    forEachHuxleyfile(spy, opts, function(err) {
-      expect(callParams[1].length).toBe(2);
-      expect(callParams[2].indexOf('/nested') > 1).toBe(true);
-      expect(callParams[3]).toEqual('firefox');
-      done(err);
-    });
+    forEachHuxleyfile(spy, opts)
+      .then(function(err) {
+        expect(callParams[1].length).toBe(2);
+        expect(callParams[2].indexOf('/nested') > 1).toBe(true);
+        expect(callParams[3]).toEqual('firefox');
+        done();
+      });
   });
 });
 

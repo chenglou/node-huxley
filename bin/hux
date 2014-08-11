@@ -55,4 +55,11 @@ var params = {
   taskName: app.only,
 };
 
-fn(params);
+fn(params)
+  .then(function() {
+    console.log('\nAll done.');
+  })
+  .catch(function(err) {
+    console.error(err);
+    console.error('\nThe tests now halt. You might have unfinished tasks.'.red);
+  });
