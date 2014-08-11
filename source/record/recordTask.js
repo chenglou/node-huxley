@@ -8,8 +8,8 @@ var consts = require('../constants');
 var processActions = require('./processActions');
 var recordCLIUntilQuit = require('./recordCLIUntilQuit');
 
-function displayPrompt() {
-  console.log('Begin record');
+function displayPrompt(taskName) {
+  console.log('Begin record "%s"', taskName);
   console.log(
     'Type q to quit, l for taking a screenshot and marking a live playback ' +
     'point til next screenshot, and anything else to take a normal screenshot.'
@@ -35,7 +35,7 @@ function recordTask(driver, task) {
       return browser.setSize(driver, w, h);
     })
     .then(function() {
-      displayPrompt();
+      displayPrompt(task.name);
       return recordCLIUntilQuit();
     })
     .then(function(screenshotActions) {
