@@ -1,5 +1,5 @@
 var expect = require('expect');
-var getHuxleyfilesPaths;
+var getFlatUniquePaths;
 
 function compare(func, globs, expected, done) {
   func(globs)
@@ -14,9 +14,9 @@ function compare(func, globs, expected, done) {
     });
 }
 
-describe('getHuxleyfilesPaths', function() {
+describe('getFlatUniquePaths', function() {
   beforeEach(function() {
-    getHuxleyfilesPaths = require('../getHuxleyfilesPaths');
+    getFlatUniquePaths = require('../getFlatUniquePaths');
   });
 
   it('gets the paths', function(done) {
@@ -25,19 +25,19 @@ describe('getHuxleyfilesPaths', function() {
       'fixture/nested/Huxleyfile.json',
     ];
     compare(
-      getHuxleyfilesPaths,
-      [__dirname + '/fixture/**/Huxleyfile.json'],
+      getFlatUniquePaths,
+      [__dirname + '/../../__tests__/fixture/**/Huxleyfile.json'],
       expected,
       done
     );
   });
 
   it('dedupes paths', function(done) {
-    var glob = __dirname + '/fixture/**/Huxleyfile.json';
+    var glob = __dirname + '/../../__tests__/fixture/**/Huxleyfile.json';
     var expected = [
       'fixture/Huxleyfile.json',
       'fixture/nested/Huxleyfile.json',
     ];
-    compare(getHuxleyfilesPaths, [glob, glob], expected, done);
+    compare(getFlatUniquePaths, [glob, glob], expected, done);
   });
 });

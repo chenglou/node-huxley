@@ -3,9 +3,9 @@
 var Promise = require("bluebird");
 
 var _ = require('lodash');
-var globP = require('../promisified/globP');
+var globP = require('../../promisified/globP');
 
-function getHuxleyfilesPaths(globs) {
+function getFlatUniquePaths(globs) {
   return Promise
     .map(globs, function(g) {
       return globP(g);
@@ -16,4 +16,4 @@ function getHuxleyfilesPaths(globs) {
     });
 }
 
-module.exports = getHuxleyfilesPaths;
+module.exports = getFlatUniquePaths;

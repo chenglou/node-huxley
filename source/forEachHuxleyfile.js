@@ -3,30 +3,13 @@
 var Promise = require('bluebird');
 
 var browser = require('./browser/browser');
-var getDefaultOpts = require('./getDefaultOpts');
-var getHuxleyfilesPaths = require('./fileOps/getHuxleyfilesPaths');
-var getRunnables = require('./getRunnables');
-var loadJSON = require('./fileOps/loadJSON');
-var path = require('path');
+var loadRunnables = require('./fileOps/loadRunnables');
 
 function forEachHuxleyfile(fn, opts) {
   var driver;
 
-  opts = getDefaultOpts(opts);
-
-  return getHuxleyfilesPaths(opts.globs)
-    .then(function(ps) {
-      if (ps.length === 0) {
-        return Promise.reject(new Error('No Huxleyfile found.'));
-      }
-      var dirs = ps.map(path.dirname);
-      return [Promise.map(ps, loadJSON).all(), dirs];
-    })
-    .spread(function(JSONs, ps) {
-      var runnables = getRunnables(JSONs, ps, opts.taskName);
-      var runnableTasks = runnables[0];
-      var runnablePaths = runnables[1];
-
+  return loadRunnables(opts.globs, opts.taskName)
+    .spread(function(runnableTasks, runnablePaths) {
       var deepEmpty = runnableTasks.every(function(task) {
         return task.length === 0;
       });

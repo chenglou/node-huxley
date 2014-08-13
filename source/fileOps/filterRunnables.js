@@ -1,6 +1,6 @@
 'use strict';
 
-function getRunnables(JSONs, paths, taskName) {
+function filterRunnables(JSONs, paths, taskName) {
   // since the JSONS array might shrink, pass huxleyfile paths too and shrink
   // accordingly
   if (taskName == null) {
@@ -25,4 +25,4 @@ function getRunnables(JSONs, paths, taskName) {
   return [newJSONs, newPaths];
 }
 
-module.exports = getRunnables;
+module.exports = filterRunnables;

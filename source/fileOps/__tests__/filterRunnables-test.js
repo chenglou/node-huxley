@@ -2,11 +2,11 @@
 
 var expect = require('expect');
 
-var getRunnables;
+var filterRunnables;
 
-describe('getRunnables', function() {
+describe('filterRunnables', function() {
   beforeEach(function() {
-    getRunnables = require('../getRunnables');
+    filterRunnables = require('../filterRunnables');
   });
 
   it('runs all the tasks if there is no taskName tasks present', function() {
@@ -15,7 +15,7 @@ describe('getRunnables', function() {
       [{name: 'c'}, {name: 'd'}]
     ];
     var paths = [1, 2];
-    expect(getRunnables(JSONs, paths)).toEqual([JSONs, paths]);
+    expect(filterRunnables(JSONs, paths)).toEqual([JSONs, paths]);
   });
 
   it('should only run the designated tasks if taskName is present', function() {
@@ -24,13 +24,13 @@ describe('getRunnables', function() {
       [{name: 'c'}, {name: 'd'}]
     ];
     var paths = [1, 2];
-    expect(getRunnables(JSONs, paths, 'b')).toEqual([[[{name: 'b'}]], [1]]);
+    expect(filterRunnables(JSONs, paths, 'b')).toEqual([[[{name: 'b'}]], [1]]);
 
     var raw2 = [
       [{name: 'a', bla: 'asd'}, {name: 'b'}],
       [{name: 'c'}, {name: 'b'}]
     ];
-    expect(getRunnables(raw2, paths, 'b'))
+    expect(filterRunnables(raw2, paths, 'b'))
       .toEqual([[[{name: 'b'}], [{name: 'b'}]], paths]);
   });
 });

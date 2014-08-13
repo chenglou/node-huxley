@@ -36,8 +36,7 @@ describe('forEachHuxleyfile', function() {
   });
 
   xit('should pass good arguments', function(done) {
-    // not appending 'huxleyfile.json' at the end
-    var p = path.join(__dirname, '../fileOps/__tests__/fixture/**');
+    var p = path.join(__dirname, '../fileOps/__tests__/fixture/**/Huxleyfile.json');
     var opts = {
       globs: [p],
     };
@@ -51,7 +50,6 @@ describe('forEachHuxleyfile', function() {
   });
 
   xit('should work', function(done) {
-    // appending 'Huxleyfile.json' at the end
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**/Huxleyfile.json');
     var opts = {
       globs: [p],

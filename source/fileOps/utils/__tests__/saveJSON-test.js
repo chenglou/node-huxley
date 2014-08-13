@@ -16,7 +16,7 @@ describe('saveJSON', function() {
 
   it('creates new dirs and save the file', function(done) {
     var json = {asd: [1, 2], b: 'a'};
-    var p = path.join(__dirname, 'fixture/a/b/c');
+    var p = path.join(__dirname, '../../__tests__/fixture/a/b/c');
     saveJSON(p, json)
       .then(function() {
         return loadJSON(p);
@@ -27,16 +27,7 @@ describe('saveJSON', function() {
       })
       .catch(done)
       .finally(function() {
-        rimraf.sync(path.join(__dirname, 'fixture/a'));
+        rimraf.sync(path.join(__dirname, '../../__tests__/fixture/a'));
       });
   });
-
-  // it('dedupes paths', function(done) {
-  //   var glob = __dirname + '/fixture/**';
-  //   var expected = [
-  //     'fixture/Huxleyfile.json',
-  //     'fixture/nested/Huxleyfile.json',
-  //   ];
-  //   compare(saveJSON, [glob, glob], expected, done);
-  // });
 });

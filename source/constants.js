@@ -10,6 +10,7 @@ module.exports = {
   FIREFOX_CHROME_SIZE: [0, 106],
   HUXLEYFILE_NAME: 'Huxleyfile.json',
   HUXLEY_FOLDER_NAME: 'Huxleyfolder',
+  HUXLEY_FOLDER_SUFFIX: '.hux',
   RECORD_FILE_NAME: 'record.json',
   STEP_CLICK: 'click',
   STEP_KEYPRESS: 'keypress',

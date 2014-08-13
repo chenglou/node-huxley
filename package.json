@@ -37,6 +37,7 @@
     "png-crop": "0.0.0",
     "png-diff": "^0.3.0",
     "read": "~1.0.5",
+    "rimraf": "^2.2.8",
     "selenium-webdriver": "~2.39.0"
   },
   "devDependencies": {
@@ -44,7 +45,6 @@
     "jest-cli": "^0.1.17",
     "mocha": "^1.20.1",
     "nexpect": "^0.4.2",
-    "rimraf": "^2.2.8",
     "selenium-server": "~2.38.0"
   }
 }

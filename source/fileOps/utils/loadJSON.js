@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var fsP = require('../promisified/fsP');
+var fsP = require('../../promisified/fsP');
 
 function loadJSON(p) {
   return fsP

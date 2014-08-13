@@ -44,22 +44,24 @@ if (app.write) {
   fn = huxley.recordTasks;
 } else if (app.compare) {
   fn = huxley.compareScreenshots;
+} else {
+  fn = huxley.defaultWorkflow;
 }
 
 // globs, browserName, serverUrl, callback
 // every unamed param is treated as a path to search in app.args
-var params = {
+var opts = {
   globs: app.args,
   browserName: app.browser,
   serverUrl: app.server,
   taskName: app.only,
 };
 
-fn(params)
+fn(opts)
   .then(function() {
     console.log('\nAll done.');
   })
   .catch(function(err) {
-    console.error(err);
     console.error('\nThe tests now halt. You might have unfinished tasks.'.red);
+    throw err;
   });

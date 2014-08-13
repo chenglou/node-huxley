@@ -31,6 +31,7 @@ function actOnScreenshot2(buf, taskDirname, imgIndex, browserName, compare) {
 
 function simulateEach(driver, w, h, actions, browserName, taskDirname, compare) {
   var screenshotCount = 0;
+
   return Promise.each(actions, function(action) {
     switch (action.action) {
       case consts.STEP_CLICK:
@@ -75,10 +76,11 @@ function replay(compare, driver, task, actions, browserName, HuxleyfileContainer
       return browser.setSize(driver, w, h);
     })
     .then(function() {
+      console.log('Replaying "%s"\n', task.name);
       var taskDirname = path.join(
         HuxleyfileContainerPath,
         consts.HUXLEY_FOLDER_NAME,
-        task.name
+        task.name + consts.HUXLEY_FOLDER_SUFFIX
       );
       return simulateEach(driver, w, h, actions, browserName, taskDirname, compare);
     })
@@ -88,7 +90,7 @@ function replay(compare, driver, task, actions, browserName, HuxleyfileContainer
         console.log(err.message.red);
         console.log('You probably tried to compare screenshot against non-existant ones.');
       } else if (err.name === 'DifferentScreenshot') {
-        console.log((err.message + ' ' + err.diffPath).red);
+        console.log((err.message + ' ' + err.diffPath + '\n').red);
       } else if (err.message.indexOf('Images not the same dimension') > -1) {
         console.log((err.message.red));
       } else {

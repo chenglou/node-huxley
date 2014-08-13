@@ -4,7 +4,7 @@ var Promise = require('bluebird');
 
 var consts = require('../constants');
 var replay = require('./replay');
-var loadJSON = require('../fileOps/loadJSON');
+var loadJSON = require('../fileOps/utils/loadJSON');
 var path = require('path');
 
 // where x is one of (compare|write)
@@ -13,8 +13,7 @@ function xScreenshots(compare, driver, JSONContent, HuxleyfileContainerPath, bro
     var p = path.join(
       HuxleyfileContainerPath,
       consts.HUXLEY_FOLDER_NAME,
-      task.name,
-      consts.RECORD_FILE_NAME
+      task.name + '.' + consts.RECORD_FILE_NAME
     );
     return loadJSON(p)
       .then(function(actions) {
