@@ -9,7 +9,7 @@ describe('filterRunnables', function() {
     filterRunnables = require('../filterRunnables');
   });
 
-  it('runs all the tasks if there is no taskName tasks present', function() {
+  it('returns all the tasks if there is no taskName present', function() {
     var JSONs = [
       [{name: 'a', bla: 'asd'}, {name: 'b'}],
       [{name: 'c'}, {name: 'd'}]
@@ -32,5 +32,14 @@ describe('filterRunnables', function() {
     ];
     expect(filterRunnables(raw2, paths, 'b'))
       .toEqual([[[{name: 'b'}], [{name: 'b'}]], paths]);
+  });
+
+  it('returns nothing if nothing matches', function() {
+    var JSONs = [
+      [{name: 'a', bla: 'asd'}, {name: 'b'}],
+      [{name: 'c'}, {name: 'd'}]
+    ];
+    var paths = [1, 2];
+    expect(filterRunnables(JSONs, paths, 'bla')).toEqual([[], []]);
   });
 });
