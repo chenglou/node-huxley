@@ -21,6 +21,7 @@ function getDefaultOpts(opts) {
   newOpts.browserName = (opts.browserName && opts.browserName.toLowerCase()) || 'firefox';
   newOpts.serverUrl = opts.serverUrl;
   newOpts.taskName = opts.taskName;
+  newOpts.injectedDriver = opts.injectedDriver;
 
   return newOpts;
 }

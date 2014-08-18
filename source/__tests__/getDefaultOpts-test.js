@@ -17,6 +17,7 @@ describe('getDefaultOpts', function() {
       browserName: 'firefox',
       serverUrl: undefined,
       taskName: undefined,
+      injectedDriver: undefined,
     });
 
     var opts = {
@@ -24,12 +25,14 @@ describe('getDefaultOpts', function() {
       globs: ['foo'],
       taskName: 'bar',
       serverUrl: 'baz',
+      injectedDriver: 'qux',
     };
     expect(getDefaultOpts(opts)).toEqual({
       browserName: 'chrome',
       globs: ['foo/Huxleyfile.json'],
       taskName: 'bar',
       serverUrl: 'baz',
+      injectedDriver: 'qux',
     });
   });
 });

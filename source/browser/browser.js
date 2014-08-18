@@ -6,13 +6,6 @@ var webdriver = require('selenium-webdriver');
 
 var consts = require('../constants');
 
-var injectedDriver;
-function injectDriver(driver) {
-  // TODO: this
-  throw 'TODO';
-  injectedDriver = driver;
-}
-
 function normalizeUrl(url) {
   if (!/^\w+?:\/\//.test(url)) {
     url = 'http://' + url;
@@ -126,7 +119,6 @@ function quit(driver) {
 }
 
 module.exports = {
-  injectDriver: injectDriver,
   open: open,
   goToUrl: goToUrl,
   setSize: setSize,

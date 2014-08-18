@@ -15,7 +15,6 @@ function wrap(fn) {
 }
 
 module.exports = {
-  // injectDriver: browser.injectDriver,
   defaultWorkflow: wrap(defaultWorkflow),
   recordTasks: wrap(forEachHuxleyfile.bind(null, recordTasks)),
   compareScreenshots: wrap(forEachHuxleyfile.bind(null, compareScreenshots)),
