@@ -43,8 +43,7 @@ xdescribe('scroll', function() {
         var actual = new Buffer(img, 'base64');
         return outputDiffP(expected, actual);
       })
-      .then(function(args) {
-        var diffMetric = args[0];
+      .spread(function(diffMetric) {
         expect(diffMetric).toBe(0);
       })
       .then(done.bind(null, null), done)

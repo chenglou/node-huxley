@@ -7,7 +7,6 @@ var concat = require('concat-stream');
 
 // config example: {height: 100, width: 40, top: 15, left: 20}
 // top and left optional
-// var cropToStream = Promise.promisify(PNGCrop.cropToStream);
 function crop(stream, config, cb) {
   PNGCrop.cropToStream(stream, config, function(err, outputStream) {
     var buf = concat(function(data) {

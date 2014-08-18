@@ -35,9 +35,9 @@ describe('loadRunnables', function() {
     ];
 
     loadRunnables(globs)
-      .then(function(res) {
-        expect(res[0]).toEqual(expected);
-        samePaths(res[1], ['fixture', 'fixture/nested']);
+      .spread(function(tasks, paths) {
+        expect(tasks).toEqual(expected);
+        samePaths(paths, ['fixture', 'fixture/nested']);
         done();
       }, done);
   });
@@ -49,9 +49,9 @@ describe('loadRunnables', function() {
     ];
 
     loadRunnables([p], '2 nested')
-      .then(function(res) {
-        expect(res[0]).toEqual(expected);
-        samePaths(res[1], ['fixture/nested']);
+      .spread(function(tasks, paths) {
+        expect(tasks).toEqual(expected);
+        samePaths(paths, ['fixture/nested']);
         done();
       }, done);
   });

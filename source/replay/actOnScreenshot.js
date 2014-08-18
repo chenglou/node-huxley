@@ -16,9 +16,7 @@ function update(buf, p) {
 
 function diff(a, b, diffPath) {
   return outputDiffP(a, b)
-    .then(function(args) {
-      var diffMetric = args[0];
-      var buf = args[1];
+    .spread(function(diffMetric, buf) {
       if (diffMetric === 0) {
         return Promise.resolve();
       }
