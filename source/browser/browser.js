@@ -8,6 +8,7 @@ var consts = require('../constants');
 
 var injectedDriver;
 function injectDriver(driver) {
+  // TODO: this
   throw 'TODO';
   injectedDriver = driver;
 }
@@ -32,7 +33,12 @@ function open(browserName, serverUrl) {
     browser = webdriver.Capabilities.firefox();
     serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_FIREFOX;
   } else {
-    browser = webdriver.Capabilities.chrome();
+    // https://code.google.com/p/chromedriver/issues/detail?id=799
+    // need to pass this arg, or else the chrome window displays an error
+    // banner message, which screws up viewport dimensions
+    browser = webdriver.Capabilities.chrome().set('chromeOptions', {
+      args: ['--test-type'],
+    });
     serverUrl = serverUrl || consts.DEFAULT_SERVER_URL_CHROME;
   }
 
@@ -53,16 +59,24 @@ function open(browserName, serverUrl) {
 // promises with an actually good implementation, so that things like `finally`
 // and `all` work
 
-// as an aside, imo the weak point of monads is that it infects all your system.
-// As long as you stay in the paradigm you're ok. Otherwise it's hard to work
-// with. And if it's already so in haskell, porting them to something like js
-// accentuates the problem. Or maybe I just suck at this
-
 // `bluebird.promisifyAll` won't work here for various reasons, e.g. the
-// `driver.manage().moreBla right below
-function setSize(driver, w, h) {
+// `driver.manage().moreBla` right below
+
+// (w, h) is the size of the browser content dimensions, which is what we want
+// most of the times. Selenium's `setSize`, however, asks for whole browser size
+// including browser chrome height. Normalize all here.
+
+var browserChrome = {
+  'chrome': [0, 72],
+  'firefox': [0, 79],
+};
+
+function setSize(driver, browserName, w, h) {
+  var displayW = w + browserChrome[browserName][0];
+  var displayH = h + browserChrome[browserName][1];
+
   var prom = new Promise(function(resolve, reject) {
-    driver.manage().window().setSize(w, h).then(resolve, reject);
+    driver.manage().window().setSize(displayW, displayH).then(resolve, reject);
   });
   return prom;
 }

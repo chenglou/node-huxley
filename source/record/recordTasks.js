@@ -7,9 +7,9 @@ var path = require('path');
 var recordTask = require('./recordTask');
 var saveJSON = require('../fileOps/utils/saveJSON');
 
-function recordTasks(driver, JSONContent, HuxleyfileContainerPath) {
+function recordTasks(driver, JSONContent, HuxleyfileContainerPath, browserName) {
   return Promise.each(JSONContent, function(task) {
-    return recordTask(driver, task)
+    return recordTask(driver, browserName, task)
       .then(function(actions) {
         var p = path.join(
           HuxleyfileContainerPath,

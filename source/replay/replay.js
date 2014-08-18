@@ -73,7 +73,7 @@ function replay(compare, driver, task, actions, browserName, HuxleyfileContainer
   return browser
     .goToUrl(driver, task.url)
     .then(function() {
-      return browser.setSize(driver, w, h);
+      return browser.setSize(driver, browserName, w, h);
     })
     .then(function() {
       console.log('Replaying "%s"\n', task.name);

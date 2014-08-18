@@ -16,7 +16,7 @@ function displayPrompt(taskName) {
   );
 }
 
-function recordTask(driver, task) {
+function recordTask(driver, browserName, task) {
   var w;
   var h;
   if (!task.screenSize) {
@@ -32,7 +32,7 @@ function recordTask(driver, task) {
       return actionsTracker.injectScript(driver);
     })
     .then(function() {
-      return browser.setSize(driver, w, h);
+      return browser.setSize(driver, browserName, w, h);
     })
     .then(function() {
       displayPrompt(task.name);
