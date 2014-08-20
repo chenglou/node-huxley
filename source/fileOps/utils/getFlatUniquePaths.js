@@ -10,7 +10,6 @@ function getFlatUniquePaths(globs) {
     .map(globs, function(g) {
       return globP(g);
     })
-    .all()
     .then(function(huxleyfilesPaths) {
       return _.uniq(_.flatten(huxleyfilesPaths));
     });

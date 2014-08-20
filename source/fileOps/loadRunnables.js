@@ -13,11 +13,13 @@ function loadRunnables(globs, taskName) {
       if (ps.length === 0) {
         return Promise.reject(new Error('No Huxleyfile found.'));
       }
-      var dirs = ps.map(path.dirname);
-      return Promise.join(Promise.map(ps, loadJSON).all(), dirs);
-    })
-    .spread(function(JSONs, dirs) {
-      return filterRunnables(JSONs, dirs, taskName);
+
+      return Promise
+        .map(ps, loadJSON)
+        .then(function(JSONs) {
+          var dirs = ps.map(path.dirname);
+          return filterRunnables(JSONs, dirs, taskName);
+        });
     });
 }
 
