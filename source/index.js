@@ -1,8 +1,8 @@
 'use strict';
 
-var defaultWorkflow = require('./defaultWorkflow');
+var defaultWorkflow = require('./defaultWorkflow/defaultWorkflow');
 var getDefaultOpts = require('./getDefaultOpts');
-var forEachHuxleyfile = require('./forEachHuxleyfile');
+var runRunnableTasks = require('./runRunnableTasks');
 var compareScreenshots = require('./replay/compareScreenshots');
 var recordTasks = require('./record/recordTasks');
 var writeScreenshots = require('./replay/writeScreenshots');
@@ -16,7 +16,7 @@ function wrap(fn) {
 
 module.exports = {
   defaultWorkflow: wrap(defaultWorkflow),
-  recordTasks: wrap(forEachHuxleyfile.bind(null, recordTasks)),
-  compareScreenshots: wrap(forEachHuxleyfile.bind(null, compareScreenshots)),
-  writeScreenshots: wrap(forEachHuxleyfile.bind(null, writeScreenshots)),
+  recordTasks: wrap(runRunnableTasks.bind(null, recordTasks)),
+  compareScreenshots: wrap(runRunnableTasks.bind(null, compareScreenshots)),
+  writeScreenshots: wrap(runRunnableTasks.bind(null, writeScreenshots)),
 };
