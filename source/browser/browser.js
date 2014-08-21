@@ -81,6 +81,20 @@ function takeScreenshot(driver) {
   return prom;
 }
 
+// useful for getting the browser name of the injected driver
+function getBrowserName(driver) {
+  var prom = new Promise(function(resolve, reject) {
+    driver
+      .getCapabilities()
+      .then(function(whatIsThis) {
+        // damn it selenium, where's the js api docs
+        var browserName = whatIsThis.caps_.browserName;
+        resolve(browserName);
+      }, reject);
+  });
+  return prom;
+}
+
 function goToUrl(driver, url) {
   // selenium throws an obscure message if you don't append the protocol to your
   // url (https://code.google.com/p/selenium/issues/detail?id=6988). Default to
@@ -119,10 +133,11 @@ function quit(driver) {
 }
 
 module.exports = {
-  open: open,
-  goToUrl: goToUrl,
-  setSize: setSize,
   executeScript: executeScript,
+  getBrowserName: getBrowserName,
+  goToUrl: goToUrl,
+  open: open,
+  quit: quit,
+  setSize: setSize,
   takeScreenshot: takeScreenshot,
-  quit: quit
 };
