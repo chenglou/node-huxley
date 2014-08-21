@@ -4,7 +4,7 @@
   "description": "New wave front-end testing.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/selenium & node_modules/.bin/mocha 'source/**/*-test.js'"
+    "test": "chromedriver & ./node_modules/.bin/selenium & node_modules/.bin/mocha 'source/**/*-test.js'"
   },
   "repository": {
     "type": "git",

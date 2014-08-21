@@ -5,7 +5,7 @@ module.exports = {
   DEFAULT_SCREEN_SIZE: [1200, 687],
   DEFAULT_SERVER_URL_CHROME: 'http://localhost:9515',
   DEFAULT_SERVER_URL_FIREFOX: 'http://localhost:4444/wd/hub',
-  DIFF_PNG_NAME: 'diff.png',
+  DIFF_PNG_SUFFIX: '-diff.png',
   HUXLEYFILE_NAME: 'Huxleyfile.json',
   HUXLEY_FOLDER_NAME: 'Huxleyfolder',
   HUXLEY_FOLDER_SUFFIX: '.hux',

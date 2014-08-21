@@ -76,7 +76,11 @@ function replay(compare, driver, task, actions, browserName, HuxleyfileContainer
       return browser.setSize(driver, browserName, w, h);
     })
     .then(function() {
-      console.log('Replaying "%s"\n', task.name);
+      console.log(
+        'Replaying and %s screenshots for "%s"\n',
+        compare ? 'comparing' : 'writing',
+        task.name
+      );
       var taskDirname = path.join(
         HuxleyfileContainerPath,
         consts.HUXLEY_FOLDER_NAME,

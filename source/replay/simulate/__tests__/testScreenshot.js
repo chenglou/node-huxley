@@ -27,7 +27,6 @@ function testScreenshot(driver, browserName, url, w, h, pngName, fn) {
         'fixture/' + pngName + '-' + browserName + '.png'
       ));
       var actual = new Buffer(img, 'base64');
-      // fs.writeFileSync(__dirname + Math.random() + '.png', actual);
 
       return outputDiffP(expected, actual);
     })
