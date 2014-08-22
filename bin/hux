@@ -10,7 +10,7 @@ var version = require('../package.json').version;
 
 app
   .version(version)
-  .usage('[options] <file ...>')
+  .usage('[options] <globs ...>')
   .option('-r, --record', 'Record a new test')
   .option('-w, --write', 'Write new screenshots using the automated steps')
   .option('-c, --compare', 'Compare screenshots against preexisting written ones')
@@ -18,7 +18,7 @@ app
     '-b, --browser <browser>',
     'Default: Firefox. Chrome needs extra setup (See README).'
   )
-  .option('-o, --only <taskName>', '(Optional) Run only the designated task.')
+  .option('-o, --only <taskName>', 'Run only the designated task.')
   .option(
     '-s, --server <url>',
     'Default: Firefox: http://localhost:4444/wd/hub. Chrome: http://localhost:9515. Address of the Selenium server.'
@@ -28,11 +28,11 @@ app
       '  Defaults to search every Huxleyfile in current & nested folders.'.bold
     );
     console.log(
-      '  Optionally pass list of Huxleyfile paths. Accepts glob patterns.'.bold
+      '  Optionally pass a list of Huxleyfile paths. Accepts glob patterns.'.bold
     );
     console.log('\n  Example:\n');
-    console.log('    hux --update ./test ./tests-with-nested-folders/**');
     console.log('    hux --record examples/**');
+    console.log('    hux --write ./test ./tests-with-nested-folders/**');
     console.log('    hux --compare examples/nested/ --only testInput1\n');
   })
   .parse(process.argv);
@@ -59,7 +59,7 @@ var opts = {
 
 fn(opts)
   .then(function() {
-    console.log('All done.\n');
+    console.log('All done.');
   })
   .catch(function(err) {
     console.error('The tests now halt. You might have unfinished tasks.\n'.red);

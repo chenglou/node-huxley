@@ -4,15 +4,20 @@ var Promise = require('bluebird');
 
 var actionsTracker = require('./actionsTracker/actionsTracker');
 var browser = require('../browser/browser');
+var colors = require('colors');
 var consts = require('../constants');
 var processActions = require('./processActions');
 var recordCLIUntilQuit = require('./recordCLIUntilQuit');
 
 function displayPrompt(taskName) {
+  console.log('--------------------------------');
   console.log('Begin record "%s"', taskName);
+  console.log('--------------------------------');
   console.log(
-    'Type q to quit, l for taking a screenshot and marking a live playback ' +
-    'point til next screenshot, and anything else to take a normal screenshot.'
+    '`enter`'.bold + ': take screenshot.\n' +
+    '`l` `enter`'.bold + ': record everything in real time from this point \n' +
+    'onward (for animation, ajax). `l` `enter` again to stop live tracking.\n' +
+    '`q` `enter`'.bold + ': quit.\n'
   );
 }
 
