@@ -49,8 +49,8 @@ function open(browserName, serverUrl) {
 
 // selenium amuses itself by implementing promises themselves, and very poorly.
 // Beside the basic `then`, there isn't much else. Here I wrap their pseudo-
-// promises with an actually good implementation, so that things like `finally`
-// and `all` work
+// promises with the actually good implementation from bluebird, so that things
+// like `finally` and `all` work. Plus, lots of these need normalization anyways
 
 // `bluebird.promisifyAll` won't work here for various reasons, e.g. the
 // `driver.manage().moreBla` right below
@@ -113,8 +113,10 @@ function goToUrl(driver, url) {
 }
 
 function executeScript(driver, script) {
-  // this is the only one we don't chain here. If you do, you get this:
-  // https://github.com/petkaantonov/bluebird/wiki/Error:-circular-promise-resolution-chain
+  // this is the only method where we expose selenium Promises rather than
+  // bluebird's: https://github.com/petkaantonov/bluebird/wiki/Error:-circular-
+  // promise-resolution-chain
+
   // executeScript has to return the return of your js script. This screws
   // things up since all the other bluebird wrappers up and below return selves
 

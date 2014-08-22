@@ -59,9 +59,9 @@ var opts = {
 
 fn(opts)
   .then(function() {
-    console.log('\nAll done.');
+    console.log('All done.\n');
   })
   .catch(function(err) {
-    console.error('\nThe tests now halt. You might have unfinished tasks.'.red);
+    console.error('The tests now halt. You might have unfinished tasks.\n'.red);
     throw err;
   });

@@ -25,12 +25,12 @@ describe('loadRunnables', function() {
 
     var expected = [
       [
-        {"name": "1 task", "screenSize": [750, 500], "url": "foo"},
-        {"name": "2 task", "url": "bar"}
+        {name: '1 task', screenSize: [750, 500], url: 'foo'},
+        {name: '2 task', url: 'bar'}
       ],
       [
-        {"name": "1 nested", "url": "baz"},
-        {"name": "2 nested", "url": "qux"}
+        {name: '1 nested', url: 'baz'},
+        {name: '2 nested', url: 'qux'}
       ]
     ];
 
@@ -45,7 +45,7 @@ describe('loadRunnables', function() {
   it('only returns the tasks indicated by taskName', function(done) {
     var p = path.join(__dirname, 'fixture/nested/Huxleyfile.json');
     var expected = [
-      [{"name": "2 nested", "url": "qux"}]
+      [{name: '2 nested', url: 'qux'}]
     ];
 
     loadRunnables([p], '2 nested')

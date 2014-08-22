@@ -1,6 +1,6 @@
 'use strict';
 
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 
 var _ = require('lodash');
 var globP = require('../../promisified/globP');

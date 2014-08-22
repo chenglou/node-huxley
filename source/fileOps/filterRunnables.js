@@ -1,5 +1,7 @@
 'use strict';
 
+// trim down the Huxleyfile json tasks to only those asked to run by `taskName`
+// (the -o flag in CLI)
 function filterRunnables(JSONs, paths, taskName) {
   // since the JSONS array might shrink, pass huxleyfile paths too and shrink
   // accordingly

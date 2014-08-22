@@ -13,7 +13,7 @@ function xScreenshots(compare, driver, JSONContent, HuxleyfileContainerPath, bro
     var p = path.join(
       HuxleyfileContainerPath,
       consts.HUXLEY_FOLDER_NAME,
-      task.name + '.' + consts.RECORD_FILE_NAME
+      task.name + consts.RECORD_FILE_SUFFIX
     );
     return loadJSON(p)
       .then(function(actions) {
