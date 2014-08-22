@@ -18,7 +18,7 @@ describe('removeDirIfOk', function() {
     removeDirIfOk = require('../removeDirIfOk');
     rimraf = require('rimraf');
 
-    dir = path.join(__dirname, 'temp');
+    dir = path.join(__dirname, 'temp' + Math.random());
     mkdirp.sync(dir);
     fs.writeFileSync(path.join(dir, 'a.png'), 'asd');
     fs.writeFileSync(path.join(dir, 'b.png'), 'asd');
