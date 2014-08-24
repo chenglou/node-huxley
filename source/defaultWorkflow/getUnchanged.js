@@ -16,6 +16,8 @@ function nothingUnchanged() {
 // definition of an unchanged task: if it exists before and after stashing
 // the content can change, and that's fine
 
+// TODO: change that behavior ^
+
 // invariant: the repo looks the same before and after this operation
 function getUnchangedTasks(globs) {
   var prevPaths;

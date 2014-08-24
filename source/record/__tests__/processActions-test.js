@@ -2,82 +2,78 @@
 
 var expect = require('expect');
 
-var consts;
 var processActions;
 
 describe('processActions', function() {
   beforeEach(function() {
-    consts = require('../../constants');
     processActions = require('../processActions');
   });
 
   it('should return [] if there is no screenshot action', function() {
-    expect(processActions([{action: 'asd'}], [{action: 'asd'}])).toEqual([]);
+    expect(processActions([{action: 'a'}], [{action: 'a'}])).toEqual([]);
   });
 
-  it('should concat actions correctly', function() {
-    var actions1 = [
-      {action: consts.STEP_CLICK, timeStamp: 10},
-    ];
+  it('should concat actions and sort correctly', function() {
+    var actions1 = [{action: 'a', timeStamp: 10}];
     var actions2 = [
-      {action: consts.STEP_SCREENSHOT, timeStamp: 11},
+      {action: 'b', timeStamp: 1},
+      {action: 'screenshot', timeStamp: 20},
     ];
-    var expected = [
-      {action: consts.STEP_CLICK},
-      {action: consts.STEP_SCREENSHOT},
-    ];
-    expect(processActions(actions1, actions2)).toEqual(expected);
-  });
-
-  it('should sort actions correctly', function() {
-    var actions1 = [
-      {action: consts.STEP_CLICK, timeStamp: 10},
-    ];
-    var actions2 = [
-      {action: consts.STEP_SCREENSHOT, timeStamp: 9},
-      {action: consts.STEP_SCREENSHOT, timeStamp: 11},
-    ];
-    var expected = [
-      {action: consts.STEP_SCREENSHOT},
-      {action: consts.STEP_CLICK},
-      {action: consts.STEP_SCREENSHOT},
-    ];
-    expect(processActions(actions1, actions2)).toEqual(expected);
+    expect(processActions(actions1, actions2)).toEqual([
+      {action: 'b'},
+      {action: 'a'},
+      {action: 'screenshot'},
+    ]);
   });
 
   it('should trim non-screenshot actions at the tail', function() {
     var actions1 = [
-      {action: consts.STEP_CLICK, timeStamp: 10},
+      {action: 'a', timeStamp: 1},
+      {action: 'b', timeStamp: 12},
     ];
-    var actions2 = [
-      {action: consts.STEP_SCREENSHOT, timeStamp: 9},
-    ];
-    var expected = [
-      {action: consts.STEP_SCREENSHOT},
-    ];
-    expect(processActions(actions1, actions2)).toEqual(expected);
+    var actions2 = [{action: 'screenshot', timeStamp: 9}];
+    expect(processActions(actions1, actions2)).toEqual([
+      {action: 'a'},
+      {action: 'screenshot'},
+    ]);
   });
 
-  it('inserts pauses between live-playback-ed actions and strip out those info',
-    function() {
-      var actions1 = [
-        {action: consts.STEP_CLICK, timeStamp: 10},
-      ];
-      var actions2 = [
-        {action: consts.STEP_SCREENSHOT, timeStamp: 9, livePlayback: true},
-        {action: consts.STEP_SCREENSHOT, timeStamp: 12, livePlayback: true},
-      ];
+  it('strips out livePlayback actions', function() {
+    var actions1 = [
+      {action: 'a', timeStamp: 3},
+    ];
+    var actions2 = [
+      {action: 'livePlayback', timeStamp: 11},
+      {action: 'screenshot', timeStamp: 23},
+    ];
 
-      var expected = [
-        {action: consts.STEP_SCREENSHOT},
-        {action: consts.STEP_PAUSE, ms: 1},
-        {action: consts.STEP_CLICK},
-        {action: consts.STEP_PAUSE, ms: 2},
-        {action: consts.STEP_SCREENSHOT},
-      ];
+    expect(processActions(actions1, actions2)).toEqual([
+      {action: 'a'},
+      {action: 'pause', ms: 12},
+      {action: 'screenshot'},
+    ]);
+  });
 
-      expect(processActions(actions1, actions2)).toEqual(expected);
-    }
-  );
+  it('inserts pauses between livePlayback actions', function() {
+    var actions1 = [
+      {action: 'a', timeStamp: 3},
+      {action: 'b', timeStamp: 12},
+      {action: 'c', timeStamp: 21},
+    ];
+    var actions2 = [
+      {action: 'livePlayback', timeStamp: 11},
+      {action: 'screenshot', timeStamp: 23},
+    ];
+
+    expect(processActions(actions1, actions2)).toEqual([
+      {action: 'a'},
+      {action: 'pause', ms: 1},
+      {action: 'b'},
+      {action: 'pause', ms: 9},
+      {action: 'c'},
+      {action: 'pause', ms: 2},
+      {action: 'screenshot'},
+    ]);
+  });
 });
 

@@ -10,9 +10,11 @@ module.exports = {
   HUXLEY_FOLDER_NAME: 'Huxleyfolder',
   TASK_FOLDER_SUFFIX: '.hux',
   RECORD_FILE_SUFFIX: '.record.json',
+
   STEP_CLICK: 'click',
   STEP_KEYPRESS: 'keypress',
   STEP_PAUSE: 'pause',
   STEP_SCREENSHOT: 'screenshot',
-  STEP_SCROLL: 'scroll'
+  STEP_SCROLL: 'scroll',
+  STEP_LIVE_PLAYBACK: 'livePlayback',
 };

@@ -15,8 +15,7 @@ function displayPrompt(taskName) {
   console.log('--------------------------------');
   console.log(
     '`enter`'.bold + ': take screenshot.\n' +
-    '`l` `enter`'.bold + ': record everything in real time from this point \n' +
-    'onward (for animation, ajax). `l` `enter` again to stop live tracking.\n' +
+    '`l` `enter`'.bold + ': toggle real-time recording (for animation, ajax).' +
     '`q` `enter`'.bold + ': quit.\n'
   );
 }
