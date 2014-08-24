@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 
 var compareScreenshots = require('../replay/compareScreenshots');
+var colors = require('colors');
 var consts = require('../constants');
 var execP = require('../promisified/execP');
 var runTasks = require('../runTasks');
@@ -43,11 +44,19 @@ function defaultWorkflow(opts) {
       tasks = a;
       paths = b;
       console.log(
-        'Repo reverted to clean state. Looking at previous screenshots...\n'
+        'Executing: ' + '`git stash && git add . && git stash`.\n'.italic
       );
       return gitCmds.safeStashAll();
     })
     .then(function() {
+      console.log(
+        'Repo reverted to clean state. Looking at previous screenshots...\n'
+      );
+      console.log(
+        'If anything goes wrong'.bold + ', simply run ' +
+        '`git stash pop && git reset HEAD . && git stash pop --index` '.italic +
+        'to restore your changes.'
+      );
       // TODO: not good enough. Warn earlier about no task. Before stash
       var res = filterRunnables(tasks, paths, opts.taskName);
       runnableTasks = res[0];
@@ -62,7 +71,13 @@ function defaultWorkflow(opts) {
           return Promise.reject(e);
         });
     })
-    .then(gitCmds.safeUnstashAll)
+    .then(function() {
+      console.log(
+        'Executing: ' +
+        '`git stash pop && git reset HEAD . && git stash pop --index`.\n'.italic
+      );
+      return gitCmds.safeUnstashAll();
+    })
     .then(function() {
       console.log(
         'Repo back to modified state. Getting new screenshots and comparing ' +
