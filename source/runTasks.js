@@ -27,6 +27,11 @@ function runTasks(fn, opts, tasks, paths) {
     driver = opts.injectedDriver;
   }
 
+  // gracefully exit if process' killed impromptu
+  process.on('SIGINT', function() {
+    browser.quit(driver);
+  });
+
   // opts.browserName is used to create the driver; since injectedDriver
   // bypasses our own `browser.open()` driver creation, `opts.browserName`
   // potentially doesn't reflect the actual (injected) driver's browser
