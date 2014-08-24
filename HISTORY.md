@@ -3,8 +3,13 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
-### Publishing soon
-- [I] Show stack trace when erroring.
+## 0.8.0
+- [I] **Big change**: the default Huxley behavior is now to run the comparison locally. See README for more info. Migration guide [here](https://github.com/chenglou/node-huxley/wiki/Migrating-to-Huxley-0.8.0).
+- [I] Related: the folder hierarchy for stored Huxleyfiles and records has changed.
+- [I] Developer API changed and got a new [wiki section](https://github.com/chenglou/node-huxley/wiki/API).
+- [I] Command line format also had a slight change. `update` became `write` and the globs now let you append `/Huxleyfile.json` at the end (to reduce some previous confusion).
+- [I] `l` `enter` now doesn't take a screenshot implicitly anymore. It simply toggles real-time recording.
+- [I] Differing screenshot will halt the current task, but Huxley will now move on to the next one without shutting down. Good for remote integration tests.
 
 ### 0.7.4 (April 6th 2014)
 - [I] Gracefully exit browsers when process dies.

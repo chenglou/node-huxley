@@ -1,12 +1,14 @@
 # Node-huxley
 
-A port of the codeless front-end testing tool, [Huxley](https://github.com/facebook/huxley), used by Instagram.
+Test your UI by comparing old and new screenshots.
 
-- Records your actions as you browse.
-- Takes screenshots.
-- Compares new screenshots against the old ones and checks for differences.
+You made some change to your app and you want to know if you broke the UI. You could either:
 
-[Grunt task here](https://github.com/chenglou/grunt-huxley).
+- Manually put up some test pages.
+- Click and type around and check if everything looks normal (was that padding always there? Did the input box always behave this way? Did the unit test assert on this style?).
+- Try to remember whether the new behavior was identical to the one before your change.
+
+Or you could let Huxley automate this for you.
 
 ## Installation
 
@@ -14,89 +16,61 @@ A port of the codeless front-end testing tool, [Huxley](https://github.com/faceb
 npm install -g huxley
 ```
 
-[Selenium Server](http://docs.seleniumhq.org/download/) is used to automate the recorded browser actions. If you already have it, skip this. Don't have it and don't want the hassle of managing it? Download the [node wrapper](https://github.com/eugeneware/selenium-server) instead.
+[Selenium Server](http://docs.seleniumhq.org/download/) is used to automate the recorded browser actions. Don't have it yet? Try the [node wrapper](https://github.com/eugeneware/selenium-server).
 
-## Walkthrough and API
+([Grunt](https://github.com/chenglou/grunt-huxley)/[Gulp](https://github.com/joukou/gulp-huxley) task, if you ever need it).
 
-`hux -h` for a list of the available commands.
+## Walkthrough
 
-The API's so short it didn't warrant its own section. This example covers every feature of Huxley. _If you have any Windows or browser issue during the process, see the FAQ below._
+The whole demo lives [here](https://github.com/chenglou/huxley-example).
 
-In `examples/` you'll find two completed Huxley tests; we'll reproduce them below.
+### Create some UI
 
-### Testing the water
+[Here's a small app component](https://rawgit.com/chenglou/huxley-example/master/test_page.html). Source code [here](https://github.com/chenglou/huxley-example/blob/master/test_page.html). We're going to use Huxley to make sure the component works every time we make a change to our code. (In reality, you'd set up a test page and bring in your UI script & css.)
 
-Let's start `examples/` from scratch by removing everything _but_ the `webroot/` folder. We'll be testing `component.html`. Take a look.
+### Say what you want to do
 
-`cd` into `webroot/` and start a local server. Try `python -m SimpleHTTPServer` (if you're on Python 3.x: `python -m http.server`) or use [this package](https://github.com/nodeapps/http-server) _(at port 8000)_.
-
-Back in `examples/`, create a `Huxleyfile.json`, like this:
+We're going to type some text into that input field and toggle the button. Create a `Huxleyfile.json` alongside the component file you just made:
 
 ```json
 [
   {
-    "name": "toggle",
-    "screenSize": [1000, 600],
-    "url": "http://localhost:8000/component.html"
+    "name": "type",
+    "screenSize": [750, 500],
+    "url": "http://localhost:8000/test_page.html"
   },
   {
-    "xname": "type",
-    "url": "http://localhost:8000/component.html"
+    "name": "toggle button",
+    "url": "http://localhost:8000/test_page.html"
   }
 ]
 ```
 
-Each task is an object. Only `name` and `url` are mandatory and `screenSize` is the only other option. **Note that the second task is marked as `xname`**. This means that the task will be skipped. We'll focus on the first one for now.
+A huxleyfile contains an array of tasks, each of which has a `name`, a `url` and browser `screenSize` (optional, defaults to 1200x795).
 
-Start Selenium (see "Installation" above), it doesn't matter where. Now run `hux -r` to start recording. The default Selenium browser is Firefox. Assuming Selenium started correctly, do the following:
+### Record your interactions
 
-- Go to the terminal, press `enter` to record a first browser screenshot.
-- Go to the browser, click on the text field and type 'Hello World'.
-- Back to the terminal again, press `enter` to take a second screenshot.
-- Back to the browser, click on the checkbox.
-- Back to the terminal one last time, `enter` to take a third screenshot.
-- Now press `q` `enter` to quit.
+Start a local server. Try `python -m SimpleHTTPServer` (if you're on Python 3.x: `python -m http.server`) or use [this package](https://github.com/nodeapps/http-server) _(at port 8000)_. Then, start selenium (just type `selenium` in the command line if you got the [node wrapper](https://github.com/eugeneware/selenium-server) already).
 
-Huxley will then replay your actions and save the screenshots into a folder (notice that your actions are chained one after another without delay for a faster test experience).
+`hux --record` to start the recording. By now, a browser window should have popped up. Every time you press `enter`, Huxley records a screenshot of the current browser screen.
 
-Onward!
+- In the command line, press `enter` once to take the initial view of the component.
+- Go to the browser, type some text in the input field.
+- Back to command line, press `enter` again.
+- Press `q`, followed by `enter`, to quit the recording session.
 
-### "l" for "live"
+You just finished recording your first task! For the second one, take a screenshot, click the button, take a second screenshot, click the button again, then take a final screenshot, followed by `q` `enter`.
 
-When you do need delays between actions for animations or AJAX, you can activate a special switch.
+There should be a `Huxleyfolder` created beside your `Huxleyfile.json`. All your browser and command line interactions are recorded there. **Check them into version control.**
 
-Open `Huxleyfile.json` again. Change the first task's `name` key into `xname` and the second one's `xname` into `name` (i.e. we'll skip the first task and run the second one). Run `hux -r` again:
+### Done!
 
-- Go to the terminal, `l` `enter`. This will capture a screenshot **and** mark a **l**ive playback point. From this point to the next `enter`, Huxley will respect the delay between your actions.
-- Browser: click on `Launch modal`.
-- Terminal: `l` `enter` again, as we'll be dismissing the modal and want to take the screenshot only after the transition's done.
-- Browser: click anywhere to dismiss the modal.
-- Terminal: `enter` to take a regular screenshot (thus marking the end of earlier's live playback), then `q` `enter` to quit.
+Let's intentionally introduce some error. In `test_page.html`, change `$(this).toggleClass('btn-primary');` to `$(this).toggleClass('bla')`.
 
-That's it! Check your replay and _Don't forget to remove the `x` in `xname` of `Huxleyfile.json`_.
+Here's where the magic happens: try `hux` in the command line =).
 
-When you modify your code in the future, `hux` to compare the new screenshots against the old ones and `hux -u` to update them. **If you want to batch run Huxleyfiles, see `hux --help`**.
+Enjoy!
 
-## FAQ
+### Advanced usage, API & FAQ
 
-### What are the best practices?
-
-Node-huxley is a port, so every recommendation [here](https://github.com/facebook/huxley#best-practices) still applies.
-
-### How do I switch the default browser?
-
-Currently, only Firefox and Chrome are supported. For Chrome, you need [chromedriver](https://code.google.com/p/chromedriver/downloads/list), which doesn't come bundled with Selenium yet. If you're using [Brew](http://brew.sh), just do `brew install chromedriver`.
-
-Start that then do:
-
-```
-hux -b chrome -flagForWhateverElseYouNeed
-```
-
-### I'm on Windows and ______
-
-Make sure that:
-
-- Java is installed and in your environment path.
-- If the enter key doesn't register while recording, try typing anything (beside the reserved `q` or `l`) before pressing enter.
-- If you're using the `--file` flag, use only forward slashes (`/`) in your pattern.
+All your questions answered in the [wiki](https://github.com/chenglou/node-huxley/wiki).
