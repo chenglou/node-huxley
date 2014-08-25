@@ -5,7 +5,7 @@
 var colors = require('colors');
 var app = require('commander');
 
-var huxley = require('../source');
+var huxley = require('../');
 var version = require('../package.json').version;
 
 app

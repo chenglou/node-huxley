@@ -1,11 +1,11 @@
 'use strict';
 
-var defaultWorkflow = require('./defaultWorkflow/defaultWorkflow');
-var getDefaultOpts = require('./getDefaultOpts');
-var runRunnableTasks = require('./runRunnableTasks');
-var compareScreenshots = require('./replay/compareScreenshots');
-var recordTasks = require('./record/recordTasks');
-var writeScreenshots = require('./replay/writeScreenshots');
+var defaultWorkflow = require('./source/defaultWorkflow/defaultWorkflow');
+var getDefaultOpts = require('./source/getDefaultOpts');
+var runRunnableTasks = require('./source/runRunnableTasks');
+var compareScreenshots = require('./source/replay/compareScreenshots');
+var recordTasks = require('./source/record/recordTasks');
+var writeScreenshots = require('./source/replay/writeScreenshots');
 
 function wrap(fn) {
   return function(opts) {
