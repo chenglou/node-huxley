@@ -5,7 +5,7 @@ var expect = require('expect');
 var browser;
 var webdriver;
 
-xdescribe('browser', function() {
+describe('browser', function() {
   beforeEach(function() {
     browser = require('../browser');
     webdriver = require('selenium-webdriver');

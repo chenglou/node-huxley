@@ -8,7 +8,7 @@ var browser;
 var keypress;
 var testScreenshot;
 
-xdescribe('keypress', function() {
+describe('keypress', function() {
   beforeEach(function() {
     browser = require('../../../browser/browser');
     keypress = require('../keypress');

@@ -22,7 +22,7 @@ describe('runRunnableTasks', function() {
 
   this.timeout(4000);
 
-  xit('should pass good arguments', function(done) {
+  it('should pass good arguments', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**/Huxleyfile.json');
     // should pass the complete set of options, but it's ok here because the
     // test doesn't advance far enough to need them
@@ -39,7 +39,7 @@ describe('runRunnableTasks', function() {
       });
   });
 
-  xit('uses the injected driver & deduces the browser name correctly', function(done) {
+  it('uses the injected driver & deduces the browser name correctly', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**/Huxleyfile.json');
 
     var browser = webdriver.Capabilities.chrome();

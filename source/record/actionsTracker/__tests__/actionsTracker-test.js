@@ -5,7 +5,7 @@ var expect = require('expect');
 var actionsTracker;
 var browser;
 
-xdescribe('actionsTracker', function() {
+describe('actionsTracker', function() {
   beforeEach(function() {
     actionsTracker = require('../actionsTracker');
     browser = require('../../../browser/browser');

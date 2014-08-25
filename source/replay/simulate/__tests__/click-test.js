@@ -8,7 +8,7 @@ var browser;
 var click;
 var testScreenshot;
 
-xdescribe('click', function() {
+describe('click', function() {
   beforeEach(function() {
     browser = require('../../../browser/browser');
     click = require('../click');

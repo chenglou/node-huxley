@@ -8,7 +8,7 @@ var browser;
 var scroll;
 var testScreenshot;
 
-xdescribe('scroll', function() {
+describe('scroll', function() {
   beforeEach(function() {
     browser = require('../../../browser/browser');
     scroll = require('../scroll');
