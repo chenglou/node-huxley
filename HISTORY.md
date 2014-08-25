@@ -3,7 +3,7 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
-## 0.8.0
+## 0.8.0 (August 24th 2014)
 - [I] **Big change**: the default Huxley behavior is now to run the comparison locally. See README for more info. Migration guide [here](https://github.com/chenglou/node-huxley/wiki/Migrating-to-Huxley-0.8.0).
 - [I] Related: the folder hierarchy for stored Huxleyfiles and records has changed.
 - [I] Developer API changed and got a new [wiki section](https://github.com/chenglou/node-huxley/wiki/API).
