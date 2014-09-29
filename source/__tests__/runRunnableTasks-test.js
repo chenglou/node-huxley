@@ -20,7 +20,7 @@ describe('runRunnableTasks', function() {
     spy = function() {callParams = arguments;};
   });
 
-  this.timeout(4000);
+  this.timeout(8000);
 
   it('should pass good arguments', function(done) {
     var p = path.join(__dirname, '../fileOps/__tests__/fixture/**/Huxleyfile.json');

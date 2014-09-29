@@ -61,7 +61,7 @@ function open(browserName, serverUrl) {
 
 var browserChrome = {
   'chrome': [0, 72],
-  'firefox': [0, 79],
+  'firefox': [0, 106],
 };
 
 function setSize(driver, browserName, w, h) {
@@ -96,9 +96,6 @@ function getBrowserName(driver) {
 }
 
 function goToUrl(driver, url) {
-  // selenium throws an obscure message if you don't append the protocol to your
-  // url (https://code.google.com/p/selenium/issues/detail?id=6988). Default to
-  // http
   var prom = new Promise(function(resolve, reject) {
     driver.get(normalizeUrl(url))
       .then(function() {

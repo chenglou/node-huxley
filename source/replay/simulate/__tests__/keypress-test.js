@@ -15,7 +15,7 @@ describe('keypress', function() {
     testScreenshot = require('./testScreenshot');
   });
 
-  this.timeout(5000);
+  this.timeout(8000);
 
   it('presses', function(done) {
     var url = 'file://' + __dirname + '/fixture/keypress.html';

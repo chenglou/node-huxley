@@ -39,13 +39,13 @@
     "png-diff": "^0.3.0",
     "read": "~1.0.5",
     "rimraf": "^2.2.8",
-    "selenium-webdriver": "~2.39.0"
+    "selenium-webdriver": "^2.43.5"
   },
   "devDependencies": {
     "expect": "^0.1.1",
     "jest-cli": "^0.1.17",
     "mocha": "^1.20.1",
     "nexpect": "^0.4.2",
-    "selenium-server": "~2.38.0"
+    "selenium-server": "^2.43.1"
   }
 }

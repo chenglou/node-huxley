@@ -15,7 +15,7 @@ describe('scroll', function() {
     testScreenshot = require('./testScreenshot');
   });
 
-  this.timeout(5000);
+  this.timeout(8000);
 
   it('scrolls', function(done) {
     var url = 'file://' + __dirname + '/fixture/scroll.html';

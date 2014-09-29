@@ -26,19 +26,6 @@ describe('browser', function() {
       });
   });
 
-  it('should throw if the browsers isn\'t opened correctly', function(done) {
-    var ff = browser.open('firefox');
-    browser.goToUrl(ff, 'asd://localhost:8000/')
-      .then(function() {
-        done(new Error('Browser should not have been opened correctly'));
-      }, function() {
-        done();
-      })
-      .finally(function() {
-        return browser.quit(ff);
-      });
-  });
-
   it('should deduce the browser name correctly from the driver', function(done) {
     var br = webdriver.Capabilities.chrome();
     var driver = new webdriver.Builder()

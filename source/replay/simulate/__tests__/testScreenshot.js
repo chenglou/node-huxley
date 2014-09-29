@@ -30,7 +30,7 @@ function testScreenshot(driver, browserName, url, w, h, pngName, fn) {
 
       return outputDiffP(expected, actual);
     })
-    .spread(function(diffMetric) {
+    .spread(function(diffMetric, data) {
       expect(diffMetric).toBe(0);
     })
     .finally(function() {
