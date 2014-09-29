@@ -13,12 +13,14 @@ var filterRunnables = require('../fileOps/filterRunnables');
 var removeDirIfOk = require('./removeDirIfOk');
 
 var notGitMsg =
-  'The default huxley workflow assumes the current folder uses git. This is what it does:\n' +
+  'The default huxley workflow assumes the current folder uses Git. This is what it does:\n' +
   '- store away the current unsaved changes\n' +
   '- record screenshots on the fresh, pre-change code, using that as the reference point\n' +
   '- restore the unsaved changes\n' +
   '- record the screenshots on the post-change code\n' +
-  '- compare them to the previously recorded ones to make sure everything looks the same\n';
+  '- compare them to the previously recorded ones to make sure everything looks the same\n' +
+  '\n' +
+  'If you don\'t want this workflow, check out https://github.com/chenglou/node-huxley/wiki for custom Huxley usage.\n';
 
 // will support hg in the future
 function defaultWorkflow(opts) {
@@ -28,16 +30,7 @@ function defaultWorkflow(opts) {
   var runnablePaths;
 
   return execP('git status')
-    .spread(function(stdout, stderr) {
-      var errMsg;
-      if (stderr !== '') {
-        errMsg = stderr.indexOf('Not a git repository') > -1 ?
-          notGitMsg :
-          stderr;
-
-        return Promise.reject(new Error(errMsg + '\n'));
-      }
-
+    .then(function() {
       return getUnchanged(opts.globs);
     })
     .spread(function(a, b) {
@@ -65,6 +58,11 @@ function defaultWorkflow(opts) {
       return runTasks(writeScreenshots, opts, runnableTasks, runnablePaths);
     })
     .catch(function(e) {
+      if (e.name === 'OperationalError' &&
+          e.message.indexOf('Not a git repository') > -1) {
+        return Promise.reject(new Error(notGitMsg));
+      }
+
       return gitCmds
         .safeUnstashAll()
         .then(function() {
