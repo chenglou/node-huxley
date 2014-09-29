@@ -3,7 +3,11 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
-# 0.8.1 (August 24th 2014)
+### 0.8.2 (September 28th 2014)
+- [I] Bump Selenium version.
+- [F] Give default workflow a better error message when `hux` isn't used on a git repo.
+
+### 0.8.1 (August 24th 2014)
 - [F] Didn't expose `index.js` correctly (fail), fixed.
 
 ## 0.8.0 (August 24th 2014)
