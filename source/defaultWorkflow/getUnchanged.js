@@ -8,10 +8,6 @@ var gitCmds = require('./gitCmds');
 var loadJSON = require('../fileOps/utils/loadJSON');
 var path = require('path');
 
-function nothingUnchanged() {
-  return Promise.reject(new Error('No Huxleyfile found that is unchanged.'));
-}
-
 // returns [[[unchangedTask]], [HuxleyfileDirectory]]
 // definition of an unchanged task: if it exists before and after stashing
 // the content can change, and that's fine
@@ -45,7 +41,9 @@ function getUnchangedTasks(globs) {
       unchangedPaths = _.intersection(prevPaths, nextPaths);
 
       if (unchangedPaths.length === 0) {
-        return nothingUnchanged();
+        return Promise.reject(
+          new Error('No Huxleyfile found that is unchanged.')
+        );
       }
 
       // at this point, we got all the `Huxleyfile.json`s directory paths that
@@ -92,7 +90,7 @@ function getUnchangedTasks(globs) {
     .then(function() {
       // time: current
       if (tasks.length === 0) {
-        return nothingUnchanged();
+        return Promise.reject(new Error('No task found that is unchanged.'));
       }
 
       return [tasks, paths];
