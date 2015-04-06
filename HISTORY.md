@@ -3,6 +3,9 @@ Legend:
   - [F]: fix
   - [K]: known problems
 
+### 0.8.3 (April 6th 2015)
+- [I] Switch to lodash npm dependency.
+
 ### 0.8.2 (September 28th 2014)
 - [I] Bump Selenium version.
 - [F] Give default workflow a better error message when `hux` isn't used on a git repo.
