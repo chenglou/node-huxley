@@ -64,4 +64,4 @@ fn(opts)
   .catch(function(err) {
     console.error('The tests now halt. You might have unfinished tasks.\n'.red);
     throw err;
-  });
+  }).done();

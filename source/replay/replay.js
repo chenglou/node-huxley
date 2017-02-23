@@ -99,10 +99,8 @@ function replay(compare, driver, task, actions, browserName, HuxleyfileContainer
         console.log((err.message + ' ' + err.diffPath + '\n').red);
       } else if (err.message.indexOf('Images not the same dimension') > -1) {
         console.log((err.message.red));
-      } else {
-        // unrecognized. Throw again to have the stack trace
-        throw err;
       }
+      throw err;
     });
 }
 
