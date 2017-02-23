@@ -86,9 +86,9 @@ function getBrowserName(driver) {
   var prom = new Promise(function(resolve, reject) {
     driver
       .getCapabilities()
-      .then(function(whatIsThis) {
+      .then(function(res) {
         // damn it selenium, where's the js api docs
-        var browserName = whatIsThis.caps_.browserName;
+        var browserName = res.caps_ ? res.caps_.browserName : res.get('browserName')
         resolve(browserName);
       }, reject);
   });
